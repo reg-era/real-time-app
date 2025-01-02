@@ -1,0 +1,51 @@
+{{define "style"}}
+<link rel="stylesheet" href="/assets/css/error.css">
+{{end}}
+
+{{define "title" }}talk - Error{{end}}
+
+{{define "sidebar"}}{{end}}
+
+{{define "body"}}
+<main>
+    <section class="container">
+        {{if eq . 404}}
+        <div class="error-message">
+            <h1>Oops! Page Not Found (404)</h1>
+            <p>We couldn't find the page you're looking for. It might have been moved or deleted.</p>
+            <button class="err-button" onclick="window.location.href='/'">Go to Home</button>
+        </div>
+        {{else if eq . 400}}
+        <div class="error-message">
+            <h1>Bad Request (400)</h1>
+            <p>The request could not be understood by the server. Please check the URL or your input.</p>
+            <button class="err-button" onclick="window.location.href='/'">Go to Home</button>
+        </div>
+        {{else if eq . 401}}
+        <div class="error-message">
+            <h1>Unauthorized (401)</h1>
+            <p>You need to be logged in to access this page. Please log in to continue.</p>
+            <button class="err-button" onclick="window.location.href='/login'">Login</button>
+            <button class="err-button" onclick="window.location.href='/'">Go to Home</button>
+        </div>
+        {{else if eq . 405}}
+        <div class="error-message">
+            <h1>Method Not Allowed (401)</h1>
+            <p>Please Go to home.</p>
+            <button class="err-button" onclick="window.location.href='/login'">Login</button>
+            <button class="err-button" onclick="window.location.href='/'">Go to Home</button>
+        </div>
+        {{else if eq . 500}}
+        <div class="error-message">
+            <h1>Internal Server Error (500)</h1>
+            <p>Something went wrong on our end. We're working on it. Please try again later.</p>
+            <button class="err-button" onclick="window.location.href='/'">Go to Home</button>
+        </div>
+        {{end}}
+    </section>
+</main>
+{{end}}
+
+{{define "script"}}
+<script type="module" src="/assets/js/script.js"></script>
+{{end}}

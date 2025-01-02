@@ -1,0 +1,32 @@
+{{define "style"}}
+<link rel="stylesheet" href="/assets/css/categories.css">
+{{end}}
+
+{{define "title"}}talk - Categories{{end}}
+
+
+
+{{define "body"}}
+<main>
+    {{block "sidebar" .}}{{end}}
+    <section class="categories">
+        <h2>Select a Category</h2>
+        <ul class="category-list">
+            {{range .}}
+            <li categoryId="{{.Id}}">
+                <a>
+                    <span class="category-name">{{.Name}}:</span>
+                    <span class="category-description">{{.Description}}</span>
+                </a>
+            </li>
+            {{end}}
+        </ul>
+    </section>
+</main>
+{{end}}
+
+
+{{define "script"}}
+<script type="module" src="/assets/js/script.js"></script>
+<script type="module" src="/assets/js/categories.js"></script>
+{{end}}
