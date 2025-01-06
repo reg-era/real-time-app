@@ -36,6 +36,21 @@ func main() {
 	// Create a multipluxer
 	router := http.NewServeMux()
 
+
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "SP-framework/index.html")
+	})
+
+	router.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/") {
+			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusNotFound, http.StatusNotFound)
+			return
+		}
+		fs := http.FileServer(http.Dir("SP-framework/js/"))
+		http.StripPrefix("/api/", fs).ServeHTTP(w, r)
+	})
+
+
 	router.HandleFunc("/assets/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/") {
 			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusNotFound, http.StatusNotFound)
@@ -46,11 +61,11 @@ func main() {
 	})
 
 	// HomePage handler
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/prev", func(w http.ResponseWriter, r *http.Request) {
 		auth.AuthMiddleware(db, handlers.HomePageHandler, true).ServeHTTP(w, r)
 	})
 
-	router.HandleFunc("/register", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/register", func(w http.ResponseWriter, r *http.Request) {	
 		switch r.Method {
 		case "GET":
 			auth.AuthMiddleware(db, handlers.RegisterPageHandler, true).ServeHTTP(w, r)
@@ -61,7 +76,7 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			handlers.LoginPageHandler(w, r, db)
@@ -72,7 +87,7 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/logout", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
 			return
@@ -80,11 +95,7 @@ func main() {
 		auth.RemoveUser(w, r, db)
 	})
 
-	router.HandleFunc("/posts", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5500")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
+	router.HandleFunc("/api/posts", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
 			return
@@ -93,7 +104,7 @@ func main() {
 		handlers.PostsHandler(w, r, db, userId)
 	})
 
-	router.HandleFunc("/new_post", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/new_post", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			auth.AuthMiddleware(db, handlers.NewPostPageHandler, false).ServeHTTP(w, r)
@@ -104,11 +115,7 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("/comments", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5500")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		
+	router.HandleFunc("/api/comments", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			userId, _ := auth.ValidUser(r, db)
@@ -120,7 +127,7 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("/react", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/react", func(w http.ResponseWriter, r *http.Request) {
 		method := r.Method
 		if method == "GET" {
 			userId, _ := auth.ValidUser(r, db)
@@ -135,7 +142,7 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("/categories", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/categories", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			handlers.CategoriesHandler(w, r, db, 0)

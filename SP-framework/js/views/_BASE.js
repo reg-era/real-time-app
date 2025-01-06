@@ -68,7 +68,7 @@ export default class {
         return `
         <header>
             <button class="menu-button">☰</button>
-            <a href="/SP-framework/index.html" class="nav__link" data-link >
+            <a href="/" class="nav__link" data-link >
                 <div class="logo">
                     <img src="http://localhost:8080/assets/icons/logo.png" alt="Logo">
                 </div>

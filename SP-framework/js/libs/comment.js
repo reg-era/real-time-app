@@ -51,7 +51,7 @@ export const initializeCommentSection = (postElement, post) => {
 
 const loadComments = async (postId, limit, commentsContainer) => {
     try {
-        const response = await fetch(`http://localhost:8080/comments?post=${postId}&limit=${limit}&from=${comentIndex[postId]}`)
+        const response = await fetch(`api/comments?post=${postId}&limit=${limit}&from=${comentIndex[postId]}`)
         if (!response.ok) throw new Error("Failed to load comments.")
 
         const comments = await response.json()
@@ -74,7 +74,7 @@ const loadComments = async (postId, limit, commentsContainer) => {
 
 const addComment = async (postId, content, commentsContainer, commentsection) => {
     try {
-        const response = await fetch(`http://localhost:8080/comments`, {
+        const response = await fetch(`api/comments`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

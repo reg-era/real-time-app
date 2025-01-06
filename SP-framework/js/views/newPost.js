@@ -4,7 +4,7 @@ export default class extends BASE {
     constructor(params) {
         super(params);
         this.setTitle("Home");
-        this.setStyle("http://localhost:8080/assets/css/new_post.css")
+        this.setStyle("/assets/css/new_post.css")
     }
 
     async getCategories() {
@@ -15,7 +15,6 @@ export default class extends BASE {
         // call the categories
         return `
         ${this.getHtmlBase()}
-        ${this.getSideBar()}
         <section class="create-post">
             <h2>Create a New Post</h2>
             <form id="createPostForm" action="/new_post" method="post">

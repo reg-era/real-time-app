@@ -8,7 +8,7 @@ export const GetData = async (postIds = false) => {
     try {
         if (postIds === false) {
             postIds = [];
-            let response = await fetch('http://localhost:8080/posts');
+            let response = await fetch('api/posts');
             if (!response.ok) throw new Error("Network response was not ok");
             let lastPostId = await response.json();
             for (let postId = 1; postId <= lastPostId; postId++) {
@@ -37,7 +37,7 @@ async function renderPage(postIds) {
     let targets = [];
     let i = 0
     while (postIds.length > 0 && i < 10) {
-        let link = `http://localhost:8080/posts?post_id=${postIds.pop()}`;
+        let link = `api/posts?post_id=${postIds.pop()}`;
         let postResponse = await fetch(link);
         if (postResponse.ok) {
             let post = await postResponse.json();
