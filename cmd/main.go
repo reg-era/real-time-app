@@ -81,6 +81,10 @@ func main() {
 	})
 
 	router.HandleFunc("/posts", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5500")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
 		if r.Method != "GET" {
 			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
 			return
@@ -101,6 +105,10 @@ func main() {
 	})
 
 	router.HandleFunc("/comments", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5500")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		
 		switch r.Method {
 		case "GET":
 			userId, _ := auth.ValidUser(r, db)
