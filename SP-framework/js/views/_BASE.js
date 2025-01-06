@@ -1,3 +1,5 @@
+import { handleResize, debounce } from "../libs/script.js";
+
 export default class {
     constructor(params) {
         this.params = params;
@@ -19,20 +21,50 @@ export default class {
         }
     }
 
-    getNavigation() {
+    setListners() {
+        const authNav = document.getElementById('auth-nav');
+        const hasSession = document.cookie.includes('session_token');
+
+        if (hasSession) {
+            authNav.innerHTML = `
+                <a href="/" class="active" data-link>Logout</a>
+            `;
+            const logoutLink = authNav.querySelector('a');
+            logoutEvent(logoutLink);
+        } else {
+            authNav.innerHTML = `
+                <a href="/login" class="active" data-link>Login</a>
+                <a href="/register" data-link>Signup</a>
+            `;
+        }
+
+        handleResize()
+        let debouncedHandleResize = debounce(handleResize, 100)
+        window.addEventListener('resize', debouncedHandleResize)
+
+        const menuButton = document.querySelector('.menu-button');
+        const sideBar = document.querySelector('.sidebar');
+        if (menuButton && sideBar) {
+            menuButton.addEventListener('click', () => {
+                sideBar.classList.toggle('hide');
+            });
+        }
+    }
+
+    getSideBar() {
         return `
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a href="/login" class="nav__link" data-link >login</a>
-                <a href="/register" class="nav__link" data-link >register</a>
-                <a href="/posts" class="nav__link" data-link >posts</a>
-                <a href="/new-post" class="nav__link" data-link >newpost</a>
+                <a href="/Create-post" class="nav__link" data-link >Create Post</a>
+                <a href="/Created-post" class="nav__link" data-link >Created Posts</a>
+                <a href="/Liked-post" class="nav__link" data-link >Liked Posts</a>
+                <a href="/Categories" class="nav__link" data-link >Categories</a>
             </nav>
         </aside>
         `
     }
 
-    getHtmlBase() {
+    getNavBar() {
         return `
         <header>
             <button class="menu-button">☰</button>
@@ -45,5 +77,13 @@ export default class {
             </nav>
         </header>
         `
+    }
+
+    getHtmlBase() {
+        const html = `
+        ${this.getNavBar()}
+        `
+        setTimeout(this.setListners, 0);
+        return html
     }
 }

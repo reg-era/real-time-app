@@ -1,3 +1,4 @@
+import { showRegistrationModal } from "./script.js";
 import { escapeHTML } from "./post.js";
 
 const commentSize = 3

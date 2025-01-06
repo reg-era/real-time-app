@@ -15,7 +15,7 @@ export default class extends BASE {
         // call the categories
         return `
         ${this.getHtmlBase()}
-        ${this.getNavigation()}
+        ${this.getSideBar()}
         <section class="create-post">
             <h2>Create a New Post</h2>
             <form id="createPostForm" action="/new_post" method="post">

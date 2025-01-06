@@ -10,7 +10,7 @@ export default class extends BASE {
     async getHtml() {
         return `
         ${this.getHtmlBase()}
-        ${this.getNavigation()}
+        ${this.getSideBar()}
         <main>
             <div class="container">
                 <section class="signup">
@@ -36,14 +36,14 @@ export default class extends BASE {
                                 placeholder="Confirm your password" minlength="8" maxlength="64" required>
                         </div>
                         <button type="submit">Sign Up</button>
-                        <p class="login-link">Already have an account? <a href="/login">Login</a></p>
+                        <p class="login-link">Already have an account? <a href="/login" data-link>Login</a></p>
                         <p id="responseMessage"></p>
                     </form>
                 </section>
             </div>
         </main>
         <footer>
-            <p>&copy; ifoukahi, yhajjaoui</p>
+            <p>&copy; Regera, Yhajjaoui</p>
         </footer>
         `;
     }

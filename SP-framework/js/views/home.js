@@ -7,8 +7,6 @@ export default class extends BASE {
         this.setTitle("Home");
         this.setStyle("http://localhost:8080/assets/css/base.css")
         this.setStyle("http://localhost:8080/assets/css/posts.css")
-
-        this.allPosts = []
     }
 
     async getPosts() {
@@ -17,15 +15,11 @@ export default class extends BASE {
         posts.forEach(post => container.appendChild(post))
     }
 
-    setupEvents() {
-        console.log(document.body.querySelectorAll('.post-container'));
-    }
-
     async getHtml() {
         const html = `
         ${this.getHtmlBase()}
         <main>     
-            ${this.getNavigation()}
+            ${this.getSideBar()}
             <section class="posts">
             </section>
         <main>
