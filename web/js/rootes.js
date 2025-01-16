@@ -2,16 +2,21 @@ import Home from "./views/home.js";
 import Login from "./views/login.js";
 import Register from "./views/register.js";
 import newPost from "./views/newPost.js";
+import ErrorPage from "./views/error.js";
 
-const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+const getParams = (path, routePath) => {
+    const pathParts = path.split('/').filter(part => part !== '');
+    const routeParts = routePath.split('/').filter(part => part !== '');
 
-const getParams = match => {
-    const values = match.result.slice(1);
-    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+    const params = {};
+    // still made custumize for more type of params URL like query indexes ....
+    routeParts.forEach((part, index) => {
+        if (part.startsWith(':')) {
+            params[part.slice(1)] = pathParts[index];
+        }
+    });
 
-    return Object.fromEntries(keys.map((key, i) => {
-        return [key, values[i]];
-    }));
+    return params;
 };
 
 const navigateTo = url => {
@@ -21,29 +26,32 @@ const navigateTo = url => {
 
 const router = async () => {
     const routes = [
-        { path: "/home", view: Home },
+        { path: "/", view: Home },
         { path: "/login", view: Login },
         { path: "/register", view: Register },
         { path: "/new-post", view: newPost },
+        { path: "/error", view: ErrorPage },
     ];
 
-    const potentialMatches = routes.map(route => {
-        return {
-            route: route,
-            result: location.pathname.match(pathToRegex(route.path))
-        };
+    const path = location.pathname;
+
+    let match = routes.find(route => {
+        const pathParts = path.split('/').filter(part => part !== '');
+        const routeParts = route.path.split('/').filter(part => part !== '');
+
+        if (pathParts.length !== routeParts.length) {
+            return false;
+        }
+
+        return routeParts.every((part, index) => part === pathParts[index]);
     });
 
-    let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null);
-
-    if (!match) {
-        match = {
-            route: routes[0],
-            result: [location.pathname]
-        };
+    if (!match) { // make sure to pute the error page on the end of routes slice
+        match = { route: routes[routes.length - 1], result: [path] };
     }
 
-    const view = new match.route.view(getParams(match));
+    const params = getParams(path, match.path);
+    const view = new match.view(params);
 
     document.querySelector(".app").innerHTML = await view.getHtml();
 };
@@ -60,5 +68,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
     router();
 });
-
-///////////////////////////////////////////////
