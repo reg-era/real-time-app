@@ -38,7 +38,7 @@ func main() {
 
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "SP-framework/index.html")
+		http.ServeFile(w, r, "web/index.html")
 	})
 
 	router.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +46,7 @@ func main() {
 			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusNotFound, http.StatusNotFound)
 			return
 		}
-		fs := http.FileServer(http.Dir("SP-framework/js/"))
+		fs := http.FileServer(http.Dir("web/js/"))
 		http.StripPrefix("/api/", fs).ServeHTTP(w, r)
 	})
 
