@@ -8,9 +8,7 @@ export class Error extends BASE {
         this.statusMsg;
         this.errorMsg;
 
-        this.setTitle("Home");
-        this.setStyle("http://localhost:8080/assets/css/base.css")
-        this.setStyle("http://localhost:8080/assets/css/posts.css")
+        this.setTitle("ERROR");
     }
 
     setAttribute() {

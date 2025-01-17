@@ -3,8 +3,9 @@ import { BASE } from "./_BASE.js";
 export class Register extends BASE {
     constructor(params) {
         super(params);
+        this.setTitle("Register");
+        this.setStyle("http://localhost:8080/assets/css/base.css")
         this.setStyle("http://localhost:8080/assets/css/register.css")
-        this.setTitle("Home");
     }
 
     setAttribute() {

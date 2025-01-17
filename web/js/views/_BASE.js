@@ -3,6 +3,8 @@ import { handleResize, debounce } from "../libs/script.js";
 export class BASE {
     constructor(params) {
         this.params = params;
+        this.setStyle("http://localhost:8080/assets/css/base.css")
+        this.setStyle("http://localhost:8080/assets/css/posts.css")
     }
 
     setTitle(title) {
@@ -27,10 +29,26 @@ export class BASE {
 
         if (hasSession) {
             authNav.innerHTML = `
-                <a href="/" class="active" data-link>Logout</a>
+                <a class="active" data-link>Logout</a>
             `;
-            const logoutLink = authNav.querySelector('a');
-            logoutEvent(logoutLink);
+            const logoutLink = authNav.querySelector('.active');
+            logoutLink.addEventListener('click', async (event) => {
+                event.preventDefault()
+                try {
+                    const response = await fetch('http://localhost:8080/api/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+
+                    if (response.ok) {
+                        window.location.href = "/"
+                    } else {
+                        console.error('Logout failed');
+                    }
+                } catch (error) {
+                    console.error('Error logging out:', error);
+                }
+            });
         } else {
             authNav.innerHTML = `
                 <a href="/login" class="active" data-link>Login</a>
@@ -55,7 +73,7 @@ export class BASE {
         return `
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a href="/Create-post" class="nav__link" data-link >Create Post</a>
+                <a href="/new-post" class="nav__link" data-link >Create Post</a>
                 <a href="/Created-post" class="nav__link" data-link >Created Posts</a>
                 <a href="/Liked-post" class="nav__link" data-link >Liked Posts</a>
                 <a href="/Categories" class="nav__link" data-link >Categories</a>

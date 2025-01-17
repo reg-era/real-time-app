@@ -80,6 +80,7 @@ func main() {
 	})
 
 	router.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
+		println("Login")
 		switch r.Method {
 		case "GET":
 			handlers.LoginPageHandler(w, r, db)
