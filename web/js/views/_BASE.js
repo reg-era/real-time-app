@@ -1,6 +1,6 @@
 import { handleResize, debounce } from "../libs/script.js";
 
-export default class {
+export class BASE {
     constructor(params) {
         this.params = params;
     }

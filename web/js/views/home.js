@@ -1,12 +1,15 @@
 import { GetData } from "../libs/post.js";
-import BASE from "./_BASE.js";
+import { BASE } from "./_BASE.js";
 
-export default class extends BASE {
+export class Home extends BASE {
     constructor(params) {
         super(params);
         this.setTitle("Home");
         this.setStyle("http://localhost:8080/assets/css/base.css")
         this.setStyle("http://localhost:8080/assets/css/posts.css")
+    }
+
+    setAttribute() {
     }
 
     async getPosts() {

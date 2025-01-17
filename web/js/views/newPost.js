@@ -1,10 +1,13 @@
-import BASE from "./_BASE.js";
+import { BASE } from "./_BASE.js";
 
-export default class extends BASE {
+export class NewPost extends BASE {
     constructor(params) {
         super(params);
         this.setTitle("Home");
         this.setStyle("/assets/css/new_post.css")
+    }
+
+    setAttribute() {
     }
 
     async getCategories() {

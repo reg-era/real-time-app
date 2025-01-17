@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -38,6 +39,8 @@ func main() {
 
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Serving index.html")
+		fmt.Println(r.URL.Path)
 		http.ServeFile(w, r, "web/index.html")
 	})
 

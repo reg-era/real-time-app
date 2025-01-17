@@ -1,10 +1,13 @@
-import BASE from "./_BASE.js";
+import { BASE } from "./_BASE.js";
 
-export default class extends BASE {
+export class Login extends BASE {
     constructor(params) {
         super(params);
         this.setTitle("Home");
         this.setStyle("http://localhost:8080/assets/css/login.css")
+    }
+
+    setAttribute() {
     }
 
     setListners(){

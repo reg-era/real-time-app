@@ -1,23 +1,42 @@
-import { GetData } from "../libs/post.js";
-import BASE from "./_BASE.js";
+import { BASE } from "./_BASE.js";
 
-export default class extends BASE {
+export class Error extends BASE {
     constructor(params) {
         super(params);
 
         this.statusError;
         this.statusMsg;
-        this.errorMsg
+        this.errorMsg;
 
         this.setTitle("Home");
         this.setStyle("http://localhost:8080/assets/css/base.css")
         this.setStyle("http://localhost:8080/assets/css/posts.css")
     }
 
-    async getPosts() {
-        const posts = await GetData()
-        const container = document.body.querySelector('.posts')
-        posts.forEach(post => container.appendChild(post))
+    setAttribute() {
+        this.statusError = this.params['/error?status'];
+        switch (this.statusError) {
+            case 404:
+                this.statusMsg = "Page Not Found";
+                this.errorMsg = "We couldn't find the page you're looking for. It might have been moved or deleted.";
+                break;
+            case 400:
+                this.statusMsg = "Bad Request";
+                this.errorMsg = "The request could not be understood by the server. Please check the URL or your input.";
+                break;
+            case 401:
+                this.statusMsg = "Unauthorized";
+                this.errorMsg = "You need to be logged in to access this page. Please log in to continue.";
+                break;
+            case 405:
+                this.statusMsg = "Method Not Allowed";
+                this.errorMsg = "Please Go to home.";
+                break;
+            case 500:
+                this.statusMsg = "Internal Server Error";
+                this.errorMsg = "Something went wrong on our end. We're working on it. Please try again later.";
+                break;
+        }
     }
 
     async getHtml() {
