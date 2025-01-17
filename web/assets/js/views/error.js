@@ -12,6 +12,8 @@ export class Error extends BASE {
     }
 
     setAttribute() {
+        console.log('try to set atribute',this.params);
+        
         this.statusError = this.params['/error?status'];
         switch (this.statusError) {
             case 404:

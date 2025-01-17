@@ -7,7 +7,6 @@ import (
 
 	"forum/internal/database"
 	"forum/internal/utils"
-	tmpl "forum/web"
 )
 
 type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int)
@@ -26,7 +25,7 @@ func AuthMiddleware(db *sql.DB, next customHandler, login bool) http.Handler {
 					next(w, r, db, userId)
 					return
 				}
-				tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusUnauthorized, http.StatusUnauthorized)
+				utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
 				return
 			} else if err == sql.ErrNoRows {
 				http.SetCookie(w, &http.Cookie{
@@ -43,10 +42,10 @@ func AuthMiddleware(db *sql.DB, next customHandler, login bool) http.Handler {
 					next(w, r, db, userId)
 					return
 				}
-				tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusUnauthorized, http.StatusUnauthorized)
+				utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
 				return
 			} else {
-				tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusInternalServerError, http.StatusInternalServerError)
+				utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 				return
 			}
 		}

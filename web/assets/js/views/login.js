@@ -4,8 +4,8 @@ export class Login extends BASE {
     constructor(params) {
         super(params);
         this.setTitle("Login");
-        this.setStyle("http://localhost:8080/assets/css/base.css")
-        this.setStyle("http://localhost:8080/assets/css/login.css")
+        this.setStyle("http://localhost:8080/api/css/base.css")
+        this.setStyle("http://localhost:8080/api/css/login.css")
     }
 
     setAttribute() { }

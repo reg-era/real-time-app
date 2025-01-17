@@ -4,8 +4,8 @@ export class Register extends BASE {
     constructor(params) {
         super(params);
         this.setTitle("Register");
-        this.setStyle("http://localhost:8080/assets/css/base.css")
-        this.setStyle("http://localhost:8080/assets/css/register.css")
+        this.setStyle("http://localhost:8080/api/css/base.css")
+        this.setStyle("http://localhost:8080/api/css/register.css")
     }
 
     setAttribute() {

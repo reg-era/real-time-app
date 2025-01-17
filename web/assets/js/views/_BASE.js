@@ -3,8 +3,8 @@ import { handleResize, debounce } from "../libs/script.js";
 export class BASE {
     constructor(params) {
         this.params = params;
-        this.setStyle("http://localhost:8080/assets/css/base.css")
-        this.setStyle("http://localhost:8080/assets/css/posts.css")
+        this.setStyle("http://localhost:8080/api/css/base.css")
+        this.setStyle("http://localhost:8080/api/css/posts.css")
     }
 
     setTitle(title) {
@@ -88,7 +88,7 @@ export class BASE {
             <button class="menu-button">☰</button>
             <a href="/" class="nav__link" data-link >
                 <div class="logo">
-                    <img src="http://localhost:8080/assets/icons/logo.png" alt="Logo">
+                    <img src="http://localhost:8080/api/icons/logo.png" alt="Logo">
                 </div>
             </a>
             <nav class="top-bar" id="auth-nav">

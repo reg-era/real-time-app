@@ -18,7 +18,7 @@ const getParams = (path, routePath) => {
         }
     });
 
-    const queryParams = new URLSearchParams(routePath);
+    const queryParams = new URLSearchParams(window.location.search);
     queryParams.forEach((value, key) => {
         params[key] = value;
     });
@@ -59,7 +59,7 @@ const router = async () => {
     const params = getParams(path, match.path);
 
     const view = new match.view(params);
-    view.setAttribute(params);
+    view.setAttribute();
 
     document.querySelector(".app").innerHTML = await view.getHtml();
 };

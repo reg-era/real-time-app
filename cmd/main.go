@@ -37,38 +37,21 @@ func main() {
 	// Create a multipluxer
 	router := http.NewServeMux()
 
-
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Serving index.html")
-		fmt.Println(r.URL.Path)
+		fmt.Println("Serving index.html for url:", r.URL.Path)
 		http.ServeFile(w, r, "web/index.html")
 	})
 
 	router.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "/") {
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusNotFound, http.StatusNotFound)
+			http.Redirect(w, r, "/error?status=404", http.StatusMovedPermanently)
 			return
 		}
-		fs := http.FileServer(http.Dir("web/js/"))
+		fs := http.FileServer(http.Dir("web/assets/"))
 		http.StripPrefix("/api/", fs).ServeHTTP(w, r)
 	})
 
-
-	router.HandleFunc("/assets/", func(w http.ResponseWriter, r *http.Request) {
-		if strings.HasSuffix(r.URL.Path, "/") {
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusNotFound, http.StatusNotFound)
-			return
-		}
-		fs := http.FileServer(http.Dir("web/assets"))
-		http.StripPrefix("/assets/", fs).ServeHTTP(w, r)
-	})
-
-	// HomePage handler
-	router.HandleFunc("/prev", func(w http.ResponseWriter, r *http.Request) {
-		auth.AuthMiddleware(db, handlers.HomePageHandler, true).ServeHTTP(w, r)
-	})
-
-	router.HandleFunc("/api/register", func(w http.ResponseWriter, r *http.Request) {	
+	router.HandleFunc("/api/register", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			auth.AuthMiddleware(db, handlers.RegisterPageHandler, true).ServeHTTP(w, r)
@@ -80,7 +63,6 @@ func main() {
 	})
 
 	router.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
-		println("Login")
 		switch r.Method {
 		case "GET":
 			handlers.LoginPageHandler(w, r, db)
