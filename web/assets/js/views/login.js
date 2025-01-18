@@ -8,8 +8,6 @@ export class Login extends BASE {
         this.setStyle("http://localhost:8080/api/css/login.css")
     }
 
-    setAttribute() { }
-
     setListners() {
         document.getElementById("login-form").addEventListener("submit", async function (event) {
             event.preventDefault();

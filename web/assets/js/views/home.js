@@ -7,9 +7,6 @@ export class Home extends BASE {
         this.setTitle("Home");
     }
 
-    setAttribute() {
-    }
-
     async getPosts() {
         const posts = await GetData()
         const container = document.body.querySelector('.posts')

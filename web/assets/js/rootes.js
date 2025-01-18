@@ -53,13 +53,12 @@ const router = async () => {
     });
 
     if (!match) {
-        match = { path: "/error?status=404", view: Error };
+        window.location.href = '/error?status=404'
     }
 
     const params = getParams(path, match.path);
 
     const view = new match.view(params);
-    view.setAttribute();
 
     document.querySelector(".app").innerHTML = await view.getHtml();
 };

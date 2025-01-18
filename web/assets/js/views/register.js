@@ -8,9 +8,6 @@ export class Register extends BASE {
         this.setStyle("http://localhost:8080/api/css/register.css")
     }
 
-    setAttribute() {
-    }
-
     setListners() {
         document.getElementById("signup-form").addEventListener("submit", async function (event) {
             event.preventDefault();

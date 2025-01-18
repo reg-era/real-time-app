@@ -14,7 +14,7 @@ export class Error extends BASE {
     setAttribute() {
         console.log('try to set atribute',this.params);
         
-        this.statusError = this.params['/error?status'];
+        this.statusError = Number.parseInt(this.params['status']);
         switch (this.statusError) {
             case 404:
                 this.statusMsg = "Page Not Found";
@@ -40,6 +40,7 @@ export class Error extends BASE {
     }
 
     async getHtml() {
+        this.setAttribute()        
         const html = `
         ${this.getHtmlBase()}
         <main>

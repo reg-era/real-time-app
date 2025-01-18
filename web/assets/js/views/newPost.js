@@ -9,10 +9,8 @@ export class NewPost extends BASE {
         this.listenerSet = false;
     }
 
-    setAttribute() {
-    }
-
     setListners() {
+
         if (this.listenerSet) return; // just to be sure the lisner i call one time
         this.listenerSet = true;
 
@@ -23,13 +21,13 @@ export class NewPost extends BASE {
             textarea.style.height = textarea.scrollHeight + "px";
         });
 
-        // setup post form submission listener
-        const button = document.querySelector('#submition-button');
-        button.disabled = true;
 
+        const button = document.querySelector('#submition-button');
         // validation posts and submit them to backend
-        document.getElementById('createPostForm').addEventListener('submit', async (e) => {
+        document.querySelector('#createPostForm').addEventListener('submit', async (e) => {
+            console.log('test opo');
             e.preventDefault();
+            button.disabled = true;
 
             const checkbox = document.querySelectorAll('[name="category"]');
             let test = false;
@@ -39,6 +37,7 @@ export class NewPost extends BASE {
 
             if (!test) {
                 document.getElementById('responseMessage').textContent = 'Oops! It looks like every post needs to have at least one category.';
+                button.disabled = false;
                 return;
             }
 
@@ -47,6 +46,7 @@ export class NewPost extends BASE {
 
             if (!createPostForm.checkValidity()) {
                 responseMessage.textContent = 'Please fill out all required fields.';
+                button.disabled = false;
                 return;
             }
 
@@ -57,9 +57,10 @@ export class NewPost extends BASE {
 
             if (!res.ok) {
                 responseMessage.textContent = 'An unexpected error occurred.';
+                button.disabled = false;
+            } else {
+                window.location.href = '/';
             }
-
-            window.location.href = '/';
         });
     }
 
@@ -103,7 +104,7 @@ export class NewPost extends BASE {
         `;
 
         this.getCategories();
-        setTimeout(() => this.setListners(), 0);
+        setTimeout(this.setListners, 0);
 
         return html;
     }
