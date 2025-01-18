@@ -9,11 +9,12 @@ export class Error extends BASE {
         this.errorMsg;
 
         this.setTitle("ERROR");
+        this.setStyle("http://localhost:8080/api/css/error.css");
     }
 
     setAttribute() {
-        console.log('try to set atribute',this.params);
-        
+        console.log('try to set atribute', this.params);
+
         this.statusError = Number.parseInt(this.params['status']);
         switch (this.statusError) {
             case 404:
@@ -40,7 +41,7 @@ export class Error extends BASE {
     }
 
     async getHtml() {
-        this.setAttribute()        
+        this.setAttribute()
         const html = `
         ${this.getHtmlBase()}
         <main>

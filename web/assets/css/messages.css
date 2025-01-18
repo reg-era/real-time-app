@@ -1,0 +1,59 @@
+.conversation {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: auto;
+    padding: 10px;
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.messages-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 16px;
+    word-wrap: break-word;
+    max-width: 80%;
+}
+
+.message.user {
+    background-color: var(--white);
+    color: black;
+    align-self: flex-start;
+}
+
+.message.sender {
+    background-color: var(--yellow);
+    color: var(--white);
+    align-self: flex-end;
+}
+
+.message-input {
+    z-index: 10;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 20px;
+    padding: 20px;
+    border: 3px;
+    background: var(--white);
+    border-bottom: 2px solid var(--yellow);
+    font-size: 18px;
+    outline: none;
+    resize: none;
+    overflow: hidden;
+}
+
+.error-comment {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}

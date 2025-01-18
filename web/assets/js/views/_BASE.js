@@ -74,9 +74,10 @@ export class BASE {
         <aside class="sidebar">
             <nav class="sidebar-nav">
                 <a href="/new-post" class="nav__link" data-link >Create Post</a>
-                <a href="/Created-post" class="nav__link" data-link >Created Posts</a>
-                <a href="/Liked-post" class="nav__link" data-link >Liked Posts</a>
-                <a href="/Categories" class="nav__link" data-link >Categories</a>
+                <a href="/created-post" class="nav__link" data-link >Created Posts</a>
+                <a href="/liked-post" class="nav__link" data-link >Liked Posts</a>
+                <a href="/categories" class="nav__link" data-link >Categories</a>
+                <a href="/messages" class="nav__link" data-link >Messages</a>
             </nav>
         </aside>
         `
