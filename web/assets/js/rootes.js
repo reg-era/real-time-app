@@ -5,6 +5,7 @@ import { NewPost } from "./views/newPost.js";
 import { Error } from "./views/error.js";
 import { Messages } from "./views/messages.js";
 import { MessagesBase } from "./views/_MSG.js";
+import { Filter } from "./views/filter.js";
 
 const getParams = (path, routePath) => {
     const pathParts = path.split('/').filter(part => part !== '');
@@ -35,10 +36,7 @@ const router = async () => {
         { path: "/login", view: Login },
         { path: "/register", view: Register },
         { path: "/new-post", view: NewPost },
-        // { path: "/posts/:id", view: PostDetails }, khliw had twichiya tal mn ba3d
-        // { path: "/created-post", view: Error },
-        // { path: "/liked-post", view: Error },
-        // { path: "/categories", view: Error },
+        { path: "/filter/:by", view: Filter },
         { path: "/messages/", view: MessagesBase },
         { path: "/messages/:user", view: Messages },
         { path: "/error", view: Error },
