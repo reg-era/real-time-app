@@ -1,5 +1,6 @@
 import { showRegistrationModal } from "./script.js";
 import { escapeHTML } from "./post.js";
+import { reactToggle, getReactInfo } from "./likes.js";
 
 const commentSize = 3
 const comentIndex = {}
@@ -59,7 +60,12 @@ const loadComments = async (postId, limit, commentsContainer) => {
 
         let count = 0
         for (const comment of comments) {
-            const commentSection = createCommentElement(comment)
+            const reaction = await getReactInfo({
+                target_type: "comment",
+                target_id: comment.comment_id,
+            }, "GET")
+            const commentSection = createCommentElement(comment, reaction)
+            reactToggle(commentSection, comment.comment_id, 'comment')
             commentsContainer.appendChild(commentSection)
             count++
         }
@@ -96,7 +102,13 @@ const addComment = async (postId, content, commentsContainer, commentsection) =>
                 break
             case 201:
                 error.textContent = ""
-                const commentSection = createCommentElement(newComment)
+                const reaction = await getReactInfo({
+                    target_type: "comment",
+                    target_id: newComment.comment_id,
+                }, "GET")
+
+                const commentSection = createCommentElement(newComment, reaction)
+                reactToggle(commentSection, newComment.comment_id, 'comment')
                 commentsContainer.prepend(commentSection)
                 commentInput.style.height = "38px"
                 commentInput.value = ""
@@ -107,12 +119,29 @@ const addComment = async (postId, content, commentsContainer, commentsection) =>
     }
 }
 
-const createCommentElement = (comment) => {
+const createCommentElement = (comment, reaction) => {
     const commentElement = document.createElement("div")
     commentElement.classList.add("comment")
 
+    let liked = false, disliked = false
+    let likeCount = reaction.data.liked_by ? reaction.data.liked_by.length : 0
+    let disLikeCount = reaction.data.disliked_by ? reaction.data.disliked_by.length : 0
+
+    if (reaction.data.user_reaction) {
+        liked = reaction.data.user_reaction === "like"
+        disliked = !liked
+    }
+
     commentElement.innerHTML = `
     <p><strong>👤 ${comment.user_name}:</strong> ${escapeHTML(comment.content)}</p>
+    <div class="reaction-section comment-likes">
+        <button class="like-button ${liked ? 'clicked' : ''}" data-clicked=${liked}>
+        👍 Like (<span class="count">${likeCount}</span>)
+        </button>
+        <button class="dislike-button ${disliked ? 'clicked' : ''}" data-clicked=${disliked}>
+        👎 Dislike (<span class="count">${disLikeCount}</span>)
+        </button>
+    </div>
     `
     return commentElement
 }

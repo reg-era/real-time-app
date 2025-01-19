@@ -1,4 +1,5 @@
 import { initializeCommentSection } from "./comment.js";
+import { reactToggle, getReactInfo } from "./likes.js";
 
 export const GetData = async (postIds = false) => {
     if (postIds == null) {
@@ -37,7 +38,7 @@ export async function renderPage(postIds) {
     try {
         let targets = [];
         let i = 0
-        while (postIds.length > 0 && i < 10) {            
+        while (postIds.length > 0 && i < 10) {
             const link = `http://localhost:8080/api/posts?post_id=${postIds.pop()}`;
             const postResponse = await fetch(link);
             if (postResponse.ok) {
@@ -63,8 +64,14 @@ export async function renderPosts(posts) {
         const postElement = document.createElement("div");
         postElement.classList.add("post");
         try {
-            postElement.innerHTML = generatePostHTML(post/*, reactInfo*/);
+            const reactInfo = await getReactInfo({
+                target_type: "post",
+                target_id: post.PostId,
+            }, "GET");
+
+            postElement.innerHTML = generatePostHTML(post, reactInfo);
             res.push(postElement)
+            reactToggle(postElement, post.PostId, "post");
             initializeCommentSection(postElement, post);
         } catch (error) {
             console.error("Error rendering post:", error);
@@ -74,7 +81,21 @@ export async function renderPosts(posts) {
 }
 
 
-function generatePostHTML(post) {
+function generatePostHTML(post, reactInfo) {
+    let liked = false;
+    let disliked = false;
+
+    let likeCount = reactInfo.data.liked_by ? reactInfo.data.liked_by.length : 0;
+    let disLikeCount = reactInfo.data.disliked_by ? reactInfo.data.disliked_by.length : 0;
+
+    if (!!reactInfo.data.user_reaction) {
+        liked = reactInfo.data.user_reaction === "like"
+        disliked = !liked
+    } else {
+        liked = false
+        disliked = false;
+    }
+
     return `
     <div class="post-container">
         <div class="post-header">
@@ -84,15 +105,25 @@ function generatePostHTML(post) {
                 <br>
                 <span class="categories">${post.Categories || "Not categorized"}</span>
             </div>
-            <h1 class="post-title">${escapeHTML(post.Title)}</h1>
+        <h1 class="post-title">${escapeHTML(post.Title)}</h1>
         </div>
-
+    
         <div class="post-body">
             <p class="content">${escapeHTML(post.Content)}</p>
         </div>
-
-        <button class="toggle-comments">💬 Show Comments</button>
-
+    
+        <div class="reaction-section">
+            <div class="reaction-buttons">
+            <button class="like like-button ${liked ? "clicked" : ""}" data-clicked=${liked}>
+                <span class="emoji">👍</span> Like (<span class="count">${likeCount}</span>)
+            </button>
+            <button class="dislike dislike-button ${disliked ? "clicked" : ""}" data-clicked=${disliked}>
+                <span class="emoji">👎</span> Dislike (<span class="count">${disLikeCount}</span>)
+            </button>
+            </div>
+            <button class="toggle-comments">💬 Show Comments</button>
+        </div>
+    
         <div class="comments-section" style="display: none;">
             <div class="comments">
             </div>
