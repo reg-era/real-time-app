@@ -137,6 +137,23 @@ func main() {
 		}
 	})
 
+	router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			getUsers := r.URL.Query().Get("users")
+			if getUsers != "" {
+				auth.AuthMiddleware(db, handlers.GetMessages, false).ServeHTTP(w, r)
+				return
+			} else {
+				auth.AuthMiddleware(db, handlers.GetConversations, false).ServeHTTP(w, r)
+			}
+		case "POST":
+			auth.AuthMiddleware(db, handlers.PostMessage, false).ServeHTTP(w, r)
+		default:
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
+		}
+	})
+
 	log.Printf("Route server running on http://localhost:%s\n", port)
 	log.Fatalln(http.ListenAndServe(":"+port, router))
 }

@@ -44,6 +44,14 @@ type Comment struct {
 	Created_at string `json:"created_at"`
 }
 
+type Message struct {
+	ID         int    `json:"id"`
+	SenderID   int    `json:"sender_id"`
+	ReceiverID int    `json:"receiver_id"`
+	Message    string `json:"message"`
+	CreatedAt  string `json:"created_at"`
+}
+
 type ErrorResponse struct {
 	Error string `json:"error"`
 }

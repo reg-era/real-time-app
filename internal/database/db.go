@@ -33,7 +33,7 @@ func CreateDatabase(dbPath string) *sql.DB {
 }
 
 func CreateTables(db *sql.DB) {
-	_, err := db.Exec(database.UsersTable + database.SessionsTable + database.ReactionTable +
+	_, err := db.Exec(database.UsersTable + database.SessionsTable + database.ReactionTable + database.MessageTable +
 		database.CommentsTable + database.PostsTable + database.CategoriesTable + database.PostCategoriesTable)
 	if err != nil {
 		log.Fatalln(err)
@@ -266,4 +266,86 @@ func LinkPostWithCategory(transaction *sql.Tx, categories []string, postId int64
 		}
 	}
 	return nil
+}
+
+///////// only for messages ////////////
+
+func GetConversations(db *sql.DB, userId int) ([]string, error) {
+	query := `
+	SELECT DISTINCT users.username
+	FROM messages
+	INNER JOIN users ON messages.sender_id = users.id
+	WHERE messages.receiver_id = ?
+	`
+	rows, err := utils.QueryRows(db, query, userId)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	defer rows.Close()
+
+	var conversations []string
+	for rows.Next() {
+		var conversation string
+		err := rows.Scan(&conversation)
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+		conversations = append(conversations, conversation)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return conversations, nil
+}
+
+func CreateMessage(m *utils.Message, db *sql.DB) error {
+	query := `
+	INSERT INTO messages (sender_id, receiver_id, content, created_at)
+	VALUES (?, ?, ?, ?)
+	`
+
+	result, err := db.Exec(query, m.SenderID, m.ReceiverID, m.Message, m.CreatedAt)
+	if err != nil {
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	m.SenderID = int(id)
+	return nil
+}
+
+func GetMessages(db *sql.DB, userId, limit, from int) ([]utils.Message, error) {
+	query := `
+	SELECT messages.id, messages.content, messages.created_at, users.username  FROM messages
+	INNER JOIN users ON messages.sender_id = users.id
+	WHERE messages.receiver_id = ?
+	ORDER BY messages.created_at ASC
+	LIMIT ? OFFSET ?;
+	`
+	rows, err := utils.QueryRows(db, query, userId, limit, from)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	defer rows.Close()
+
+	var messages []utils.Message
+	for rows.Next() {
+		var message utils.Message
+		err := rows.Scan(&message.SenderID, &message.Message, &message.CreatedAt, &message.ReceiverID)
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+		message.ReceiverID = userId
+		messages = append(messages, message)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return messages, nil
 }
