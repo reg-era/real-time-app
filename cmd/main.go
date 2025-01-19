@@ -137,7 +137,7 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("/me/", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/me/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			auth.AuthMiddleware(db, handlers.MeHandler, false).ServeHTTP(w, r)

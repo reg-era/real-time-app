@@ -33,25 +33,28 @@ export const GetData = async (postIds = false) => {
     }
 };
 
-async function renderPage(postIds) {
-    let targets = [];
-    let i = 0
-    while (postIds.length > 0 && i < 10) {
-        let link = `api/posts?post_id=${postIds.pop()}`;
-        let postResponse = await fetch(link);
-        if (postResponse.ok) {
-            let post = await postResponse.json();
-            targets.push(post);
-        } else {
-            if (postResponse.status !== 404) {
-                throw new Error("Response not ok");
+export async function renderPage(postIds) {
+    try {
+        let targets = [];
+        let i = 0
+        while (postIds.length > 0 && i < 10) {            
+            const link = `http://localhost:8080/api/posts?post_id=${postIds.pop()}`;
+            const postResponse = await fetch(link);
+            if (postResponse.ok) {
+                const post = await postResponse.json();
+                targets.push(post);
+            } else {
+                if (postResponse.status !== 404) {
+                    throw new Error("Response not ok");
+                }
             }
+            i++
         }
-        i++
+        const data = await renderPosts(targets);
+        return data;
+    } catch (error) {
+        console.error(error);
     }
-    const data = await renderPosts(targets);
-    return data;
-
 }
 
 export async function renderPosts(posts) {
