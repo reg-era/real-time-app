@@ -2,10 +2,7 @@ package handlers
 
 import (
 	"database/sql"
-	"encoding/json"
-	"fmt"
 	"net/http"
-	"os"
 
 	"forum/internal/database"
 	models "forum/internal/database/models"
@@ -16,18 +13,15 @@ import (
 func CategoriesHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 	if r.URL.Query().Has("category") {
 		category := r.URL.Query().Get("category")
-
 		result, err := utils.QueryRow(db, `SELECT EXISTS(SELECT 1 FROM categories WHERE id = ?)`, category)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusInternalServerError, http.StatusInternalServerError)
+			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			return
 		}
 
 		var exists bool
 		if err := result.Scan(&exists); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusInternalServerError, http.StatusInternalServerError)
+			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			return
 		}
 		if !exists {
@@ -37,23 +31,18 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userI
 
 		postIds, err := database.GetCategoryContentIds(db, category)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusInternalServerError, http.StatusInternalServerError)
+			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			return
 		}
 
-		jsonIds, err := json.Marshal(postIds)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusInternalServerError, http.StatusInternalServerError)
-			return
-		}
-		tmpl.ExecuteTemplate(w, []string{"posts", "sideBar"}, http.StatusOK, string(jsonIds))
+		data := struct {
+			PostIds []int `json:"post_ids"`
+		}{PostIds: postIds}
+		utils.RespondWithJSON(w, http.StatusOK, data)
 	} else {
 		categories, err := GetCategories(db)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusInternalServerError, http.StatusInternalServerError)
+			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			return
 		}
 		tmpl.ExecuteTemplate(w, []string{"categories", "sideBar"}, http.StatusOK, categories)
