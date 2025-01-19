@@ -47,7 +47,7 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userI
 	comment := utils.Comment{}
 	err = json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
-		http.Error(w, "Failed to parse JSON", http.StatusBadRequest)
+		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
 

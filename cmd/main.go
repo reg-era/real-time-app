@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +10,7 @@ import (
 	"forum/internal/database"
 	"forum/internal/handlers"
 	auth "forum/internal/middleware"
-	tmpl "forum/web"
+	"forum/internal/utils"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -20,11 +19,9 @@ func main() {
 	dbPath := os.Getenv("DB_PATH")
 	port := os.Getenv("PORT")
 
-	// Create Database file
 	db := database.CreateDatabase(dbPath)
 	defer db.Close()
 
-	// Create tables if not exist
 	database.CreateTables(db)
 
 	go func() {
@@ -34,11 +31,9 @@ func main() {
 		}
 	}()
 
-	// Create a multipluxer
 	router := http.NewServeMux()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Serving index.html for url:", r.URL.Path)
 		http.ServeFile(w, r, "web/index.html")
 	})
 
@@ -53,29 +48,25 @@ func main() {
 
 	router.HandleFunc("/api/register", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case "GET":
-			auth.AuthMiddleware(db, handlers.RegisterPageHandler, true).ServeHTTP(w, r)
 		case "POST":
 			handlers.RegisterHandler(w, r, db)
 		default:
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
 	})
 
 	router.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case "GET":
-			handlers.LoginPageHandler(w, r, db)
 		case "POST":
 			handlers.LoginHandler(w, r, db)
 		default:
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
 	})
 
 	router.HandleFunc("/api/logout", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 			return
 		}
 		auth.RemoveUser(w, r, db)
@@ -83,7 +74,7 @@ func main() {
 
 	router.HandleFunc("/api/posts", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 			return
 		}
 		userId, _ := auth.ValidUser(r, db)
@@ -97,7 +88,7 @@ func main() {
 		case "POST":
 			auth.AuthMiddleware(db, handlers.NewPostHandler, false).ServeHTTP(w, r)
 		default:
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
 	})
 
@@ -109,7 +100,7 @@ func main() {
 		case "POST":
 			auth.AuthMiddleware(db, handlers.AddCommentHandler, false).ServeHTTP(w, r)
 		default:
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
 	})
 
@@ -123,7 +114,7 @@ func main() {
 		} else if method == "DELETE" {
 			auth.AuthMiddleware(db, handlers.DeleteReactionHandler, false).ServeHTTP(w, r)
 		} else {
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 			return
 		}
 	})
@@ -133,7 +124,7 @@ func main() {
 		case "GET":
 			handlers.CategoriesHandler(w, r, db, 0)
 		default:
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
 	})
 
@@ -142,7 +133,7 @@ func main() {
 		case "GET":
 			auth.AuthMiddleware(db, handlers.MeHandler, false).ServeHTTP(w, r)
 		default:
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusMethodNotAllowed, http.StatusMethodNotAllowed)
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
 	})
 

@@ -2,9 +2,7 @@ package handlers
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
-	"os"
 	"regexp"
 	"strings"
 
@@ -20,7 +18,6 @@ func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 		query := `SELECT post_id FROM reactions WHERE user_id = ? AND reaction_type = 'like' AND post_id NOT NULL`
 		rows, err := utils.QueryRows(db, query, userId)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
 			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			return
 		}
@@ -30,7 +27,6 @@ func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 			var postId int
 			err := rows.Scan(&postId)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
 				utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 				return
 			}
@@ -44,7 +40,6 @@ func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 		query := `SELECT id FROM posts WHERE user_id = ?`
 		rows, err := utils.QueryRows(db, query, userId)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
 			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			return
 		}
@@ -54,7 +49,6 @@ func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 			var postId int
 			err := rows.Scan(&postId)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
 				utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			}
 			postIds = append(postIds, postId)

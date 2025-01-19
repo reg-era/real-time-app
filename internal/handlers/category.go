@@ -7,7 +7,6 @@ import (
 	"forum/internal/database"
 	models "forum/internal/database/models"
 	"forum/internal/utils"
-	tmpl "forum/web"
 )
 
 func CategoriesHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
@@ -25,7 +24,7 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userI
 			return
 		}
 		if !exists {
-			tmpl.ExecuteTemplate(w, []string{"error"}, http.StatusNotFound, http.StatusNotFound)
+			utils.RespondWithJSON(w, http.StatusNotFound, utils.ErrorResponse{Error: "Status Not Found"})
 			return
 		}
 
@@ -38,14 +37,8 @@ func CategoriesHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userI
 		data := struct {
 			PostIds []int `json:"post_ids"`
 		}{PostIds: postIds}
+
 		utils.RespondWithJSON(w, http.StatusOK, data)
-	} else {
-		categories, err := GetCategories(db)
-		if err != nil {
-			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
-			return
-		}
-		tmpl.ExecuteTemplate(w, []string{"categories", "sideBar"}, http.StatusOK, categories)
 	}
 }
 

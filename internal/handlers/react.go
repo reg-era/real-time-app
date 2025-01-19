@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"os"
 
 	"forum/internal/utils"
 )
@@ -30,21 +29,19 @@ func InsertOrUpdateReactionHandler(w http.ResponseWriter, r *http.Request, db *s
 			ON CONFLICT (user_id, comment_id,target_type) DO UPDATE SET reaction_type = EXCLUDED.reaction_type ;
 			`
 		default:
-			w.WriteHeader(http.StatusBadRequest)
+			utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 			return
 		}
 
 		_, err := db.Exec(insertQuery, reactionType, userID, id, targetType)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			w.WriteHeader(http.StatusBadRequest)
-
+			utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 			return
 		}
 		w.WriteHeader(200)
 
 	} else {
-		utils.RespondWithJSON(w, http.StatusBadRequest, `{"error": "Bad Request 1!"}`)
+		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 		return
 	}
 }
@@ -64,12 +61,12 @@ func DeleteReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, u
 		}
 		_, err := db.Exec(deleteQuery, userID, id, targetType)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 			return
 		}
 		w.WriteHeader(200)
 	} else {
-		utils.RespondWithJSON(w, http.StatusBadRequest, `{"error": "Bad Request1"}`)
+		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 		return
 	}
 }
@@ -84,7 +81,7 @@ func GetReactionsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, use
 	} else if targetType == "comment" {
 		column = "comment_id"
 	} else {
-		http.Error(w, "bad request", http.StatusBadRequest)
+		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 		return
 	}
 	// Prepare query to get likes and dislikes for the target (post or comment)
@@ -112,16 +109,14 @@ func GetReactionsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, use
 	// Execute like query
 	rows, err := db.Query(likeQuery, targetID, targetType)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var userId int
 		if err := rows.Scan(&userId); err != nil {
-			fmt.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			return
 		}
 		likedBy = append(likedBy, userId)
@@ -130,16 +125,14 @@ func GetReactionsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, use
 	// Execute dislike query
 	rows, err = db.Query(dislikeQuery, targetID, targetType)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var userId int
 		if err := rows.Scan(&userId); err != nil {
-			fmt.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 			return
 		}
 		dislikedBy = append(dislikedBy, userId)
@@ -148,8 +141,7 @@ func GetReactionsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, use
 	// Execute user reaction query
 	err = db.QueryRow(userReactionQuery, userId, targetID, targetType).Scan(&userReaction)
 	if err != nil && err != sql.ErrNoRows {
-		fmt.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
 
