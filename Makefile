@@ -17,12 +17,12 @@ build:
 run:
 	@echo "Running Docker container: $(CONTAINER_NAME)"
 	@echo $(PORT)
-	 docker run --name $(CONTAINER_NAME) -p $(PORT):$(PORT) $(IMAGE_NAME)
+	docker run --name $(CONTAINER_NAME) -p $(PORT):$(PORT) $(IMAGE_NAME)
 
 # Stop and remove the Docker container
 stop:
 	@echo "Stopping and removing Docker container: $(CONTAINER_NAME)"
-	 docker stop $(CONTAINER_NAME) || true
+	docker stop $(CONTAINER_NAME) || true
 
 # Clean up files and Docker resources
 clean:

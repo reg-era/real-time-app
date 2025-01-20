@@ -140,12 +140,22 @@ func main() {
 	router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			getUsers := r.URL.Query().Get("users")
-			if getUsers != "" {
-				auth.AuthMiddleware(db, handlers.GetMessages, false).ServeHTTP(w, r)
-				return
-			} else {
-				auth.AuthMiddleware(db, handlers.GetConversations, false).ServeHTTP(w, r)
+			section := r.URL.Query().Get("section")
+			switch section {
+			case "user":
+				name := r.URL.Query().Get("name")
+				if name == "" {
+					utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
+					return
+				}
+				auth.AuthMiddleware(db, handlers.GetUser, false).ServeHTTP(w, r)
+			case "message":
+				// 
+				// auth.AuthMiddleware(db, handlers.GetMessages, false).ServeHTTP(w, r)
+				// return
+				// auth.AuthMiddleware(db, handlers.GetConversations, false).ServeHTTP(w, r)
+			default:
+				utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 			}
 		case "POST":
 			auth.AuthMiddleware(db, handlers.PostMessage, false).ServeHTTP(w, r)

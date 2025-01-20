@@ -1,6 +1,6 @@
 package database
 
-var MessageTable = `CREATE TABLE messages (
+var MessageTable = `CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     sender_id INTEGER,
     receiver_id INTEGER,

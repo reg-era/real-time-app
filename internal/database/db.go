@@ -223,6 +223,23 @@ func GetUserName(id int, db *sql.DB) (string, error) {
 	return name, nil
 }
 
+func GetUserIdByName(name string, db *sql.DB) (int, error) {
+	var id int
+	row, err := utils.QueryRow(db, "SELECT id FROM users WHERE username = ?", name)
+	if err != nil {
+		return 0, err
+	}
+
+	err = row.Scan(&id)
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return -69, err
+		}
+		return 0, err
+	}
+	return id, nil
+}
+
 func GetPostCategories(db *sql.DB, PostId int, userId int) ([]string, error) {
 	query := `
 	SELECT categories.name 
@@ -301,7 +318,7 @@ func GetConversations(db *sql.DB, userId int) ([]string, error) {
 
 func CreateMessage(m *utils.Message, db *sql.DB) error {
 	query := `
-	INSERT INTO messages (sender_id, receiver_id, content, created_at)
+	INSERT INTO messages (sender_id, receiver_id, message, created_at)
 	VALUES (?, ?, ?, ?)
 	`
 

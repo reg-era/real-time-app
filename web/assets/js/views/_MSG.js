@@ -6,7 +6,41 @@ export class MessagesBase extends BASE {
         this.setStyle("http://localhost:8080/api/css/messages.css");
     }
 
-    getConversation() {
+
+    setupSearch() {
+        const input = document.querySelector('.users-input')
+        const search = document.querySelector('.search-user')
+
+        search.addEventListener('click', async (e) => {
+            try {
+                if (input.value.length == 0) return
+                const allNavUsers = document.querySelectorAll('.sidebar-nav .nav__link')
+                for (let i = 0; i < allNavUsers.length; i++) {
+                    if (allNavUsers[i]?.id == input.value) {
+                        return
+                    }
+                }
+                const res = await fetch(`http://localhost:8080/api/messages?section=user&name=${input.value}`)
+                if (res.ok) {
+                    const sidbare = document.querySelector('.sidebar-nav')
+                    const newConv = document.createElement('a');
+                    newConv.href = `/messages/${input.value}`;
+                    newConv.classList.add('nav__link');
+                    newConv.setAttribute('data-link', '');
+                    newConv.setAttribute('id', input.value)
+                    newConv.innerHTML = `👤  ${input.value}`;
+                    sidbare.prepend(newConv);
+                } else if (res.status == 404) {
+                    console.log("user not found");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        })
+    }
+
+    getPrevConversation() {
+        //get by username all previous conversations name
         return [
             { user: 'ilyass' },
             { user: 'hasssan' },
@@ -16,10 +50,13 @@ export class MessagesBase extends BASE {
     }
 
     getSideBar() {
-        let conversation = ''
-        this.getConversation().forEach(user => {
-            conversation += `<a href="/messages/${user.user}" class="nav__link" data-link >👤  ${user.user}</a>`
+        let conversation = `<input type="text" class="users-input" placeholder="type users name...">
+        <button class="search-user">search</button>`
+
+        this.getPrevConversation().forEach(user => {
+            conversation += `<a href="/messages/${user.user}" class="nav__link" id="${user.user}" data-link >👤  ${user.user}</a>`
         })
+
         return `
         <aside class="sidebar">
             <nav class="sidebar-nav">
@@ -34,6 +71,7 @@ export class MessagesBase extends BASE {
         ${this.getHtmlBase()}
         ${this.getSideBar()}
         `
+        setTimeout(this.setupSearch, 0)
         return html
     }
 }
