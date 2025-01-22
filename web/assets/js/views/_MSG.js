@@ -39,22 +39,23 @@ export class MessagesBase extends BASE {
         })
     }
 
-    getPrevConversation() {
-        //get by username all previous conversations name
-        return [
-            { user: 'ilyass' },
-            { user: 'hasssan' },
-            { user: 'lmolabi' },
-            { user: '3daysa' },
-        ]
+    async getPrevConversation() {
+        try {
+            const res = await fetch(`http://localhost:8080/api/messages?section=user`)
+            const data = await res.json()
+            return data.friends
+        } catch (error) {
+            console.error(error);
+        }
     }
 
-    getSideBar() {
+    async getSideBar() {
         let conversation = `<input type="text" class="users-input" placeholder="type users name...">
         <button class="search-user">search</button>`
 
-        this.getPrevConversation().forEach(user => {
-            conversation += `<a href="/messages/${user.user}" class="nav__link" id="${user.user}" data-link >👤  ${user.user}</a>`
+        const prevConvers = await this.getPrevConversation();
+        prevConvers.forEach(user => {
+            conversation += `<a href="/messages/${user}" class="nav__link" id="${user}" data-link >👤  ${user}</a>`
         })
 
         return `
@@ -69,9 +70,10 @@ export class MessagesBase extends BASE {
     async getHtml() {
         const html = `
         ${this.getHtmlBase()}
-        ${this.getSideBar()}
+        ${await this.getSideBar()}
         `
         setTimeout(this.setupSearch, 0)
+        setTimeout(super.setListners, 0)
         return html
     }
 }

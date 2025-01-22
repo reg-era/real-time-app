@@ -45,7 +45,7 @@ export class Messages extends MessagesBase {
                             window.location.href = '/error?status=500';
                         } else {
                             const messageCompon = document.createElement('div')
-                            messageCompon.classList.add('message', 'sender')
+                            messageCompon.classList.add('message', 'receiver')
                             messageCompon.innerHTML = `<p>${message}</p>`
                             document.querySelector('.messages-section').appendChild(messageCompon)
                             send.value = ''

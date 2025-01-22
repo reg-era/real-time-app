@@ -287,16 +287,42 @@ func LinkPostWithCategory(transaction *sql.Tx, categories []string, postId int64
 
 ///////// only for messages ////////////
 
+func GetAllFriends(db *sql.DB, userId int) ([]string, error) {
+	query := `
+	SELECT username FROM users
+	WHERE id IN (
+		SELECT DISTINCT sender_id FROM messages WHERE receiver_id = ?
+		UNION
+		SELECT DISTINCT receiver_id FROM messages WHERE sender_id = ?
+	);
+	`
+	rows, err := utils.QueryRows(db, query, userId, userId)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	defer rows.Close()
+
+	var friends []string
+	for rows.Next() {
+		var friend string
+		err := rows.Scan(&friend)
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+		friends = append(friends, friend)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return friends, nil
+}
+
 func GetConversations(db *sql.DB, userId int, receiver string) ([]utils.Message, error) {
 	receiverID, err := GetUserIdByName(receiver, db)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
-	// senderName, err := GetUserName(userId, db)
-	// if err != nil {
-		// return nil, errors.New(err.Error())
-	// }
-
 	query := `
 	SELECT * FROM messages WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1)
 	ORDER BY created_at ASC;`
@@ -345,35 +371,4 @@ func CreateMessage(m *utils.Message, db *sql.DB) error {
 
 	m.SenderID = int(id)
 	return nil
-}
-
-func GetMessages(db *sql.DB, userId, limit, from int) ([]utils.Message, error) {
-	query := `
-	SELECT messages.id, messages.content, messages.created_at, users.username  FROM messages
-	INNER JOIN users ON messages.sender_id = users.id
-	WHERE messages.receiver_id = ?
-	ORDER BY messages.created_at ASC
-	LIMIT ? OFFSET ?;
-	`
-	rows, err := utils.QueryRows(db, query, userId, limit, from)
-	if err != nil {
-		return nil, errors.New(err.Error())
-	}
-	defer rows.Close()
-
-	var messages []utils.Message
-	for rows.Next() {
-		var message utils.Message
-		err := rows.Scan(&message.SenderID, &message.Message, &message.CreatedAt, &message.ReceiverID)
-		if err != nil {
-			return nil, errors.New(err.Error())
-		}
-		message.ReceiverID = userId
-		messages = append(messages, message)
-	}
-	if err = rows.Err(); err != nil {
-		return nil, errors.New(err.Error())
-	}
-
-	return messages, nil
 }
