@@ -287,25 +287,36 @@ func LinkPostWithCategory(transaction *sql.Tx, categories []string, postId int64
 
 ///////// only for messages ////////////
 
-func GetConversations(db *sql.DB, userId int) ([]string, error) {
+func GetConversations(db *sql.DB, userId int, receiver string) ([]utils.Message, error) {
+	receiverID, err := GetUserIdByName(receiver, db)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	// senderName, err := GetUserName(userId, db)
+	// if err != nil {
+		// return nil, errors.New(err.Error())
+	// }
+
 	query := `
-	SELECT DISTINCT users.username
-	FROM messages
-	INNER JOIN users ON messages.sender_id = users.id
-	WHERE messages.receiver_id = ?
-	`
-	rows, err := utils.QueryRows(db, query, userId)
+	SELECT * FROM messages WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1)
+	ORDER BY created_at ASC;`
+	rows, err := utils.QueryRows(db, query, userId, receiverID)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
 	defer rows.Close()
 
-	var conversations []string
+	var conversations []utils.Message
 	for rows.Next() {
-		var conversation string
-		err := rows.Scan(&conversation)
+		var conversation utils.Message
+		err := rows.Scan(&conversation.ID, &conversation.SenderID, &conversation.ReceiverID, &conversation.Message, &conversation.CreatedAt)
 		if err != nil {
 			return nil, errors.New(err.Error())
+		}
+		if conversation.SenderID == userId {
+			conversation.IsSender = true
+		} else {
+			conversation.IsSender = false
 		}
 		conversations = append(conversations, conversation)
 	}

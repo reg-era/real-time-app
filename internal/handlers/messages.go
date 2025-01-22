@@ -28,13 +28,15 @@ func GetUser(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 }
 
 func GetConversations(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
-	conversations, err := database.GetConversations(db, userId)
+	name := r.URL.Query().Get("name")
+
+	data, err := database.GetConversations(db, userId, name)
 	if err != nil {
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, conversations)
+	utils.RespondWithJSON(w, http.StatusOK, data)
 }
 
 func PostMessage(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {

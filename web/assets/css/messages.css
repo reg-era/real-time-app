@@ -23,13 +23,13 @@
     max-width: 80%;
 }
 
-.message.user {
+.message.sender {
     background-color: var(--white);
     color: black;
     align-self: flex-start;
 }
 
-.message.sender {
+.message.receiver {
     background-color: var(--yellow);
     color: var(--white);
     align-self: flex-end;

@@ -50,6 +50,7 @@ type Message struct {
 	ReceiverID int    `json:"receiver_id"`
 	Message    string `json:"message"`
 	CreatedAt  string `json:"created_at"`
+	IsSender   bool   `json:"is_sender"`
 }
 
 type ErrorResponse struct {

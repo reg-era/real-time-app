@@ -150,10 +150,9 @@ func main() {
 				}
 				auth.AuthMiddleware(db, handlers.GetUser, false).ServeHTTP(w, r)
 			case "message":
-				// 
+				auth.AuthMiddleware(db, handlers.GetConversations, false).ServeHTTP(w, r)
+				return
 				// auth.AuthMiddleware(db, handlers.GetMessages, false).ServeHTTP(w, r)
-				// return
-				// auth.AuthMiddleware(db, handlers.GetConversations, false).ServeHTTP(w, r)
 			default:
 				utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 			}
