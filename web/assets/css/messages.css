@@ -8,6 +8,14 @@
     margin: 0 auto;
 }
 
+.status-tag.online {
+    color: green;
+}
+
+.status-tag.offline {
+    color: red;
+}
+
 .messages-section {
     display: flex;
     flex-direction: column;

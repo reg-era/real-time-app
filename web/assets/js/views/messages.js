@@ -42,7 +42,7 @@ export class Messages extends MessagesBase {
                             })
                         })
                         if (!res.ok) {
-                            window.location.href = '/error?status=500';
+                            window.location.href = `/error?status=${res.status}`;
                         } else {
                             const messageCompon = document.createElement('div')
                             messageCompon.classList.add('message', 'receiver')

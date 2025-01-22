@@ -32,9 +32,8 @@ func GetAllFriends(w http.ResponseWriter, r *http.Request, db *sql.DB, userId in
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, struct {
-		Friends []string `json:"friends"`
-	}{data})
+	// check if users online or not befor sending data
+	utils.RespondWithJSON(w, http.StatusOK, data)
 }
 
 func GetConversations(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {

@@ -290,13 +290,8 @@ func LinkPostWithCategory(transaction *sql.Tx, categories []string, postId int64
 func GetAllFriends(db *sql.DB, userId int) ([]string, error) {
 	query := `
 	SELECT username FROM users
-	WHERE id IN (
-		SELECT DISTINCT sender_id FROM messages WHERE receiver_id = ?
-		UNION
-		SELECT DISTINCT receiver_id FROM messages WHERE sender_id = ?
-	);
 	`
-	rows, err := utils.QueryRows(db, query, userId, userId)
+	rows, err := utils.QueryRows(db, query)
 	if err != nil {
 		return nil, errors.New(err.Error())
 	}
