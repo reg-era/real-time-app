@@ -63,15 +63,26 @@ export class BASE {
 
     setupSidebar() {
         // const { handleResize, debounce } = require('../libs/script.js');
-        const debouncedResize = debounce(handleResize, 100);
-        window.addEventListener('resize', debouncedResize);
+        handleResize()
+        let debouncedHandleResize = debounce(handleResize, 100)
+        window.addEventListener('resize', debouncedHandleResize)
 
         const menuButton = document.querySelector('.menu-button');
-        const sidebar = document.querySelector('.sidebar');
-
-        if (menuButton && sidebar) {
-            menuButton.addEventListener('click', () => sidebar.classList.toggle('hide'));
+        const sideBar = document.querySelector('.sidebar');
+        if (menuButton && sideBar) {
+            menuButton.addEventListener('click', () => {
+                sideBar.classList.toggle('hide');
+            });
         }
+        // const debouncedResize = debounce(handleResize, 100);
+        // window.addEventListener('resize', debouncedResize);
+
+        // const menuButton = document.querySelector('.menu-button');
+        // const sidebar = document.querySelector('.sidebar');
+
+        // if (menuButton && sidebar) {
+        //     menuButton.addEventListener('click', () => sidebar.classList.toggle('hide'));
+        // }
     }
 
     getSidebar() {
