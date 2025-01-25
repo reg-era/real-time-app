@@ -4,12 +4,11 @@ export class Login extends BASE {
     constructor(params) {
         super(params);
         this.setTitle("Login");
-        this.setStyle("http://localhost:8080/api/css/base.css")
-        this.setStyle("http://localhost:8080/api/css/login.css")
+        this.setStyle("http://localhost:8080/api/css/login.css");
     }
 
-    setListners() {
-        document.getElementById("login-form").addEventListener("submit", async function (event) {
+    setListeners() {
+        document.getElementById("login-form").addEventListener("submit", async (event) => {
             event.preventDefault();
             const username = document.getElementById("login-username").value;
             const password = document.getElementById("login-password").value;
@@ -21,25 +20,27 @@ export class Login extends BASE {
                     headers: {
                         "Content-Type": "application/json"
                     },
+                    credentials: 'include',
                     body: JSON.stringify({ username, password }),
                 });
 
                 if (response.ok) {
                     window.location.href = '/';
                 } else {
-                    const errorData = await response.text();
-                    messageElement.textContent = `Error: ${errorData}`;
+                    const errorData = await response.json();
+                    messageElement.textContent = errorData.message || 'Login failed. Please try again.';
                     messageElement.style.color = "red";
                 }
-            } catch {
-                messageElement.textContent = "An error occurred during registration.";
+            } catch (error) {
+                console.error('Login error:', error);
+                messageElement.textContent = "Unable to connect to the server. Please try again later.";
                 messageElement.style.color = "red";
             }
         });
     }
 
-    async getHtml() {
-        const html = `
+    async renderHtml() {
+        return `
         ${this.getHtmlBase()}
         <main>
             <div class="container">
@@ -48,12 +49,14 @@ export class Login extends BASE {
                     <form id="login-form">
                         <div class="form-group">
                             <label for="login-username">Username:</label>
-                            <input type="text" id="login-username" name="username" placeholder="Enter your username"
+                            <input type="text" id="login-username" name="username" 
+                                placeholder="Enter your username"
                                 minlength="5" maxlength="30" required>
                         </div>
                         <div class="form-group">
                             <label for="login-password">Password:</label>
-                            <input type="password" id="login-password" name="password" placeholder="Enter your password"
+                            <input type="password" id="login-password" name="password" 
+                                placeholder="Enter your password"
                                 minlength="8" maxlength="64" required>
                         </div>
                         <button type="submit">Login</button>
@@ -64,11 +67,13 @@ export class Login extends BASE {
             </div>
         </main>
         <footer>
-            <p>&copy Regera, Yhajjaoui</p>
+            <p>&copy; Regera, Yhajjaoui</p>
         </footer>
-        `
+        `;
+    }
 
-        setTimeout(this.setListners, 0)
-        return html
+    afterRender() {
+        this.setListeners();
+        super.afterRender();
     }
 }

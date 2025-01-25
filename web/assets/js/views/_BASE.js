@@ -1,108 +1,125 @@
 import { handleResize, debounce } from "../libs/script.js";
-
+// import { Error } from "./error.js";
 export class BASE {
     constructor(params) {
         this.params = params;
-        this.setStyle("http://localhost:8080/api/css/base.css")
-        this.setStyle("http://localhost:8080/api/css/posts.css")
+        this.styleUrls = [
+            'http://localhost:8080/api/css/base.css',
+            'http://localhost:8080/api/css/posts.css'
+        ];
+        this.initializeStyles();
+    }
+
+    initializeStyles() {
+        this.styleUrls.forEach(url => this.setStyle(url));
     }
 
     setTitle(title) {
         document.title = title;
     }
 
-    setStyle(link) {
-        const existingLink = Array.from(document.head.getElementsByTagName('link'))
-            .some(el => el.href === link);
-
-        if (!existingLink) {
+    setStyle(url) {
+        const links = Array.from(document.head.getElementsByTagName('link'));
+        if (!links.some(link => link.href === url)) {
             const linkElement = document.createElement('link');
             linkElement.rel = 'stylesheet';
-            linkElement.href = link;
+            linkElement.href = url;
             document.head.appendChild(linkElement);
         }
     }
 
-    setListners() {
-        const authNav = document.getElementById('auth-nav');
-        const hasSession = document.cookie.includes('session_token');
-
-        if (hasSession) {
-            authNav.innerHTML = `
-                <a class="active" data-link>Logout</a>
-            `;
-            const logoutLink = authNav.querySelector('.active');
-            logoutLink.addEventListener('click', async (event) => {
-                event.preventDefault()
-                try {
-                    const response = await fetch('http://localhost:8080/api/logout', {
-                        method: 'POST',
-                        credentials: 'include'
-                    });
-
-                    if (response.ok) {
-                        window.location.href = "/"
-                    } else {
-                        console.error('Logout failed');
-                    }
-                } catch (error) {
-                    console.error('Error logging out:', error);
-                }
+    async handleLogout() {
+        try {
+            const response = await fetch('http://localhost:8080/api/logout', {
+                method: 'POST',
+                credentials: 'include'
             });
-        } else {
-            authNav.innerHTML = `
-                <a href="/login" class="active" data-link>Login</a>
-                <a href="/register" data-link>Signup</a>
-            `;
-        }
 
-        handleResize()
-        let debouncedHandleResize = debounce(handleResize, 100)
-        window.addEventListener('resize', debouncedHandleResize)
-
-        const menuButton = document.querySelector('.menu-button');
-        const sideBar = document.querySelector('.sidebar');
-        if (menuButton && sideBar) {
-            menuButton.addEventListener('click', () => {
-                sideBar.classList.toggle('hide');
-            });
+            if (response.ok) {
+                window.location.href = '/';
+            } else {
+                throw new Error('Logout failed');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
         }
     }
 
-    getSideBar() {
+    setupAuthNav() {
+        const authNav = document.getElementById('auth-nav');
+        const hasSession = document.cookie.includes('session_token');
+
+        authNav.innerHTML = hasSession
+            ? '<span class="active" data-link>Logout</span>'
+            : `
+                <span href="/login" class="active" data-link>Login</span>
+                <span href="/register" data-link>Signup</span>
+              `;
+
+        if (hasSession) {
+            authNav.querySelector('.active').addEventListener('click', () => this.handleLogout());
+        }
+    }
+
+    setupSidebar() {
+        // const { handleResize, debounce } = require('../libs/script.js');
+        const debouncedResize = debounce(handleResize, 100);
+        window.addEventListener('resize', debouncedResize);
+
+        const menuButton = document.querySelector('.menu-button');
+        const sidebar = document.querySelector('.sidebar');
+
+        if (menuButton && sidebar) {
+            menuButton.addEventListener('click', () => sidebar.classList.toggle('hide'));
+        }
+    }
+
+    getSidebar() {
         return `
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a href="/new-post" class="nav__link" data-link >Create Post</a>
-                <a href="/filter/created-posts" class="nav__link" data-link >Created Posts</a>
-                <a href="/filter/liked-posts" class="nav__link" data-link >Liked Posts</a>
-                <a href="/filter/categories" class="nav__link" data-link >Categories</a>
-                <a href="/ws" class="nav__link" data-link >Messages</a>
+                <span href="/new-post" class="nav__link" data-link>Create Post</span>
+                <span href="/filter/created-posts" class="nav__link" data-link>Created Posts</span>
+                <span href="/filter/liked-posts" class="nav__link" data-link>Liked Posts</span>
+                <span href="/filter/categories" class="nav__link" data-link>Categories</span>
+                <span href="/ws" class="nav__link" data-link>Messages</span>
             </nav>
         </aside>
-        `
+        `;
     }
 
     getNavBar() {
         return `
         <header>
             <button class="menu-button">☰</button>
-            <a href="/" class="nav__link" data-link >
-                <div class="logo">
-                    <img src="http://localhost:8080/api/icons/logo.png" alt="Logo">
+            <span href="/" class="nav__link" data-link>
+                <div class="logo" data-link>
+                    <img src="http://localhost:8080/api/icons/logo.png" alt="Logo" data-link>
                 </div>
-            </a>
-            <nav class="top-bar" id="auth-nav">
-            </nav>
+            </span>
+            <nav class="top-bar" id="auth-nav"></nav>
         </header>
-        `
+        `;
     }
 
     getHtmlBase() {
-        const html = `
-        ${this.getNavBar()}
-        `
-        setTimeout(this.setListners, 0);
-        return html
+        return this.getNavBar();
+    }
+
+    setupNavigation() {
+        document.querySelectorAll('[data-link]').forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const href = link.getAttribute('href');
+                if (href) window.history.pushState(null, null, href);
+
+            });
+        });
+    }
+
+    afterRender() {
+        this.setupAuthNav();
+        this.setupSidebar();
+        this.setupNavigation();
     }
 }

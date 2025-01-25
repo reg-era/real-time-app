@@ -8,22 +8,26 @@ export class Home extends BASE {
     }
 
     async getPosts() {
-        const posts = await GetData()
-        const container = document.body.querySelector('.posts')
-        posts.forEach(post => container.appendChild(post))
+        const posts = await GetData();
+        const container = document.querySelector('.posts');
+        posts.forEach(post => container.appendChild(post));
     }
 
-    async getHtml() {
-        const html = `
-        ${this.getHtmlBase()}
-        <main>     
-            ${this.getSideBar()}
-            <section class="posts">
-            </section>
-        <main>
-        `
+    async renderHtml() {
+        return `
+            ${this.getHtmlBase()}
+            <main>
+                ${this.getSidebar()}
+                <section class="posts">
+                </section>
+            </main>
+        `;
+    }
 
-        setTimeout(this.getPosts, 0)
-        return html
+    afterRender() {
+        this.getPosts();
+        this.setupAuthNav();
+        this.setupNavigation();
+        this.setupSidebar();
     }
 }

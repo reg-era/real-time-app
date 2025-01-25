@@ -33,7 +33,7 @@ func CreateDatabase(dbPath string) *sql.DB {
 }
 
 func CreateTables(db *sql.DB) {
-	_, err := db.Exec(database.UsersTable + database.SessionsTable + database.ReactionTable + database.MessageTable +
+	_, err := db.Exec(database.UsersTable + database.SessionsTable + database.MessageTable +
 		database.CommentsTable + database.PostsTable + database.CategoriesTable + database.PostCategoriesTable)
 	if err != nil {
 		log.Fatalln(err)
@@ -357,7 +357,7 @@ func CreateMessage(m *utils.Message, db *sql.DB) error {
 	query := `
 	INSERT INTO messages (sender_id, receiver_id, message, created_at)
 	VALUES (?, ?, ?, ?)
-	`
+	`;
 
 	result, err := db.Exec(query, m.SenderID, m.ReceiverID, m.Message, m.CreatedAt)
 	if err != nil {

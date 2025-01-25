@@ -67,9 +67,8 @@ export class Messg extends BASE {
         });
     }
     async getHtml() {
-        document.querySelector(".app").innerHTML = '';
-        document.querySelector(".app").innerHTML = `
-        ${this.getHtmlBase()}
+        let html = `
+        ${await this.getHtmlBase()}
         <main>
             <div class="container">
                 <section class="signup">
@@ -106,7 +105,7 @@ export class Messg extends BASE {
         </footer>
         `;
 
-        this.setListners();
+        //this.setListners();
         return html
     }
 }

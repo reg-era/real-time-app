@@ -47,7 +47,7 @@ export class Register extends BASE {
         });
     }
 
-    async getHtml() {
+    async renderHtml() {
         const html = `
         ${this.getHtmlBase()}
         <main>
@@ -86,8 +86,13 @@ export class Register extends BASE {
         </footer>
         `
 
-        setTimeout(this.setListners, 0)
         return html
+    }
+
+    afterRender(){
+        this.setupAuthNav();
+        this.setupSidebar();
+        this.setupNavigation();
     }
 }
 
