@@ -77,7 +77,7 @@ export class BASE {
                 <a href="/filter/created-posts" class="nav__link" data-link >Created Posts</a>
                 <a href="/filter/liked-posts" class="nav__link" data-link >Liked Posts</a>
                 <a href="/filter/categories" class="nav__link" data-link >Categories</a>
-                <a href="/messages" class="nav__link" data-link >Messages</a>
+                <a href="/ws" class="nav__link" data-link >Messages</a>
             </nav>
         </aside>
         `

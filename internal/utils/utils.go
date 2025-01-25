@@ -44,29 +44,22 @@ type Comment struct {
 	Created_at string `json:"created_at"`
 }
 
-type Message struct {
-	ID         int    `json:"id"`
-	SenderID   int    `json:"sender_id"`
-	ReceiverID int    `json:"receiver_id"`
-	Message    string `json:"message"`
-	CreatedAt  string `json:"created_at"`
-	IsSender   bool   `json:"is_sender"`
-}
-
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload any) {
-	w.Header().Set("Content-Type", "application/json")
-	response, err := json.Marshal(payload)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal Server Error"))
-		return
+	if payload != nil {
+		w.Header().Set("Content-Type", "application/json")
+		response, err := json.Marshal(payload)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal Server Error"))
+			return
+		}
+		w.Write(response)
 	}
 	w.WriteHeader(code)
-	w.Write(response)
 }
 
 func QueryRows(db *sql.DB, query string, args ...any) (*sql.Rows, error) {

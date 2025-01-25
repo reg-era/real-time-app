@@ -6,6 +6,7 @@ import { Error } from "./views/error.js";
 import { Messages } from "./views/messages.js";
 import { MessagesBase } from "./views/_MSG.js";
 import { Filter } from "./views/filter.js";
+import { Messg } from "./views/WsHub.js"
 
 const getParams = (path, routePath) => {
     const pathParts = path.split('/').filter(part => part !== '');
@@ -40,6 +41,7 @@ const router = async () => {
         { path: "/messages/", view: MessagesBase },
         { path: "/messages/:user", view: Messages },
         { path: "/error", view: Error },
+        { path: "/ws", view: Messg },
     ];
 
     const path = location.pathname;
@@ -47,7 +49,6 @@ const router = async () => {
     let match = routes.find(route => {
         const pathParts = path.split('/').filter(part => part !== '');
         const routeParts = route.path.split('/').filter(part => part !== '');
-
         if (pathParts.length !== routeParts.length) {
             return false;
         }

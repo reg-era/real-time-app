@@ -335,7 +335,7 @@ func GetConversations(db *sql.DB, userId int, receiver string) ([]utils.Message,
 	var conversations []utils.Message
 	for rows.Next() {
 		var conversation utils.Message
-		err := rows.Scan(&conversation.ID, &conversation.SenderID, &conversation.ReceiverID, &conversation.Message, &conversation.CreatedAt)
+		err := rows.Scan(&conversation.Id, &conversation.SenderID, &conversation.ReceiverID, &conversation.Message, &conversation.CreatedAt)
 		if err != nil {
 			return nil, errors.New(err.Error())
 		}

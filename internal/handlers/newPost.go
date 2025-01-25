@@ -54,5 +54,5 @@ func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId i
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	// http.Redirect(w, r, "/", http.StatusSeeOther)
 }

@@ -20,6 +20,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	db := database.CreateDatabase(dbPath)
+	forumHub := new(utils.Hub)
 	defer db.Close()
 
 	database.CreateTables(db)
@@ -137,30 +138,38 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case "GET":
-			section := r.URL.Query().Get("section")
-			switch section {
-			case "user":
-				name := r.URL.Query().Get("name")
-				if name == "" {
-					auth.AuthMiddleware(db, handlers.GetAllFriends, false).ServeHTTP(w, r)
-					return
-				}
-				auth.AuthMiddleware(db, handlers.GetUser, false).ServeHTTP(w, r)
-			case "message":
-				auth.AuthMiddleware(db, handlers.GetConversations, false).ServeHTTP(w, r)
-				return
-			default:
-				utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
-			}
-		case "POST":
-			auth.AuthMiddleware(db, handlers.PostMessage, false).ServeHTTP(w, r)
-		default:
-			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
-		}
+	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		// userId, err := auth.ValidUser(r, db)
+		// if err != nil {
+		// 	utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
+		// }
+		handlers.HandleWs(w, r, 1, db, forumHub)
 	})
+
+	// router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {
+	// 	switch r.Method {
+	// 	case "GET":
+	// 		section := r.URL.Query().Get("section")
+	// 		switch section {
+	// 		case "user":
+	// 			name := r.URL.Query().Get("name")
+	// 			if name == "" {
+	// 				auth.AuthMiddleware(db, handlers.GetAllFriends, false).ServeHTTP(w, r)
+	// 				return
+	// 			}
+	// 			auth.AuthMiddleware(db, handlers.GetUser, false).ServeHTTP(w, r)
+	// 		case "message":
+	// 			auth.AuthMiddleware(db, handlers.GetConversations, false).ServeHTTP(w, r)
+	// 			return
+	// 		default:
+	// 			utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
+	// 		}
+	// 	case "POST":
+	// 		auth.AuthMiddleware(db, handlers.PostMessage, false).ServeHTTP(w, r)
+	// 	default:
+	// 		utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
+	// 	}
+	// })
 
 	log.Printf("Route server running on http://localhost:%s\n", port)
 	log.Fatalln(http.ListenAndServe(":"+port, router))
