@@ -23,6 +23,7 @@ func NewPostPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, user
 }
 
 func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+	fmt.Println(r.Body)
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		fmt.Printf("Error parsing form: %v", err)
 		utils.RespondWithJSON(w, http.StatusOK, utils.ErrorResponse{Error: "Internal Server Error"})

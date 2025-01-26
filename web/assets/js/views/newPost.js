@@ -22,11 +22,12 @@ export class NewPost extends BASE {
         });
 
 
-        const button = document.querySelector('#submition-button');
+        const button = document.querySelector('.submit');
         // validation posts and submit them to backend
-        document.querySelector('#createPostForm').addEventListener('submit', async (e) => {
+        button.addEventListener('click', async (e) => {
             e.preventDefault();
             button.disabled = true;
+
 
             const checkbox = document.querySelectorAll('[name="category"]');
             let test = false;
@@ -49,7 +50,8 @@ export class NewPost extends BASE {
                 return;
             }
 
-            const res = await fetch(createPostForm.action, {
+            console.log(formData);
+            const res = await fetch('/api/new_post', {
                 method: 'POST',
                 body: formData,
             });
@@ -88,7 +90,7 @@ export class NewPost extends BASE {
         <main>
             <section class="create-post">
                 <h2>Create a New Post</h2>
-                <form id="createPostForm" action="/api/new_post" method="post">
+                <form id="createPostForm" >
                     <input name="title" type="text" placeholder="Post Title" class="post-title" minlength="3" maxlength="60" required>
                     <textarea name="content" placeholder="Post Content" class="post-content" required minlength="10" maxlength="10000"></textarea>
                     <div class="form-group">
@@ -96,7 +98,7 @@ export class NewPost extends BASE {
                         <div class="categories">
                         </div>
                     </div>
-                    <button id="submition-button" type="submit">Create Post</button>
+                    <button id="submition-button" class="submit">Create Post</button>
                     <p id="responseMessage"></p>
                 </form>
             </section>
@@ -112,5 +114,6 @@ export class NewPost extends BASE {
         this.setupAuthNav();
         this.setupNavigation();
         this.setupSidebar();
+        this.setListners();
     }
 }
