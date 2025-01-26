@@ -58,8 +58,9 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload any) {
 			return
 		}
 		w.Write(response)
+	} else {
+		w.WriteHeader(code)
 	}
-	w.WriteHeader(code)
 }
 
 func QueryRows(db *sql.DB, query string, args ...any) (*sql.Rows, error) {

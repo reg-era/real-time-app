@@ -13,7 +13,7 @@ export class NewPost extends BASE {
 
         if (this.listenerSet) return; // just to be sure the lisner i call one time
         this.listenerSet = true;
-
+        const self = this;
         // setup textarea resizing
         const textarea = document.querySelector('.post-content');
         textarea.addEventListener('input', (event) => {
@@ -25,7 +25,6 @@ export class NewPost extends BASE {
         const button = document.querySelector('#submition-button');
         // validation posts and submit them to backend
         document.querySelector('#createPostForm').addEventListener('submit', async (e) => {
-            console.log('test opo');
             e.preventDefault();
             button.disabled = true;
 
@@ -59,7 +58,8 @@ export class NewPost extends BASE {
                 responseMessage.textContent = 'An unexpected error occurred.';
                 button.disabled = false;
             } else {
-                window.location.href = '/';
+                history.pushState(null, null, '/');
+                self.router.handleRoute();
             }
         });
     }
@@ -82,7 +82,7 @@ export class NewPost extends BASE {
         }
     }
 
-    async getHtml() {
+    async renderHtml() {
         const html = `
         ${this.getHtmlBase()}
         <main>
@@ -104,8 +104,13 @@ export class NewPost extends BASE {
         `;
 
         this.getCategories();
-        setTimeout(this.setListners, 0);
-
         return html;
+    }
+
+    afterRender() {
+        //this.getPosts();
+        this.setupAuthNav();
+        this.setupNavigation();
+        this.setupSidebar();
     }
 }

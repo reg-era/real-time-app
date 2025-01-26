@@ -1,7 +1,8 @@
 import { handleResize, debounce } from "../libs/script.js";
-// import { Error } from "./error.js";
+import { Router } from "../rootes.js";
 export class BASE {
     constructor(params) {
+        this.router = new Router();
         this.params = params;
         this.styleUrls = [
             'http://localhost:8080/api/css/base.css',
@@ -36,7 +37,8 @@ export class BASE {
             });
 
             if (response.ok) {
-                window.location.href = '/';
+                history.pushState(null, null, '/');
+                this.router.handleRoute();
             } else {
                 throw new Error('Logout failed');
             }
@@ -62,7 +64,6 @@ export class BASE {
     }
 
     setupSidebar() {
-        // const { handleResize, debounce } = require('../libs/script.js');
         handleResize()
         let debouncedHandleResize = debounce(handleResize, 100)
         window.addEventListener('resize', debouncedHandleResize)
@@ -74,15 +75,6 @@ export class BASE {
                 sideBar.classList.toggle('hide');
             });
         }
-        // const debouncedResize = debounce(handleResize, 100);
-        // window.addEventListener('resize', debouncedResize);
-
-        // const menuButton = document.querySelector('.menu-button');
-        // const sidebar = document.querySelector('.sidebar');
-
-        // if (menuButton && sidebar) {
-        //     menuButton.addEventListener('click', () => sidebar.classList.toggle('hide'));
-        // }
     }
 
     getSidebar() {

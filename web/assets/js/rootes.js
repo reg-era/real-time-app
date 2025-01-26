@@ -1,6 +1,18 @@
+import { Home } from './views/home.js';
+import { Login } from './views/login.js';
+import { Register } from './views/register.js';
+import { Messages } from './views/messages.js';
+import { NewPost } from './views/newPost.js';
+
 export class Router {
-    constructor(routes) {
-        this.routes = routes;
+    constructor() {
+        this.routes = [
+            { path: "/", view: Home },
+            { path: "/register", view: Register },
+            { path: "/login", view: Login },
+            { path: "/messages", view: Messages },
+            { path: "/new-post", view: NewPost }
+        ];
         this.init();
     }
 

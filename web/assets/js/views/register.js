@@ -9,6 +9,7 @@ export class Register extends BASE {
     }
 
     setListners() {
+        const self = this;
         document.getElementById("signup-form").addEventListener("submit", async function (event) {
             event.preventDefault();
 
@@ -34,7 +35,8 @@ export class Register extends BASE {
                 if (response.ok) {
                     messageElement.textContent = "Registration successful!";
                     messageElement.style.color = "green";
-                    window.location.href = '/';
+                    history.pushState(null, null, "/");
+                    self.router.handleRoute();
                 } else {
                     const errorData = await response.text();
                     messageElement.textContent = `Error: ${errorData}`;
@@ -89,10 +91,11 @@ export class Register extends BASE {
         return html
     }
 
-    afterRender(){
+    afterRender() {
         this.setupAuthNav();
         this.setupSidebar();
         this.setupNavigation();
+        this.setListners();
     }
 }
 
