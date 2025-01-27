@@ -11,6 +11,18 @@
 <body>
     <div class="app"></div>
     <script type="module" src="/api/js/rootes.js"></script>
+    <script>
+        const websocket = new WebSocket('ws://localhost:8080/api/ws');
+        websocket.onopen = () => {
+            console.log('Connected to the server');
+        };
+        websocket.onmessage = (event) => {
+            console.log("data get in :", event.data);
+        };
+        websocket.onclose = () => {
+            console.log('Disconnected from the server');
+        };
+    </script>
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +13,8 @@ import (
 	auth "forum/internal/middleware"
 	"forum/internal/utils"
 
+	"github.com/gofrs/uuid/v5"
+	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -22,11 +25,13 @@ func main() {
 	db := database.CreateDatabase(dbPath)
 	defer db.Close()
 
+	pool := utils.NewPool()
 	database.CreateTables(db)
 
 	go func() {
 		for {
 			database.CleanupExpiredSessions(db)
+			pool.PingConnections()
 			time.Sleep(2 * time.Hour)
 		}
 	}()
@@ -35,6 +40,54 @@ func main() {
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "web/index.html")
+	})
+
+	switcher := websocket.Upgrader{}
+	router.HandleFunc("/api/ws", func(w http.ResponseWriter, r *http.Request) {
+		var streamID string
+		cookie, err := r.Cookie("session_token")
+		if err != nil || cookie == nil {
+			fmt.Println("new user")
+
+			newCookie, _ := uuid.NewV4()
+			streamID = newCookie.String()
+
+			http.SetCookie(w, &http.Cookie{
+				Name:    "session_token",
+				Value:   streamID,
+				Path:    "/",
+				Expires: time.Now().Add(3 * time.Hour),
+			})
+
+		} else {
+			streamID = cookie.Value
+		}
+
+		conn, _ := switcher.Upgrade(w, r, nil)
+		pool.AddConn(conn, streamID)
+		go func() {
+			for {
+				select {
+				case cmd := <-pool.Channel:
+					if cmd.Type == "broadcast" {
+						message, ok := cmd.Data.([]byte)
+						if !ok {
+							fmt.Println("Error: Data is not of type []byte")
+							continue
+						}
+
+						pool.Mu.RLock()
+						for _, conn := range pool.Connections {
+							err := conn.Conn.WriteMessage(websocket.TextMessage, message)
+							if err != nil {
+								fmt.Println("Error sending message:", err)
+							}
+						}
+						pool.Mu.RUnlock()
+					}
+				}
+			}
+		}()
 	})
 
 	router.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
@@ -99,6 +152,10 @@ func main() {
 			handlers.GetCommentsHandler(w, r, db, userId)
 		case "POST":
 			auth.AuthMiddleware(db, handlers.AddCommentHandler, false).ServeHTTP(w, r)
+			pool.Channel <- utils.Action{
+				Type: "broadcast",
+				Data: []byte("make a comment"),
+			}
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
@@ -111,6 +168,10 @@ func main() {
 			handlers.GetReactionsHandler(w, r, db, userId)
 		} else if method == "PUT" {
 			auth.AuthMiddleware(db, handlers.InsertOrUpdateReactionHandler, false).ServeHTTP(w, r)
+			pool.Channel <- utils.Action{
+				Type: "broadcast",
+				Data: []byte("react to comment"),
+			}
 		} else if method == "DELETE" {
 			auth.AuthMiddleware(db, handlers.DeleteReactionHandler, false).ServeHTTP(w, r)
 		} else {
@@ -157,6 +218,10 @@ func main() {
 			}
 		case "POST":
 			auth.AuthMiddleware(db, handlers.PostMessage, false).ServeHTTP(w, r)
+			pool.Channel <- utils.Action{
+				Type: "broadcast",
+				Data: []byte("send message"),
+			}
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
