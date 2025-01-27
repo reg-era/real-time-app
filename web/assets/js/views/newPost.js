@@ -50,7 +50,6 @@ export class NewPost extends BASE {
                 return;
             }
 
-            console.log(formData);
             const res = await fetch('/api/new_post', {
                 method: 'POST',
                 body: formData,
@@ -112,7 +111,7 @@ export class NewPost extends BASE {
     afterRender() {
         //this.getPosts();
         this.setupAuthNav();
-        this.setupNavigation();
+       // this.setupNavigation();
         this.setupSidebar();
         this.setListners();
     }

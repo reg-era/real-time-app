@@ -2,6 +2,8 @@ import { initializeCommentSection } from "./comment.js";
 import { reactToggle, getReactInfo } from "./likes.js";
 
 export const GetData = async (postIds = false) => {
+    console.log("1");
+
     if (postIds == null) {
         return;
     }

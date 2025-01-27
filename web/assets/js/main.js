@@ -8,4 +8,5 @@
 import { Router } from "./rootes.js";
 
 const app = new Router();
+app.handleRoute();
 // const router = new Router();

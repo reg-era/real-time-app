@@ -37,6 +37,12 @@ export class BASE {
             });
 
             if (response.ok) {
+                const authNav = document.getElementById('auth-nav');
+                authNav.innerHTML =
+                    `
+                <span href="/login" class="active" data-link>Login</span>
+                <span href="/register" data-link>Signup</span>
+              `;
                 history.pushState(null, null, '/');
                 this.router.handleRoute();
             } else {
@@ -93,8 +99,8 @@ export class BASE {
         <header>
             <button class="menu-button">☰</button>
             <span href="/" class="nav__link" data-link>
-                <div class="logo" data-link>
-                    <img src="http://localhost:8080/api/icons/logo.png" alt="Logo" data-link>
+                <div class="logo" href="/" data-link>
+                    <img src="http://localhost:8080/api/icons/logo.png" alt="Logo" href="/" data-link>
                 </div>
             </span>
             <nav class="top-bar" id="auth-nav"></nav>
@@ -106,20 +112,19 @@ export class BASE {
         return this.getNavBar();
     }
 
-    setupNavigation() {
-        document.querySelectorAll('[data-link]').forEach(link => {
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                const href = link.getAttribute('href');
-                if (href) window.history.pushState(null, null, href);
-
-            });
-        });
-    }
+    // setupNavigation() {
+    //     document.querySelectorAll('[data-link]').forEach(link => {
+    //         link.addEventListener('click', (event) => {
+    //             event.preventDefault();
+    //             const href = link.getAttribute('href');
+    //             if (href) window.history.pushState(null, null, href);
+    //         });
+    //     });
+    // }
 
     afterRender() {
         this.setupAuthNav();
         this.setupSidebar();
-        this.setupNavigation();
+        //this.setupNavigation();
     }
 }

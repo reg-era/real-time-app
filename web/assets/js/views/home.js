@@ -21,13 +21,13 @@ export class Home extends BASE {
                 <section class="posts">
                 </section>
             </main>
+            ${this.getPosts()}
         `;
     }
 
     afterRender() {
-        this.getPosts();
         this.setupAuthNav();
-        this.setupNavigation();
+       // this.setupNavigation();
         this.setupSidebar();
     }
 }

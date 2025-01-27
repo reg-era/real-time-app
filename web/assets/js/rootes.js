@@ -8,45 +8,74 @@ import { Error } from './views/error.js';
 export class Router {
     constructor() {
         this.routes = [
-            { path: "/", view: Home },
-            { path: "/register", view: Register },
-            { path: "/login", view: Login },
-            { path: "/messages", view: Messages },
-            { path: "/new-post", view: NewPost }
+            { path: "/", view: Home, name: "home" },
+            { path: "/register", view: Register, name: "register" },
+            { path: "/login", view: Login, name: "login" },
+            { path: "/messages", view: Messages, name: "messages" },
+            { path: "/new-post", view: NewPost, name: "new-post" }
         ];
+        this.eventlistener = this.handleClick.bind(this); // Bind the listener once
         this.init();
     }
 
     init() {
-        window.addEventListener('popstate', () => this.handleRoute());
-        document.addEventListener('DOMContentLoaded', () => this.handleRoute());
-        document.addEventListener('click', e => {
-            if (e.target.matches('[data-link]')) {
-                e.preventDefault();
-                const href = e.target.getAttribute('href') || e.target.closest('[data-link]').getAttribute('href');
-                this.navigateTo(href);
-            }
-        });
+        document.removeEventListener('click', this.eventlistener); // Ensure no duplicates
+        document.addEventListener('click', this.eventlistener);
+    }
+
+    handleClick(e) {
+        console.log('triggered');
+
+        if (e.target.matches('[data-link]')) {
+            e.preventDefault();
+            const href = e.target.getAttribute('href');
+            this.navigateTo(href);
+        }
     }
 
     async handleRoute() {
-        console.log("handled");
         const path = window.location.pathname;
-        const route = this.routes.find(r => r.path === path) || this.routes.find(r => r.path === '/404');
+        const route = this.routes.find(r => r.path === path);
+        const hasSession = document.cookie.includes('session_token');
+
         if (route) {
             const view = new route.view(this.getQueryParams());
 
-            const html = await view.renderHtml();
-            document.querySelector('.app').innerHTML = html;
-            if (typeof view.afterRender === 'function') {
-                view.afterRender();
+            // Check for authentication
+            if ((route.view === NewPost || route.view === Messages) && !hasSession) {
+                console.log("not authorized");
+                const errorView = new Error("401");
+                const html = await errorView.renderHtml();
+                const appElement = document.querySelector('.app');
+                appElement.innerHTML = html;
+                appElement.setAttribute('page', 'error');
+                if (typeof errorView.afterRender === 'function') {
+                    errorView.afterRender();
+                }
+                return;
+            }
+
+            const appElement = document.querySelector('.app');
+            console.log(appElement.getAttribute('page'));
+
+            // Render only if the page has changed
+            if (appElement.getAttribute('page') !== route.name) {
+                const html = await view.renderHtml();
+                appElement.innerHTML = html;
+                appElement.setAttribute('page', route.name);
+                if (typeof view.afterRender === 'function') {
+                    view.afterRender();
+                }
             }
         } else {
-            const view = new Error("404");
-            const html = await view.renderHtml();
-            document.querySelector('.app').innerHTML = html;
-            if (typeof view.afterRender === 'function') {
-                view.afterRender();
+            // Handle 404 case
+            const errorView = new Error("404");
+            const html = await errorView.renderHtml();
+            const appElement = document.querySelector('.app');
+            appElement.innerHTML = html;
+            appElement.setAttribute('page', 'error');
+            if (typeof errorView.afterRender === 'function') {
+                errorView.afterRender();
             }
         }
     }
@@ -59,9 +88,9 @@ export class Router {
     }
 
     navigateTo(url) {
+        // if (!window.location.pathname === url) {
+        // }
         history.pushState(null, null, url);
         this.handleRoute();
     }
-
-
 }
