@@ -12,7 +12,7 @@ import (
 	"forum/internal/utils"
 )
 
-func NewPostPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func NewPostPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool) {
 	categories, err := GetCategories(db)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -22,7 +22,7 @@ func NewPostPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, user
 	utils.RespondWithJSON(w, http.StatusOK, categories)
 }
 
-func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool) {
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		fmt.Printf("Error parsing form: %v", err)
 		utils.RespondWithJSON(w, http.StatusOK, utils.ErrorResponse{Error: "Internal Server Error"})

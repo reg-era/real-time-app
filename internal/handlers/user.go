@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool) {
 	switch r.URL.Path {
 	case "/api/me/liked-posts":
 		query := `SELECT post_id FROM reactions WHERE user_id = ? AND reaction_type = 'like' AND post_id NOT NULL`

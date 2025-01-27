@@ -9,9 +9,9 @@ import (
 	"forum/internal/utils"
 )
 
-type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int)
+type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool)
 
-func AuthMiddleware(db *sql.DB, next customHandler, login bool) http.Handler {
+func AuthMiddleware(db *sql.DB, next customHandler, login bool, pool *utils.Pool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		isConstentJson := r.Header.Get("Content-Type") == "application/json"
 		userId, err := ValidUser(r, db)
@@ -22,7 +22,7 @@ func AuthMiddleware(db *sql.DB, next customHandler, login bool) http.Handler {
 					return
 				}
 				if login {
-					next(w, r, db, userId)
+					next(w, r, db, userId, pool)
 					return
 				}
 				utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
@@ -39,7 +39,7 @@ func AuthMiddleware(db *sql.DB, next customHandler, login bool) http.Handler {
 					return
 				}
 				if login {
-					next(w, r, db, userId)
+					next(w, r, db, userId, pool)
 					return
 				}
 				utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
@@ -49,7 +49,7 @@ func AuthMiddleware(db *sql.DB, next customHandler, login bool) http.Handler {
 				return
 			}
 		}
-		next(w, r, db, userId)
+		next(w, r, db, userId, pool)
 	})
 }
 

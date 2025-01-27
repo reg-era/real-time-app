@@ -37,7 +37,7 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request, file *sql.DB, us
 	utils.RespondWithJSON(w, http.StatusOK, comments)
 }
 
-func AddCommentHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func AddCommentHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool) {
 	userName, err := database.GetUserName(userId, db)
 	if err != nil {
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})

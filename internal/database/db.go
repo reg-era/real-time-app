@@ -367,3 +367,13 @@ func CreateMessage(m *utils.Message, db *sql.DB) error {
 	m.SenderID = int(id)
 	return nil
 }
+
+func GetUserSession(id int, db *sql.DB) (string, error) {
+	var session string
+	query := `SELECT session_id FROM sessions WHERE user_id = ?`
+	err := db.QueryRow(query, id).Scan(&session)
+	if err != nil {
+		return "", err
+	}
+	return session, nil
+}

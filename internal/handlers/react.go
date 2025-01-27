@@ -8,7 +8,7 @@ import (
 	"forum/internal/utils"
 )
 
-func InsertOrUpdateReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userID int) {
+func InsertOrUpdateReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userID int, pool *utils.Pool) {
 	r.Header.Add("content-type", "application/json")
 
 	reactionType := r.URL.Query().Get("reaction_type")
@@ -46,7 +46,7 @@ func InsertOrUpdateReactionHandler(w http.ResponseWriter, r *http.Request, db *s
 	}
 }
 
-func DeleteReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userID int) {
+func DeleteReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userID int, pool *utils.Pool) {
 	r.Header.Add("content-type", "application/json")
 	targetType := r.URL.Query().Get("target_type")
 	id := r.URL.Query().Get("target_id")

@@ -1,22 +1,21 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
 
 type Connection struct {
-	ID       string
-	Conn     *websocket.Conn
-	LastSeen time.Time
+	ID   string
+	Conn *websocket.Conn
 }
 
 type Action struct {
-	Type string
-	Data interface{}
+	To   string
+	Data []byte
 }
 
 type Pool struct {
@@ -37,9 +36,8 @@ func (p *Pool) AddConn(conn *websocket.Conn, id string) {
 	defer p.Mu.Unlock()
 
 	p.Connections[id] = &Connection{
-		ID:       id,
-		Conn:     conn,
-		LastSeen: time.Now(),
+		ID:   id,
+		Conn: conn,
 	}
 	log.Println("Added connection with ID:", id)
 }
@@ -62,30 +60,6 @@ func (p *Pool) GetConn(id string) (*Connection, bool) {
 	return conn, exists
 }
 
-func (p *Pool) Broadcast(message []byte) {
-	p.Mu.RLock()
-	defer p.Mu.RUnlock()
-
-	for _, conn := range p.Connections {
-		if err := conn.Conn.WriteMessage(websocket.TextMessage, message); err != nil {
-			log.Println("Error broadcasting to connection:", conn.ID, err)
-		}
-	}
-}
-
-func (p *Pool) Cleanup() {
-	p.Mu.Lock()
-	defer p.Mu.Unlock()
-
-	for id, conn := range p.Connections {
-		if time.Since(conn.LastSeen) > 30*time.Minute {
-			conn.Conn.Close()
-			delete(p.Connections, id)
-			log.Println("Removed stale connection with ID:", id)
-		}
-	}
-}
-
 func (p *Pool) PingConnections() {
 	p.Mu.RLock()
 	defer p.Mu.RUnlock()
@@ -97,5 +71,19 @@ func (p *Pool) PingConnections() {
 			conn.Conn.Close()
 			delete(p.Connections, id)
 		}
+	}
+}
+
+func WebSocketHandler(pool *Pool) {
+	for cmd := range pool.Channel {
+		pool.Mu.RLock()
+		conn, exist := pool.GetConn(cmd.To)
+		if exist {
+			err := conn.Conn.WriteMessage(websocket.TextMessage, cmd.Data)
+			if err != nil {
+				fmt.Println("Error sending message:", err)
+			}
+		}
+		pool.Mu.RUnlock()
 	}
 }

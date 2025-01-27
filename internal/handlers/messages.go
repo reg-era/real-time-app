@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -10,7 +11,7 @@ import (
 	"forum/internal/utils"
 )
 
-func GetUser(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func GetUser(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool) {
 	name := r.URL.Query().Get("name")
 	user, err := database.GetUserIdByName(name, db)
 	if err != nil {
@@ -25,7 +26,7 @@ func GetUser(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 	utils.RespondWithJSON(w, http.StatusOK, nil)
 }
 
-func GetAllFriends(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func GetAllFriends(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool) {
 	data, err := database.GetAllFriends(db, userId)
 	if err != nil {
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
@@ -36,7 +37,7 @@ func GetAllFriends(w http.ResponseWriter, r *http.Request, db *sql.DB, userId in
 	utils.RespondWithJSON(w, http.StatusOK, data)
 }
 
-func GetConversations(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func GetConversations(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool) {
 	name := r.URL.Query().Get("name")
 
 	data, err := database.GetConversations(db, userId, name)
@@ -48,7 +49,7 @@ func GetConversations(w http.ResponseWriter, r *http.Request, db *sql.DB, userId
 	utils.RespondWithJSON(w, http.StatusOK, data)
 }
 
-func PostMessage(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func PostMessage(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, pool *utils.Pool) {
 	respons := struct {
 		To      string `json:"to"`
 		Message string `json:"message"`
@@ -78,4 +79,24 @@ func PostMessage(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int)
 	}
 
 	utils.RespondWithJSON(w, http.StatusOK, message)
+
+	conn, err := database.GetUserSession(message.ReceiverID, db)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	origin, _ := database.GetUserName(userId, db)
+	data, _ := json.Marshal(struct {
+		From    string `json:"from"`
+		Message string `json:"message"`
+	}{
+		From:    origin,
+		Message: message.Message,
+	})
+
+	pool.Channel <- utils.Action{
+		To:   conn,
+		Data: data,
+	}
 }
