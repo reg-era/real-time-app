@@ -3,6 +3,7 @@ import { Login } from './views/login.js';
 import { Register } from './views/register.js';
 import { Messages } from './views/messages.js';
 import { NewPost } from './views/newPost.js';
+import { Error } from './views/error.js';
 
 export class Router {
     constructor() {
@@ -35,6 +36,13 @@ export class Router {
         if (route) {
             const view = new route.view(this.getQueryParams());
 
+            const html = await view.renderHtml();
+            document.querySelector('.app').innerHTML = html;
+            if (typeof view.afterRender === 'function') {
+                view.afterRender();
+            }
+        } else {
+            const view = new Error("404");
             const html = await view.renderHtml();
             document.querySelector('.app').innerHTML = html;
             if (typeof view.afterRender === 'function') {

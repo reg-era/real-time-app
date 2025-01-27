@@ -82,9 +82,6 @@ export class BASE {
         <aside class="sidebar">
             <nav class="sidebar-nav">
                 <span href="/new-post" class="nav__link" data-link>Create Post</span>
-                <span href="/filter/created-posts" class="nav__link" data-link>Created Posts</span>
-                <span href="/filter/liked-posts" class="nav__link" data-link>Liked Posts</span>
-                <span href="/filter/categories" class="nav__link" data-link>Categories</span>
                 <span href="/ws" class="nav__link" data-link>Messages</span>
             </nav>
         </aside>
