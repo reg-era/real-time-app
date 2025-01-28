@@ -29,8 +29,15 @@ const getParams = (path, routePath) => {
     return params;
 };
 
-
+let validated = false
 const router = async () => {
+    if (!validated && location.pathname != '/login' && location.pathname != '/register' && (await invalidSession())) {
+        validated = true
+        navigateTo('/login')
+    }
+    validated = false
+
+
     const routes = [
         { path: "/", view: Home },
         { path: "/login", view: Login },
@@ -73,4 +80,24 @@ const navigateTo = url => {
     router();
 };
 
-export {navigateTo ,router}
+const invalidSession = async () => {
+    const compon = document.cookie.split(';')
+    for (let i = 0; i < compon.length; i++) {
+        const cookie = compon[i].split('=')
+        if (cookie && cookie[0].includes('session_token')) {
+            try {
+                const res = await fetch('http://localhost:8080/api/me', {
+                    credentials: 'include',
+                })
+                return (res.status !== 404)
+            } catch (_) {
+                console.log('throwed', _);
+
+                return false
+            }
+        }
+    }
+    return true
+}
+
+export { navigateTo, router }
