@@ -318,6 +318,32 @@ func GetAllFriends(db *sql.DB, userId int) ([]string, error) {
 	return friends, nil
 }
 
+func GetFriends(db *sql.DB, userId int) ([]string, error) {
+	query := `
+	SELECT username FROM users
+	WHERE id != ?;
+	`
+	rows, err := utils.QueryRows(db, query, userId)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	defer rows.Close()
+	var friends []string
+	for rows.Next() {
+		var friend string
+		err := rows.Scan(&friend)
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+		friends = append(friends, friend)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return friends, nil
+}
+
 func GetConversations(db *sql.DB, userId int, receiver string) ([]utils.Message, error) {
 	receiverID, err := GetUserIdByName(receiver, db)
 	if err != nil {
@@ -357,7 +383,7 @@ func CreateMessage(m *utils.Message, db *sql.DB) error {
 	query := `
 	INSERT INTO messages (sender_id, receiver_id, message, created_at)
 	VALUES (?, ?, ?, ?)
-	`;
+	`
 
 	result, err := db.Exec(query, m.SenderID, m.ReceiverID, m.Message, m.CreatedAt)
 	if err != nil {

@@ -94,7 +94,7 @@ export class Register extends BASE {
     afterRender() {
         this.setupAuthNav();
         this.setupSidebar();
-        // this.setupNavigation();
+        this.setupNavigation();
         this.setListners();
     }
 }

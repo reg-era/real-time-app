@@ -111,7 +111,7 @@ export class NewPost extends BASE {
     afterRender() {
         //this.getPosts();
         this.setupAuthNav();
-       // this.setupNavigation();
+       this.setupNavigation();
         this.setupSidebar();
         this.setListners();
     }

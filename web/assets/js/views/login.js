@@ -25,7 +25,9 @@ export class Login extends BASE {
                 });
 
                 if (response.ok) {
-                    window.location.href = '/';
+                    // window.location.href = '/';
+                    history.pushState(null, null, "/");
+                    self.router.handleRoute();
                 } else {
                     const errorData = await response.json();
                     messageElement.textContent = errorData.message || 'Login failed. Please try again.';

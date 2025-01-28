@@ -4,6 +4,7 @@ import { Register } from './views/register.js';
 import { Messages } from './views/messages.js';
 import { NewPost } from './views/newPost.js';
 import { Error } from './views/error.js';
+import { Messg } from './views/WsHub.js';
 
 export class Router {
     constructor() {
@@ -12,10 +13,12 @@ export class Router {
             { path: "/register", view: Register, name: "register" },
             { path: "/login", view: Login, name: "login" },
             { path: "/messages", view: Messages, name: "messages" },
-            { path: "/new-post", view: NewPost, name: "new-post" }
+            { path: "/new-post", view: NewPost, name: "new-post" },
+            { path: "/ws", view: Messg, name: ",msgs" }
         ];
         this.eventlistener = this.handleClick.bind(this); // Bind the listener once
         this.init();
+        this.page = {};
     }
 
     init() {
@@ -40,7 +43,7 @@ export class Router {
 
         if (route) {
             const view = new route.view(this.getQueryParams());
-
+            this.page = view;
             // Check for authentication
             if ((route.view === NewPost || route.view === Messages) && !hasSession) {
                 console.log("not authorized");

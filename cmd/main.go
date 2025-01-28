@@ -21,6 +21,8 @@ func main() {
 
 	db := database.CreateDatabase(dbPath)
 	forumHub := new(utils.Hub)
+	forumHub.Clients = make(map[*utils.Client]bool)
+
 	defer db.Close()
 
 	database.CreateTables(db)
