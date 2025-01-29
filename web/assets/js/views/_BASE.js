@@ -235,7 +235,7 @@ export class BASE {
                     <a href="/messages/${user}" class="nav__link" id="${user}" data-link>
                         👤 ${user} 
                         <span class="status-tag online">
-                            Online
+                            🟢Online
                         </span>
                     </a>
                 `).join('');
@@ -247,7 +247,7 @@ export class BASE {
                     <a href="/messages/${user}" class="nav__link" id="${user}" data-link>
                         👤 ${user} 
                         <span class="status-tag offline">
-                            Offline
+                            🔴Offline
                         </span>
                     </a>
                 `).join('');

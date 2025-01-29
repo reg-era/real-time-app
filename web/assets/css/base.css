@@ -222,3 +222,48 @@ p {
 .sidebar.hide {
     display: none;
 }
+
+/* side online bar style */
+
+.onligne-bar {
+    width: 250px;
+    height: 100vh;
+    background-color: var(--smoke-white);
+    color: #fff;
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding-top: 20px;
+    margin-top: 50px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    gap: 2px;
+}
+
+.onligne-bar a {
+    margin: 8px;
+    display: block;
+    text-decoration: none;
+    font-size: 18px;
+    background-color: var(--white);
+}
+
+.onligne-bar .status-tag {
+    font-size: 10px;
+}
+
+/* Customize the Scrollbar */
+.onligne-bar::-webkit-scrollbar {
+    width: 10px;
+}
+
+.onligne-bar::-webkit-scrollbar-thumb {
+    background-color: var(--yellow);
+    border-radius: 10px;
+    border: 2px solid var(--white);
+}
+
+.onligne-bar::-webkit-scrollbar-track {
+    background-color: var(--smoke-white);
+    border-radius: 10px;
+}
