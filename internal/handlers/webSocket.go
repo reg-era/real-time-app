@@ -41,7 +41,6 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 	hub.Mu.Lock()
 	hub.Clients[newclient] = true
 	hub.Mu.Unlock()
-	fmt.Println(hub.Clients)
 	// Cleanup when function returns
 	defer func() {
 		hub.Mu.Lock()
@@ -50,24 +49,12 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 	}()
 
 	if err := sendUsersList(newclient, hub, db); err != nil {
-		log.Printf("Failed to send users list: %v", err)
-		return
+		fmt.Printf("Failed to send users list: %v", err)
 	}
 
+	cont := 0
 	for {
-		// messageType, message, err := conn.ReadMessage()
-		// if err != nil {
-		// 	if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-		// 		log.Printf("WebSocket error: %v", err)
-		// 	}
-		// 	break
-		// }
-
-		// Handle received messages
-		// if err := handleMessage(messageType, message, newclient, hub, db); err != nil {
-		// 	log.Printf("Error handling message: %v", err)
-		// 	break
-		// }
+		cont++
 	}
 }
 

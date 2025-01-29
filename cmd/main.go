@@ -141,11 +141,12 @@ func main() {
 	})
 
 	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		// userId, err := auth.ValidUser(r, db)
-		// if err != nil {
-		// 	utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
-		// }
-		handlers.HandleWs(w, r, 1, db, forumHub)
+		userId, err := auth.ValidUser(r, db)
+		if err != nil {
+			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
+			return
+		}
+		handlers.HandleWs(w, r, userId, db, forumHub)
 	})
 
 	// router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {

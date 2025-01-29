@@ -19,12 +19,12 @@ export class Router {
         ];
         this.base = app;
         this.eventlistener = this.handleClick.bind(this); // Bind the listener once
-        this.init();
+        // this.init();
         this.page = {};
     }
 
     init() {
-        document.removeEventListener('click', this.eventlistener); // Ensure no duplicates
+        document.removeEventListener('click', this.eventlistener);
         document.addEventListener('click', this.eventlistener);
     }
 
@@ -52,6 +52,7 @@ export class Router {
                 if (this.base.connection) {
                     this.base.connection.close();
                 }
+                history.pushState(null, null, '/login');
                 const view = new Login();
                 const html = await view.renderHtml();
                 const appElement = document.querySelector('.app');

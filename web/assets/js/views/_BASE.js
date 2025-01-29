@@ -128,7 +128,7 @@ export class BASE {
                 if (this.connection) {
                     this.connection.close();
                 }
-                history.pushState(null, null, '/');
+                history.pushState(null, null, '/login');
                 app.router.handleRoute()
             } else {
                 throw new Error('Logout failed');
@@ -199,6 +199,7 @@ export class BASE {
         <aside class="onligne-bar">
             <nav class="sidebar-nav">
                 <div class="loading-indicator">Loading users...</div>
+                ${this.renderSidebar()}
             </nav>
         </aside>
         `;
