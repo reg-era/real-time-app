@@ -1,8 +1,10 @@
+import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
 
 export class NewPost extends BASE {
     constructor(params) {
         super(params);
+        this.base = app;
         this.setTitle("New");
         this.setStyle("http://localhost:8080/api/css/base.css");
         this.setStyle("http://localhost:8080/api/css/newPost.css");

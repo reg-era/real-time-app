@@ -1,8 +1,10 @@
+import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
 
 export class Login extends BASE {
     constructor(params) {
         super(params);
+        this.base = app;
         this.setTitle("Login");
         this.setStyle("http://localhost:8080/api/css/login.css");
     }
@@ -27,7 +29,7 @@ export class Login extends BASE {
                 if (response.ok) {
                     // window.location.href = '/';
                     history.pushState(null, null, "/");
-                    self.router.handleRoute();
+                    this.base.router.handleRoute();
                 } else {
                     const errorData = await response.json();
                     messageElement.textContent = errorData.message || 'Login failed. Please try again.';
@@ -62,7 +64,7 @@ export class Login extends BASE {
                                 minlength="8" maxlength="64" required>
                         </div>
                         <button type="submit">Login</button>
-                        <p class="signup-link">Don't have an account? <a href="/register" data-link>Signup</a></p>
+                        <p class="signup-link">Don't have an account? <a href="/register"  data-link>Signup</a></p>
                         <p id="responseMessage"></p>
                     </form>
                 </section>

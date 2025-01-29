@@ -1,8 +1,10 @@
+import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
 
 export class Register extends BASE {
     constructor(params) {
         super(params);
+        this.base = app;
         this.setTitle("Register");
         this.setStyle("http://localhost:8080/api/css/base.css")
         this.setStyle("http://localhost:8080/api/css/register.css")
@@ -36,7 +38,7 @@ export class Register extends BASE {
                     messageElement.textContent = "Registration successful!";
                     messageElement.style.color = "green";
                     history.pushState(null, null, "/");
-                    self.router.handleRoute();
+                    self.base.router.handleRoute();
                 } else {
                     const errorData = await response.text();
                     messageElement.textContent = `Error: ${errorData}`;
@@ -94,7 +96,7 @@ export class Register extends BASE {
     afterRender() {
         this.setupAuthNav();
         this.setupSidebar();
-       // this.setupNavigation();
+        // this.setupNavigation();
         this.setListners();
     }
 }

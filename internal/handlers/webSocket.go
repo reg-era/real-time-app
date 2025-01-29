@@ -41,7 +41,7 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 	hub.Mu.Lock()
 	hub.Clients[newclient] = true
 	hub.Mu.Unlock()
-
+	fmt.Println(hub.Clients)
 	// Cleanup when function returns
 	defer func() {
 		hub.Mu.Lock()
@@ -111,7 +111,7 @@ func sendUsersList(client *utils.Client, hub *utils.Hub, db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf("JSON error: %v", err)
 	}
-
+	fmt.Println(string(jsonResponse))
 	hub.Mu.Lock()
 	for client := range hub.Clients {
 		err := client.Conn.WriteMessage(websocket.TextMessage, jsonResponse)

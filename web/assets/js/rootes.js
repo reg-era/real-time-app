@@ -5,6 +5,7 @@ import { Messages } from './views/messages.js';
 import { NewPost } from './views/newPost.js';
 import { Error } from './views/error.js';
 import { Messg } from './views/WsHub.js';
+import { app } from './main.js';
 
 export class Router {
     constructor() {
@@ -16,6 +17,7 @@ export class Router {
             { path: "/new-post", view: NewPost, name: "new-post" },
             { path: "/ws", view: Messg, name: ",msgs" }
         ];
+        this.base = app;
         this.eventlistener = this.handleClick.bind(this); // Bind the listener once
         this.init();
         this.page = {};
@@ -45,15 +47,18 @@ export class Router {
             const view = new route.view(this.getQueryParams());
             this.page = view;
             // Check for authentication
-            if ((route.view === NewPost || route.view === Messages) && !hasSession) {
+            if (!hasSession && (route.name !== 'login' && route.name !== "register")) {
                 console.log("not authorized");
-                const errorView = new Error("401");
-                const html = await errorView.renderHtml();
+                if (this.base.connection) {
+                    this.base.connection.close();
+                }
+                const view = new Login();
+                const html = await view.renderHtml();
                 const appElement = document.querySelector('.app');
                 appElement.innerHTML = html;
                 appElement.setAttribute('page', 'error');
-                if (typeof errorView.afterRender === 'function') {
-                    errorView.afterRender();
+                if (typeof view.afterRender === 'function') {
+                    view.afterRender();
                 }
                 return;
             }
@@ -63,6 +68,9 @@ export class Router {
 
             // Render only if the page has changed
             if (appElement.getAttribute('page') !== route.name) {
+                if (!this.base.connection) {
+                    this.base.initializeWebSocket();
+                }
                 const html = await view.renderHtml();
                 appElement.innerHTML = html;
                 appElement.setAttribute('page', route.name);

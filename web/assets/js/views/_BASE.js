@@ -1,4 +1,5 @@
 import { handleResize, debounce } from "../libs/script.js";
+import { app } from "../main.js";
 // import { Router } from "../rootes.js";
 
 export class BASE {
@@ -128,7 +129,7 @@ export class BASE {
                     this.connection.close();
                 }
                 history.pushState(null, null, '/');
-                this.router.handleRoute();
+                app.router.handleRoute()
             } else {
                 throw new Error('Logout failed');
             }
