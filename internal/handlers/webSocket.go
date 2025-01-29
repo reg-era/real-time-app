@@ -13,6 +13,16 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type WebSocketMessage struct {
+	Type  string `json:"Type"`
+	Users users  `json:"users"`
+}
+
+type users struct {
+	Online  []string `json:"online"`
+	Offline []string `json:"offline"`
+}
+
 func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hub *utils.Hub) {
 	conn, err := utils.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -20,40 +30,60 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 		return
 	}
 	defer conn.Close()
-	type users struct {
-		Online  []string `json:"online"`
-		Offline []string `json:"offline"`
-	}
+
+	// Create client
 	newclient := &utils.Client{
 		Id:   userid,
 		Conn: conn,
 	}
-	type WebSocketMessage struct {
-		Type  string `json:"Type"`
-		Users users  `json:"users"`
-	}
+
+	// Add client to hub
 	hub.Mu.Lock()
 	hub.Clients[newclient] = true
 	hub.Mu.Unlock()
 
-	// Get all friends
-	allFriends, err := database.GetFriends(db, userid)
-	if err != nil {
-		log.Printf("Failed to get friends: %v", err)
+	// Cleanup when function returns
+	defer func() {
+		hub.Mu.Lock()
+		delete(hub.Clients, newclient)
+		hub.Mu.Unlock()
+	}()
+
+	if err := sendUsersList(newclient, hub, db); err != nil {
+		log.Printf("Failed to send users list: %v", err)
 		return
 	}
 
-	// Create maps for O(1) lookups
-	onlineFriends := make([]string, 0)
-	offlineFriends := make([]string, 0)
+	for {
+		// messageType, message, err := conn.ReadMessage()
+		// if err != nil {
+		// 	if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+		// 		log.Printf("WebSocket error: %v", err)
+		// 	}
+		// 	break
+		// }
+
+		// Handle received messages
+		// if err := handleMessage(messageType, message, newclient, hub, db); err != nil {
+		// 	log.Printf("Error handling message: %v", err)
+		// 	break
+		// }
+	}
+}
+
+func sendUsersList(client *utils.Client, hub *utils.Hub, db *sql.DB) error {
+	allFriends, err := database.GetFriends(db, client.Id)
+	if err != nil {
+		return fmt.Errorf("failed to get friends: %v", err)
+	}
+
+	var onlineFriends, offlineFriends []string
 
 	hub.Mu.Lock()
-	fmt.Println(hub.Clients)
-	// Check each friend's online status
 	for _, friend := range allFriends {
 		isOnline := false
-		for client := range hub.Clients {
-			clientname, err := database.GetUserName(client.Id, db)
+		for c := range hub.Clients {
+			clientname, err := database.GetUserName(c.Id, db)
 			if err != nil {
 				continue
 			}
@@ -68,26 +98,30 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 		}
 	}
 	hub.Mu.Unlock()
-	// Create response structure
-	Users1 := users{
-		Online:  onlineFriends,
-		Offline: offlineFriends,
+
+	response := WebSocketMessage{
+		Type: "onlineusers",
+		Users: users{
+			Online:  onlineFriends,
+			Offline: offlineFriends,
+		},
 	}
 
-	jsonResponse, err := json.Marshal(WebSocketMessage{
-		Type:  "onlineusers",
-		Users: Users1,
-	})
-	fmt.Println(string(jsonResponse))
+	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		log.Printf("JSON error: %v", err)
-		return
+		return fmt.Errorf("JSON error: %v", err)
 	}
 
-	if err := conn.WriteMessage(websocket.TextMessage, jsonResponse); err != nil {
-		log.Printf("Write error: %v", err)
-		return
+	hub.Mu.Lock()
+	for client := range hub.Clients {
+		err := client.Conn.WriteMessage(websocket.TextMessage, jsonResponse)
+		if err != nil {
+			return err
+		}
 	}
+	hub.Mu.Unlock()
+
+	return nil
 }
 
 // go readmessages()

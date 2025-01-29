@@ -1,11 +1,11 @@
 import { handleResize, debounce } from "../libs/script.js";
-import { Router } from "../rootes.js";
+// import { Router } from "../rootes.js";
 
 export class BASE {
     constructor(params) {
-        this.router = new Router();
+        this.router = null;
         this.params = params;
-        this.currentPage = this.router.page;
+        // this.currentPage = this.router.page;
         this.styleUrls = [
             'http://localhost:8080/api/css/base.css',
             'http://localhost:8080/api/css/posts.css'
@@ -16,7 +16,7 @@ export class BASE {
         };
         this.connection = null;
         this.initializeStyles();
-        this.initializeWebSocket();
+        //   this.initializeWebSocket();
     }
 
     async initializeWebSocket() {
@@ -33,7 +33,7 @@ export class BASE {
         this.connection = new WebSocket(wsUrl.toString());
         console.log('Initializing WebSocket connection...');
 
-        await this.setupWebSocket();
+        this.setupWebSocket();
     }
 
     setupWebSocket() {
@@ -59,6 +59,8 @@ export class BASE {
 
     setupConnReader() {
         this.connection.onmessage = async (event) => {
+            console.log(event, "received");
+
             try {
                 const data = JSON.parse(event.data);
                 if (!data.Type) {
@@ -66,9 +68,8 @@ export class BASE {
                     return;
                 }
 
-                console.log(data.users);
+                //  console.log(data.users);
                 switch (data.Type) {
-
                     case 'message':
                         this.handleWebSocketMessage(data);
                         break;
@@ -206,18 +207,20 @@ export class BASE {
         return this.getNavBar();
     }
 
-    setupNavigation() {
-        document.querySelectorAll('[data-link]').forEach(link => {
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                const href = link.getAttribute('href');
-                if (href) {
-                    window.history.pushState(null, null, href);
-                    this.router.handleRoute();
-                }
-            });
-        });
-    }
+    // setupNavigation() {
+    //     console.log(this.router);
+
+    //     document.querySelectorAll('[data-link]').forEach(link => {
+    //         link.addEventListener('click', (event) => {
+    //             event.preventDefault();
+    //             const href = link.getAttribute('href');
+    //             if (href) {
+    //                 window.history.pushState(null, null, href);
+    //                 this.router.handleRoute();
+    //             }
+    //         });
+    //     });
+    // }
 
     async renderSidebar() {
         try {
@@ -254,7 +257,7 @@ export class BASE {
             }
 
             sidebar.innerHTML = html || '<div>No users available</div>';
-            this.setupNavigation();
+            //  this.setupNavigation();
         } catch (error) {
             console.error('Error rendering sidebar:', error);
             const sidebar = document.querySelector('.onligne-bar .sidebar-nav');
@@ -272,8 +275,9 @@ export class BASE {
     }
 
     afterRender() {
+        this.renderSidebar();
         this.setupAuthNav();
         this.setupSidebar();
-        this.setupNavigation();
+        // this.setupNavigation();
     }
 }

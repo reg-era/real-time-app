@@ -1,12 +1,9 @@
-// import { Router } from './rootes.js';
-// // import { Home } from './views/home.js';
-// // import { Login } from './views/login.js';
-// // import { Register } from './views/register.js';
-// // import { Messages } from './views/messages.js';
-// // import { NewPost } from './views/newPost.js';
-// // import { Error404 } from './views/error.js';
+import { BASE } from "./views/_BASE.js"
 import { Router } from "./rootes.js";
 
-const app = new Router();
-app.handleRoute();
-// const router = new Router();
+const app = new BASE();
+app.router = new Router();
+console.log(app.router);
+
+await app.router.handleRoute();
+ app.initializeWebSocket();

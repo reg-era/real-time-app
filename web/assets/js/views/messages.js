@@ -59,7 +59,6 @@ export class Messages extends MessagesBase {
     }
 
     async getHtml() {
-        console.log(this.params);
         const base = await super.getHtml();
         const html = `
         ${base}

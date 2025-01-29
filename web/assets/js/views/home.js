@@ -27,7 +27,7 @@ export class Home extends BASE {
 
     afterRender() {
         this.setupAuthNav();
-       this.setupNavigation();
+        //this.setupNavigation();
         this.setupSidebar();
     }
 }
