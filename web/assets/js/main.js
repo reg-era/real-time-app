@@ -1,4 +1,4 @@
-import { navigateTo , router } from "./routes.js";
+import { navigateTo, router } from "./routes.js";
 
 window.addEventListener("popstate", router);
 
@@ -33,3 +33,8 @@ websocket.onmessage = (event) => {
         container.appendChild(messageCompon)
     }
 };
+
+// window.scrollTo({
+// top: document.body.scrollHeight,
+// behavior: 'smooth'
+// });
