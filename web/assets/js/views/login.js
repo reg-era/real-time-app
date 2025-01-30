@@ -1,15 +1,16 @@
-import { app } from "../main.js";
+// import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
 
 export class Login extends BASE {
-    constructor(params) {
-        super(params);
+    constructor(app) {
+        super();
         this.base = app;
         this.setTitle("Login");
         this.setStyle("http://localhost:8080/api/css/login.css");
     }
 
     setListeners() {
+
         document.getElementById("login-form").addEventListener("submit", async (event) => {
             event.preventDefault();
             const username = document.getElementById("login-username").value;
@@ -28,6 +29,7 @@ export class Login extends BASE {
 
                 if (response.ok) {
                     // window.location.href = '/';
+                    this.base.loged = true;
                     history.pushState(null, null, "/");
                     this.base.router.handleRoute();
                 } else {

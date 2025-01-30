@@ -5,10 +5,10 @@ import { Messages } from './views/messages.js';
 import { NewPost } from './views/newPost.js';
 import { Error } from './views/error.js';
 import { Messg } from './views/WsHub.js';
-import { app } from './main.js';
+//import { app } from './main.js';
 
 export class Router {
-    constructor() {
+    constructor(app) {
         this.routes = [
             { path: "/", view: Home, name: "home" },
             { path: "/register", view: Register, name: "register" },
@@ -42,18 +42,20 @@ export class Router {
         const path = window.location.pathname;
         const route = this.routes.find(r => r.path === path);
         const hasSession = document.cookie.includes('session_token');
+        // console.log(this.base);
+
+        const view = new route.view(this.base);
 
         if (route) {
-            const view = new route.view(this.getQueryParams());
             this.page = view;
             // Check for authentication
-            if (!hasSession && (route.name !== 'login' && route.name !== "register")) {
-                console.log("not authorized");
+            if ((!hasSession && (route.name !== 'login' && route.name !== "register")) || (route.name === 'login' || route.name === "register")) {
+                // console.log("not authorized");
                 if (this.base.connection) {
                     this.base.connection.close();
                 }
                 history.pushState(null, null, '/login');
-                const view = new Login();
+                const view = new Login(this.base);
                 const html = await view.renderHtml();
                 const appElement = document.querySelector('.app');
                 appElement.innerHTML = html;
@@ -65,13 +67,13 @@ export class Router {
             }
 
             const appElement = document.querySelector('.app');
-            console.log(appElement.getAttribute('page'));
+            // console.log(appElement.getAttribute('page'));
 
             // Render only if the page has changed
-            if (appElement.getAttribute('page') !== route.name) {
-                if (!this.base.connection) {
-                    this.base.initializeWebSocket();
-                }
+            if (appElement.getAttribute('page') !== route.name && hasSession) {
+                // if (!this.base.connection) {
+                //     this.base.initializeWebSocket();
+                // }
                 const html = await view.renderHtml();
                 appElement.innerHTML = html;
                 appElement.setAttribute('page', route.name);

@@ -1,9 +1,9 @@
-import { app } from "../main.js";
+// import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
 
 export class NewPost extends BASE {
-    constructor(params) {
-        super(params);
+    constructor(app) {
+        super();
         this.base = app;
         this.setTitle("New");
         this.setStyle("http://localhost:8080/api/css/base.css");
@@ -112,7 +112,7 @@ export class NewPost extends BASE {
 
     afterRender() {
         //this.getPosts();
-        this.setupAuthNav();
+        this.setupAuthNav(this.base);
         this.setupNavigation();
         this.setupSidebar();
         this.setListners();

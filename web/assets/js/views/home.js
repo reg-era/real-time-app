@@ -1,10 +1,10 @@
 import { GetData } from "../libs/post.js";
-import { app } from "../main.js";
+// import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
 
 export class Home extends BASE {
-    constructor(params) {
-        super(params);
+    constructor(app) {
+        super();
         this.base = app;
         this.setTitle("Home");
     }
@@ -28,7 +28,7 @@ export class Home extends BASE {
     }
 
     afterRender() {
-        this.setupAuthNav();
+        this.setupAuthNav(this.base);
         //this.setupNavigation();
         this.setupSidebar();
     }

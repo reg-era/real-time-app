@@ -1,11 +1,12 @@
 import { handleResize, debounce } from "../libs/script.js";
-import { app } from "../main.js";
+// import { app } from "../main.js";
 // import { Router } from "../rootes.js";
 
 export class BASE {
     constructor(params) {
         this.router = null;
         this.params = params;
+        this.loged = false;
         // this.currentPage = this.router.page;
         this.styleUrls = [
             'http://localhost:8080/api/css/base.css',
@@ -113,6 +114,8 @@ export class BASE {
     }
 
     async handleLogout() {
+        console.log(this.router);
+
         try {
             const response = await fetch('http://localhost:8080/api/logout', {
                 method: 'POST',
@@ -129,7 +132,7 @@ export class BASE {
                     this.connection.close();
                 }
                 history.pushState(null, null, '/login');
-                app.router.handleRoute()
+                this.router.handleRoute()
             } else {
                 throw new Error('Logout failed');
             }
@@ -138,7 +141,7 @@ export class BASE {
         }
     }
 
-    setupAuthNav() {
+    setupAuthNav(app) {
         const authNav = document.getElementById('auth-nav');
         const hasSession = document.cookie.includes('session_token');
 
@@ -150,7 +153,7 @@ export class BASE {
               `;
 
         if (hasSession) {
-            authNav.querySelector('.active').addEventListener('click', () => this.handleLogout());
+            authNav.querySelector('.active').addEventListener('click', () => app.handleLogout());
         }
     }
 
@@ -278,7 +281,7 @@ export class BASE {
 
     afterRender() {
         this.renderSidebar();
-        this.setupAuthNav();
+        this.setupAuthNav(this);
         this.setupSidebar();
         // this.setupNavigation();
     }

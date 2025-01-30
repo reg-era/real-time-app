@@ -20,8 +20,9 @@ func main() {
 	port := os.Getenv("PORT")
 
 	db := database.CreateDatabase(dbPath)
-	forumHub := new(utils.Hub)
-	forumHub.Clients = make(map[*utils.Client]bool)
+	forumHub := &utils.Hub{
+		Clients: make(map[*utils.Client]bool),
+	}
 
 	defer db.Close()
 
