@@ -8,10 +8,13 @@ async function main() {
     if (!document.cookie) {
         deleteAllCookies();
         history.pushState(null, null, '/login');
+
+        await app.router.handleRoute();
+        console.log(app);
+
+
         try {
-            await app.router.handleRoute();
-            console.log(app);
-            app.router.initializeWebSocket();
+            //await app.initializeWebSocket();
 
         } catch (error) {
             console.error('Error during route handling:', error);
@@ -19,6 +22,8 @@ async function main() {
 
     } else {
         await app.router.handleRoute();
+        app.initializeWebSocket();
+
 
     }
 }

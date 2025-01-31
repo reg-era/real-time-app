@@ -9,8 +9,6 @@ import (
 
 	"forum/internal/database"
 	"forum/internal/utils"
-
-	"github.com/gorilla/websocket"
 )
 
 type WebSocketMessage struct {
@@ -29,66 +27,61 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 		log.Printf("Failed to upgrade: %v", err)
 		return
 	}
-	defer conn.Close()
 
 	// Create client
 	newclient := &utils.Client{
 		Id:   userid,
 		Conn: conn,
 	}
-
-	// Add client to hub
-	hub.Mu.Lock()
-	hub.Clients[newclient] = true
-	hub.Mu.Unlock()
-	fmt.Println(len(hub.Clients))
-
-	// Cleanup when function returns
+	hub.Register <- newclient
 	defer func() {
-		hub.Mu.Lock()
-		delete(hub.Clients, newclient)
-		hub.Mu.Unlock()
+		hub.Unregister <- newclient
+		if mssg, err := getuserslist(newclient, hub, db); err != nil {
+			fmt.Printf("Failed to send users list: %v", err)
+		} else {
+			hub.Broadcast <- mssg
+		}
 	}()
 
-	if err := sendUsersList(newclient, hub, db); err != nil {
+	if mssg, err := getuserslist(newclient, hub, db); err != nil {
 		fmt.Printf("Failed to send users list: %v", err)
+	} else {
+		hub.Broadcast <- mssg
 	}
 
-	cont := 0
 	for {
-		cont++
+		_, _, err := conn.ReadMessage()
+		if err != nil {
+			break
+		}
 	}
 }
 
-func sendUsersList(client *utils.Client, hub *utils.Hub, db *sql.DB) error {
+func getuserslist(client *utils.Client, hub *utils.Hub, db *sql.DB) ([]byte, error) {
 	allFriends, err := database.GetFriends(db, client.Id)
+	fmt.Println("all friends:", allFriends)
 	if err != nil {
-		return fmt.Errorf("failed to get friends: %v", err)
+		return nil, fmt.Errorf("failed to get friends: %v", err)
 	}
 
 	var onlineFriends, offlineFriends []string
 
-	hub.Mu.Lock()
-	for _, friend := range allFriends {
-		isOnline := false
-		for c := range hub.Clients {
-			fmt.Println(c.Id)
-			clientname, err := database.GetUserName(c.Id, db)
-			fmt.Println(clientname)
-			if err != nil {
-				continue
-			}
-			if friend == clientname {
-				onlineFriends = append(onlineFriends, clientname)
-				isOnline = true
-				break
-			}
+	hub.Mutex.Lock()
+	for c := range hub.Clients {
+		clientname, err := database.GetUserName(c.Id, db)
+		if err != nil {
+			continue
 		}
-		if !isOnline {
-			offlineFriends = append(offlineFriends, friend)
+		onlineFriends = append(onlineFriends, clientname)
+	}
+	for _, client := range allFriends {
+		for _, onligne := range onlineFriends {
+			if client != onligne {
+				offlineFriends = append(offlineFriends, client)
+			}
 		}
 	}
-	hub.Mu.Unlock()
+	hub.Mutex.Unlock()
 
 	response := WebSocketMessage{
 		Type: "onlineusers",
@@ -100,21 +93,9 @@ func sendUsersList(client *utils.Client, hub *utils.Hub, db *sql.DB) error {
 
 	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		return fmt.Errorf("JSON error: %v", err)
+		return nil, fmt.Errorf("JSON error: %v", err)
 	}
-	fmt.Println(string(jsonResponse))
-	hub.Mu.Lock()
-	for client1 := range hub.Clients {
-		if client1.Conn != client.Conn {
-			err := client1.Conn.WriteMessage(websocket.TextMessage, jsonResponse)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	hub.Mu.Unlock()
-
-	return nil
+	return jsonResponse, nil
 }
 
 // go readmessages()

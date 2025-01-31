@@ -234,7 +234,7 @@ export class BASE {
                 console.error('Sidebar element not found');
                 return;
             }
-
+            sidebar.innerHTML = '';
             let html = '';
 
             // Render online users
