@@ -22,7 +22,9 @@ async function main() {
 
     } else {
         await app.router.handleRoute();
-        app.initializeWebSocket();
+        if (!app.connection) {
+            await app.initializeWebSocket();
+        }
 
 
     }

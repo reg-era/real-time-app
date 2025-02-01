@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -72,7 +71,6 @@ func (h *Hub) Run() {
 			h.Mutex.Unlock()
 
 		case message := <-h.Broadcast:
-			fmt.Println(string(message))
 			h.Mutex.RLock()
 			for client := range h.Clients {
 				err := client.Conn.WriteMessage(websocket.TextMessage, message)

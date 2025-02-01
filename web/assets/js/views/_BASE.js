@@ -22,6 +22,13 @@ export class BASE {
     }
 
     async initializeWebSocket() {
+        // Don't create a new connection if one exists and is healthy
+        if (this.connection &&
+            (this.connection.readyState === WebSocket.CONNECTING ||
+                this.connection.readyState === WebSocket.OPEN)) {
+            return;
+        }
+
         const sessionToken = document.cookie
             .split('; ')
             .find(row => row.startsWith('session_token='))

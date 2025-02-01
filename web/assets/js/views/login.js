@@ -32,7 +32,7 @@ export class Login extends BASE {
                     this.base.loged = true;
                     history.pushState(null, null, "/");
                     this.base.router.handleRoute();
-                    this.base.initializeWebSocket();
+                    await this.base.initializeWebSocket();
                 } else {
                     const errorData = await response.json();
                     messageElement.textContent = errorData.message || 'Login failed. Please try again.';

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"forum/internal/database"
 	"forum/internal/utils"
@@ -27,10 +28,11 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 		log.Printf("Failed to upgrade: %v", err)
 		return
 	}
-
+	hub.Mutex.Lock()
 	if exist, client := checkForValue(userid, hub.Clients); exist {
 		hub.Unregister <- client
 	}
+	hub.Mutex.Unlock()
 	// if exist , ok := hub.Clients[]
 	// Create client
 	newclient := &utils.Client{
@@ -38,6 +40,8 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 		Conn: conn,
 	}
 	hub.Register <- newclient
+	time.Sleep(100 * time.Millisecond)
+
 	defer func() {
 		hub.Unregister <- newclient
 		if mssg, err := getuserslist(newclient, hub, db); err != nil {
