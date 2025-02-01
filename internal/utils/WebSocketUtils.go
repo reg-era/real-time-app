@@ -45,12 +45,12 @@ type Hub struct {
 }
 
 type Message struct {
-	Id         int    `Id`
-	SenderID   int    `SenderID`
-	ReceiverID int    `ReceiverID`
-	Message    string `Message`
-	CreatedAt  string `CreatedAt`
-	IsSender   bool   `IsSender`
+	Id         int    `json:"Id"`
+	SenderID   int    `json:"SenderID"`
+	ReceiverID int    `json:"ReceiverID"`
+	Message    string `json:"Message"`
+	CreatedAt  string `json:"CreatedAt"`
+	IsSender   bool   `json:"IsSender"`
 }
 
 func (h *Hub) Run() {

@@ -28,7 +28,6 @@ export class Login extends BASE {
                 });
 
                 if (response.ok) {
-                    // window.location.href = '/';
                     this.base.loged = true;
                     history.pushState(null, null, "/");
                     this.base.router.handleRoute();

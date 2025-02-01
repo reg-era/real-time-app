@@ -1,5 +1,4 @@
 import { GetData } from "../libs/post.js";
-// import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
 
 export class Home extends BASE {

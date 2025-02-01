@@ -1,14 +1,11 @@
 import { handleResize, debounce } from "../libs/script.js";
 import { popup } from "./popup.js";
-// import { app } from "../main.js";
-// import { Router } from "../rootes.js";
 
 export class BASE {
     constructor(params) {
         this.router = null;
         this.params = params;
         this.loged = false;
-        // this.currentPage = this.router.page;
         this.styleUrls = [
             'http://localhost:8080/api/css/base.css',
             'http://localhost:8080/api/css/posts.css'
@@ -19,7 +16,6 @@ export class BASE {
         };
         this.connection = null;
         this.initializeStyles();
-        //   this.initializeWebSocket();
     }
 
     async initializeWebSocket() {
@@ -64,8 +60,6 @@ export class BASE {
 
     setupConnReader() {
         this.connection.onmessage = async (event) => {
-            console.log(event, "received");
-
             try {
                 const data = JSON.parse(event.data);
                 if (!data.Type) {
@@ -73,7 +67,6 @@ export class BASE {
                     return;
                 }
 
-                console.log(data.users);
                 switch (data.Type) {
                     case 'message':
                         this.handleWebSocketMessage(data);
@@ -91,11 +84,6 @@ export class BASE {
                 console.error('Error processing WebSocket message:', error);
             }
         };
-    }
-
-    handleWebSocketMessage(data) {
-        console.log('Received message:', data);
-        // Implement specific message handling logic here
     }
 
     initializeStyles() {
@@ -117,8 +105,6 @@ export class BASE {
     }
 
     async handleLogout() {
-        console.log(this.router);
-
         try {
             const response = await fetch('http://localhost:8080/api/logout', {
                 method: 'POST',
@@ -153,7 +139,7 @@ export class BASE {
             : `
                 <span href="/login" class="active" data-link>Login</span>
                 <span href="/register" data-link>Signup</span>
-              `;
+            `;
 
         if (hasSession) {
             authNav.querySelector('.active').addEventListener('click', () => app.handleLogout());
@@ -221,12 +207,12 @@ export class BASE {
             if (linkElement) {
                 event.preventDefault();
                 const pop = new popup(app);
-                console.log(linkElement.getAttribute('id'));
                 await pop.getMessages(linkElement.getAttribute('id'));
                 pop.setupConversation(linkElement.getAttribute('id'));
             }
         });
     }
+
     setupNavigation(app) {
         document.querySelectorAll('[data-link]').forEach(link => {
             link.addEventListener('click', (event) => {
@@ -283,13 +269,6 @@ export class BASE {
                 sidebar.innerHTML = '<div class="error-message">Error loading users</div>';
             }
         }
-    }
-
-    cleanup() {
-        if (this.connection) {
-            this.connection.close();
-        }
-        window.removeEventListener('resize', this.debouncedHandleResize);
     }
 
     afterRender() {

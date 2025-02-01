@@ -1,7 +1,5 @@
 import { BASE } from "./views/_BASE.js"
 import { Router } from "./rootes.js";
-import { popup } from "./views/popup.js";
-
 
 async function main() {
     const app = new BASE();
@@ -11,8 +9,6 @@ async function main() {
         history.pushState(null, null, '/login');
 
         await app.router.handleRoute();
-        console.log(app);
-
 
         try {
             //await app.initializeWebSocket();
