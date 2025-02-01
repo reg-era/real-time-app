@@ -44,11 +44,11 @@ export class Messages extends MessagesBase {
                         if (!res.ok) {
                             window.location.href = '/error?status=500';
                         } else {
-                            const messageCompon = document.createElement('div')
-                            messageCompon.classList.add('message', 'receiver')
-                            messageCompon.innerHTML = `<p>${message}</p>`
-                            document.querySelector('.messages-section').appendChild(messageCompon)
-                            send.value = ''
+                            const messageCompon = document.createElement('div');
+                            messageCompon.classList.add('message', 'receiver');
+                            messageCompon.innerHTML = `<p>${message}</p>`;
+                            document.querySelector('.messages-section').appendChild(messageCompon);
+                            send.value = '';
                         }
                     } catch (error) {
                         console.error(error);

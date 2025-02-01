@@ -21,7 +21,7 @@ func main() {
 
 	db := database.CreateDatabase(dbPath)
 	forumHub := &utils.Hub{
-		Clients:    make(map[*utils.Client]bool),
+		Clients:    make(map[*utils.Client]int),
 		Broadcast:  make(chan []byte),
 		Register:   make(chan *utils.Client),
 		Unregister: make(chan *utils.Client),

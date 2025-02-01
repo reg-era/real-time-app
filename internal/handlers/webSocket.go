@@ -28,6 +28,10 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 		return
 	}
 
+	if exist, client := checkForValue(userid, hub.Clients); exist {
+		hub.Unregister <- client
+	}
+	// if exist , ok := hub.Clients[]
 	// Create client
 	newclient := &utils.Client{
 		Id:   userid,
@@ -59,12 +63,12 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 
 func getuserslist(client *utils.Client, hub *utils.Hub, db *sql.DB) ([]byte, error) {
 	allFriends, err := database.GetFriends(db, client.Id)
-	fmt.Println("all friends:", allFriends)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get friends: %v", err)
 	}
 
-	var onlineFriends, offlineFriends []string
+	onlineMap := make(map[string]bool)
+	var onlineFriends []string
 
 	hub.Mutex.Lock()
 	for c := range hub.Clients {
@@ -73,15 +77,17 @@ func getuserslist(client *utils.Client, hub *utils.Hub, db *sql.DB) ([]byte, err
 			continue
 		}
 		onlineFriends = append(onlineFriends, clientname)
-	}
-	for _, client := range allFriends {
-		for _, onligne := range onlineFriends {
-			if client != onligne {
-				offlineFriends = append(offlineFriends, client)
-			}
-		}
+		onlineMap[clientname] = true
 	}
 	hub.Mutex.Unlock()
+
+	// Build offline friends list without duplicates
+	var offlineFriends []string
+	for _, friend := range allFriends {
+		if !onlineMap[friend] {
+			offlineFriends = append(offlineFriends, friend)
+		}
+	}
 
 	response := WebSocketMessage{
 		Type: "onlineusers",
@@ -91,11 +97,17 @@ func getuserslist(client *utils.Client, hub *utils.Hub, db *sql.DB) ([]byte, err
 		},
 	}
 
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		return nil, fmt.Errorf("JSON error: %v", err)
+	return json.Marshal(response)
+}
+
+func checkForValue(userValue int, users map[*utils.Client]int) (bool, *utils.Client) {
+	for c, value := range users {
+		if value == userValue {
+			return true, c
+		}
 	}
-	return jsonResponse, nil
+
+	return false, nil
 }
 
 // go readmessages()

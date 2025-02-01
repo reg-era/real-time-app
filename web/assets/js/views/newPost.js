@@ -62,7 +62,7 @@ export class NewPost extends BASE {
                 button.disabled = false;
             } else {
                 history.pushState(null, null, '/');
-                self.router.handleRoute();
+                this.base.router.handleRoute();
             }
         });
     }
@@ -113,7 +113,7 @@ export class NewPost extends BASE {
     afterRender() {
         //this.getPosts();
         this.setupAuthNav(this.base);
-        this.setupNavigation();
+        this.setupNavigation(this.base);
         this.setupSidebar();
         this.setListners();
     }

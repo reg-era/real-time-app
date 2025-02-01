@@ -32,11 +32,12 @@ type Client struct {
 	// Target *Client
 }
 
-var Clients map[*Client]bool
+// var Clients map[*Client]bool
 
 type Hub struct {
-	Clients    map[*Client]bool
+	Clients    map[*Client]int
 	Broadcast  chan []byte
+	Message    chan Message
 	Register   chan *Client
 	Unregister chan *Client
 	Mutex      sync.RWMutex
@@ -56,7 +57,7 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.Register:
 			h.Mutex.Lock()
-			h.Clients[client] = true
+			h.Clients[client] = client.Id
 			h.Mutex.Unlock()
 			// Notify all Clients about new user
 			// message := []byte("New user joined: " + string(client.Id))

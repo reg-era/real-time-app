@@ -13,8 +13,8 @@ export class BASE {
             'http://localhost:8080/api/css/posts.css'
         ];
         this.users = {
-            online: [],
-            offline: []
+            online: new Set([]),
+            offline: new Set([])
         };
         this.connection = null;
         this.initializeStyles();
@@ -51,11 +51,12 @@ export class BASE {
         this.connection.onclose = (event) => {
             console.log('WebSocket closed:', event.code, event.reason);
             // Attempt to reconnect after 5 seconds
-            setTimeout(() => {
-                if (document.cookie.includes('session_token')) {
-                    this.initializeWebSocket();
-                }
-            }, 5000);
+            // setTimeout(() => {
+            //     if (document.cookie.includes('session_token')) {
+            //         this.initializeWebSocket();
+            //     }
+            // }, 5000);
+            this.handleLogout();
         };
     }
 
@@ -212,20 +213,18 @@ export class BASE {
         return this.getNavBar();
     }
 
-    // setupNavigation() {
-    //     console.log(this.router);
-
-    //     document.querySelectorAll('[data-link]').forEach(link => {
-    //         link.addEventListener('click', (event) => {
-    //             event.preventDefault();
-    //             const href = link.getAttribute('href');
-    //             if (href) {
-    //                 window.history.pushState(null, null, href);
-    //                 this.router.handleRoute();
-    //             }
-    //         });
-    //     });
-    // }
+    setupNavigation(app) {
+        document.querySelectorAll('[data-link]').forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const href = link.getAttribute('href');
+                if (href) {
+                    window.history.pushState(null, null, href);
+                    app.router.handleRoute();
+                }
+            });
+        });
+    }
 
     async renderSidebar() {
         try {
@@ -283,6 +282,6 @@ export class BASE {
         this.renderSidebar();
         this.setupAuthNav(this);
         this.setupSidebar();
-        // this.setupNavigation();
+        this.setupNavigation(this);
     }
 }
