@@ -17,7 +17,7 @@ export class Messages extends MessagesBase {
                 messageCompon.classList.add('message')
                 console.log(data[i].sender_name);
                 data[i].is_sender ? messageCompon.classList.add('receiver') : messageCompon.classList.add('sender');
-                messageCompon.innerHTML = `<p>${data[i].message}</p>`
+                messageCompon.innerHTML = `<p>${data[i].message}</p>`;
                 document.querySelector('.messages-section').appendChild(messageCompon)
             }
         } catch (error) {

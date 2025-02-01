@@ -30,6 +30,7 @@ export class Home extends BASE {
     }
 
     afterRender() {
+        this.setupmssglistner(this.base);
         this.base.renderSidebar()
         this.setupAuthNav(this.base);
         this.setupNavigation(this.base);

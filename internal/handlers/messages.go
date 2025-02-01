@@ -12,17 +12,12 @@ import (
 
 func GetUser(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 	name := r.URL.Query().Get("name")
-	user, err := database.GetUserIdByName(name, db)
+	data, err := database.GetConversations(db, userId, name)
 	if err != nil {
-		if user == -69 {
-			utils.RespondWithJSON(w, http.StatusNotFound, utils.ErrorResponse{Error: "User not found"})
-			return
-		}
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
-
-	utils.RespondWithJSON(w, http.StatusOK, nil)
+	utils.RespondWithJSON(w, http.StatusOK, data)
 }
 
 func GetAllFriends(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {

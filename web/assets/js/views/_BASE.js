@@ -1,4 +1,5 @@
 import { handleResize, debounce } from "../libs/script.js";
+import { popup } from "./popup.js";
 // import { app } from "../main.js";
 // import { Router } from "../rootes.js";
 
@@ -57,12 +58,6 @@ export class BASE {
 
         this.connection.onclose = (event) => {
             console.log('WebSocket closed:', event.code, event.reason);
-            // Attempt to reconnect after 5 seconds
-            // setTimeout(() => {
-            //     if (document.cookie.includes('session_token')) {
-            //         this.initializeWebSocket();
-            //     }
-            // }, 5000);
             this.handleLogout();
         };
     }
@@ -220,6 +215,17 @@ export class BASE {
         return this.getNavBar();
     }
 
+    setupmssglistner(app) {
+        document.addEventListener('click', (event) => {
+            const linkElement = event.target.closest('[data-mssg-link]');
+            if (linkElement) {
+                event.preventDefault();
+                const pop = new popup(app);
+                console.log(linkElement.getAttribute('id'));
+                pop.getMessages(linkElement.getAttribute('id'));
+            }
+        });
+    }
     setupNavigation(app) {
         document.querySelectorAll('[data-link]').forEach(link => {
             link.addEventListener('click', (event) => {
@@ -246,7 +252,7 @@ export class BASE {
             // Render online users
             if (Array.isArray(this.users.online)) {
                 html += this.users.online.map(user => `
-                    <a href="/messages/${user}" class="nav__link" id="${user}" data-link>
+                    <a class="nav__link" id="${user}" data-mssg-link>
                         👤 ${user} 
                         <span class="status-tag online">
                             🟢Online
@@ -258,7 +264,7 @@ export class BASE {
             // Render offline users
             if (Array.isArray(this.users.offline)) {
                 html += this.users.offline.map(user => `
-                    <a href="/messages/${user}" class="nav__link" id="${user}" data-link>
+                    <a class="nav__link" id="${user}" data-mssg-link>
                         👤 ${user} 
                         <span class="status-tag offline">
                             🔴Offline
@@ -290,5 +296,6 @@ export class BASE {
         this.setupAuthNav(this);
         this.setupSidebar();
         this.setupNavigation(this);
+        this.setupmssglistner(this);
     }
 }

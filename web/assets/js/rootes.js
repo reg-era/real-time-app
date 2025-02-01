@@ -5,6 +5,7 @@ import { Messages } from './views/messages.js';
 import { NewPost } from './views/newPost.js';
 import { Error } from './views/error.js';
 import { Messg } from './views/WsHub.js';
+import { popup } from './views/popup.js';
 //import { app } from './main.js';
 
 export class Router {
@@ -18,7 +19,7 @@ export class Router {
             { path: "/ws", view: Messg, name: ",msgs" }
         ];
         this.base = app;
-        this.eventlistener = this.handleClick.bind(this); // Bind the listener once
+        // this.eventlistener = this.handleClick.bind(this); // Bind the listener once
         // this.init();
         this.page = {};
     }
@@ -28,15 +29,22 @@ export class Router {
         document.addEventListener('click', this.eventlistener);
     }
 
-    handleClick(e) {
-        console.log('triggered');
+    // handleClick(e) {
+    //     console.log(e.target);
 
-        if (e.target.matches('[data-link]')) {
-            e.preventDefault();
-            const href = e.target.getAttribute('href');
-            this.navigateTo(href);
-        }
-    }
+    //     if (e.target.matches('[data-link]')) {
+    //         e.preventDefault();
+    //         const href = e.target.getAttribute('href');
+    //         this.navigateTo(href);
+    //     } // Find the closest parent element with mssg-link attribute
+    //     if (e.target.closest('[data-mssg-link]')) {
+    //         e.preventDefault();
+    //         const linkElement = e.target.closest('[data-mssg-link]');
+    //         const pop = new popup(this.base);
+    //         console.log(linkElement.getAttribute('id'));
+    //         pop.getMessages(linkElement.getAttribute('id'));
+    //     }
+    // }
 
     async handleRoute() {
         const path = window.location.pathname;

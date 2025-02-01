@@ -1,5 +1,6 @@
 import { BASE } from "./views/_BASE.js"
 import { Router } from "./rootes.js";
+import { popup } from "./views/popup.js";
 
 
 async function main() {
@@ -39,6 +40,7 @@ function deleteAllCookies() {
         document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     }
 }
+
 
 main();
 //app.initializeWebSockety
