@@ -172,7 +172,7 @@ export class BASE {
         }
     }
 
-    getSidebar() {
+    async getSidebar() {
         return `
         <aside class="sidebar">
             <nav class="sidebar-nav">
@@ -180,7 +180,7 @@ export class BASE {
                 <span href="/ws" class="nav__link" data-link>Messages</span>
             </nav>
         </aside>
-        ${this.getOnlineBar()}
+        ${await this.getOnlineBar()}
         `;
     }
 
@@ -198,12 +198,12 @@ export class BASE {
         `;
     }
 
-    getOnlineBar() {
+    async getOnlineBar() {
         return `
         <aside class="onligne-bar">
             <nav class="sidebar-nav">
                 <div class="loading-indicator">Loading users...</div>
-                ${this.renderSidebar()}
+                ${await this.renderSidebar()}
             </nav>
         </aside>
         `;

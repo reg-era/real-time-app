@@ -16,10 +16,12 @@ export class Home extends BASE {
     }
 
     async renderHtml() {
+        console.log(this.base.users);
+
         return `
-            ${this.getHtmlBase()}
+            ${await this.base.getHtmlBase()}
             <main>
-                ${this.getSidebar()}
+                ${await this.base.getSidebar()}
                 <section class="posts">
                 </section>
             </main>
@@ -28,6 +30,7 @@ export class Home extends BASE {
     }
 
     afterRender() {
+        this.base.renderSidebar()
         this.setupAuthNav(this.base);
         this.setupNavigation(this.base);
         this.setupSidebar();
