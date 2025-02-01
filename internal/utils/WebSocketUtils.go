@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -78,6 +80,21 @@ func (h *Hub) Run() {
 					log.Printf("Error broadcasting to client: %v", err)
 					client.Conn.Close()
 					delete(h.Clients, client)
+				}
+			}
+			h.Mutex.RUnlock()
+		case mssg := <-h.Message:
+			fmt.Println(mssg.CreatedAt, mssg.Message, mssg.SenderID, mssg.ReceiverID)
+			h.Mutex.RLock()
+			for client := range h.Clients {
+				if client.Id == mssg.ReceiverID {
+					data, _ := json.Marshal(mssg)
+					err := client.Conn.WriteMessage(websocket.TextMessage, data)
+					if err != nil {
+						log.Printf("Error broadcasting to client: %v", err)
+						client.Conn.Close()
+						delete(h.Clients, client)
+					}
 				}
 			}
 			h.Mutex.RUnlock()

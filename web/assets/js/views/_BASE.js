@@ -73,7 +73,7 @@ export class BASE {
                     return;
                 }
 
-                //  console.log(data.users);
+                console.log(data.users);
                 switch (data.Type) {
                     case 'message':
                         this.handleWebSocketMessage(data);
@@ -215,14 +215,15 @@ export class BASE {
         return this.getNavBar();
     }
 
-    setupmssglistner(app) {
-        document.addEventListener('click', (event) => {
+    async setupmssglistner(app) {
+        document.addEventListener('click', async (event) => {
             const linkElement = event.target.closest('[data-mssg-link]');
             if (linkElement) {
                 event.preventDefault();
                 const pop = new popup(app);
                 console.log(linkElement.getAttribute('id'));
-                pop.getMessages(linkElement.getAttribute('id'));
+                await pop.getMessages(linkElement.getAttribute('id'));
+                pop.setupConversation(linkElement.getAttribute('id'));
             }
         });
     }

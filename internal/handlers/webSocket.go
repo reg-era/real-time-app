@@ -41,7 +41,7 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 	}
 	hub.Register <- newclient
 
-	//locking map to check if user exist slow the regitration process 
+	// locking map to check if user exist slow the regitration process
 	time.Sleep(100 * time.Millisecond)
 
 	defer func() {
@@ -59,11 +59,28 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 		hub.Broadcast <- mssg
 	}
 
+	type mssge struct {
+		ReceiverName string `json: ReceiverName`
+		Data         string `json: Data`
+	}
+
 	for {
-		_, _, err := conn.ReadMessage()
+		_, mssg, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
+		newmssg := utils.Message{}
+		received := mssge{}
+		json.Unmarshal(mssg, &received)
+		newmssg.Message = received.Data
+		newmssg.SenderID = userid
+		newmssg.CreatedAt = time.Now().String()
+		id, err := database.GetUserIdByName(received.ReceiverName, db)
+		if err != nil {
+			break
+		}
+		newmssg.ReceiverID = id
+		hub.Message <- newmssg
 	}
 }
 
