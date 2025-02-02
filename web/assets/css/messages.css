@@ -1,22 +1,47 @@
 .conversation {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    height: auto;
-    padding: 10px;
-    max-width: 80%;
-    margin: 0 auto;
+    z-index: 1000;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 80vh;
+    width: 90%;
+    max-width: 800px;
 }
 
 .messages-section {
+    width: 100%;
+    height: 80%;
+    padding: 16px;
+    border-radius: 12px;
+    background-color: #ffffff;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.messages-input {
+    height: 15%;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
+
+.message-input {
+    height: 100%;
+    width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+    border: 3px;
+    background: var(--white);
+    border-bottom: 2px solid var(--yellow);
+    font-size: 18px;
 }
 
 .message {
-    padding: 10px;
-    margin-bottom: 10px;
+    padding: 8px;
     border-radius: 8px;
     font-size: 16px;
     word-wrap: break-word;
@@ -35,25 +60,53 @@
     align-self: flex-end;
 }
 
-.message-input {
-    z-index: 10;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 20px;
-    padding: 20px;
-    border: 3px;
-    background: var(--white);
-    border-bottom: 2px solid var(--yellow);
-    font-size: 18px;
-    outline: none;
-    resize: none;
-    overflow: hidden;
-}
-
 .error-comment {
     color: red;
     font-size: 12px;
     margin-top: 5px;
+}
+
+.over-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+body.has-overlay {
+    overflow: hidden;
+    height: 100vh;
+}
+
+.messages-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messages-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messages-section::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 3px;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #777;
+}
+
+.username-message {
+    font-weight: bold;
+    font-size: 14px;
+    color: black;
+}
+
+.timestamp {
+    color: #888;
 }

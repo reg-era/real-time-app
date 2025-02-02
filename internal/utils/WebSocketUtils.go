@@ -55,6 +55,8 @@ type Message struct {
 	Message    string `json:"Message"`
 	CreatedAt  string `json:"CreatedAt"`
 	IsSender   bool   `json:"IsSender"`
+
+	SenderName string `json:"sender_name"`
 }
 
 func (h *Hub) Run() {

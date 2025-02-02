@@ -156,7 +156,7 @@ func main() {
 
 	router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
-		case "PUT":
+		case http.MethodGet:
 			// 	section := r.URL.Query().Get("section")
 			// 	switch section {
 			// 	case "user":
@@ -175,7 +175,7 @@ func main() {
 			// case "POST":
 			// 	auth.AuthMiddleware(db, handlers.PostMessage, false).ServeHTTP(w, r)
 
-			// auth.AuthMiddleware(db, handlers.GetUser, false).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.GetUser, false).ServeHTTP(w, r)
 
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})

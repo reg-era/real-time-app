@@ -370,6 +370,9 @@ func GetConversations(db *sql.DB, userId int, receiver string) ([]utils.Message,
 		} else {
 			conversation.IsSender = false
 		}
+
+		conversation.SenderName, _ = GetUserName(userId, db)
+
 		conversations = append(conversations, conversation)
 	}
 	if err = rows.Err(); err != nil {

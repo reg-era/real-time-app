@@ -79,6 +79,10 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 		if err != nil {
 			break
 		}
+		newmssg.SenderName,err = database.GetUserName(userid,db)
+		if err != nil {
+			break
+		}
 		newmssg.ReceiverID = id
 		database.CreateMessage(&newmssg, db)
 		hub.Message <- newmssg

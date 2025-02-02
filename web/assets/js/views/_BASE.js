@@ -8,7 +8,8 @@ export class BASE {
         this.loged = false;
         this.styleUrls = [
             'http://localhost:8080/api/css/base.css',
-            'http://localhost:8080/api/css/posts.css'
+            'http://localhost:8080/api/css/posts.css',
+            'http://localhost:8080/api/css/messages.css'
         ];
         this.users = {
             online: new Set([]),
@@ -101,17 +102,20 @@ export class BASE {
     }
 
     handleWebSocketMessage(message) {
+        const allMessages = document.querySelector('.messages-section');
         const conversation = document.querySelector('.messages-section');
-        const input = document.querySelector('.messages-input');
-        console.log(input);
 
         if (conversation) {
             const msg = document.createElement('div');
-            msg.textContent = message.Message.Message
-            insertBefore(input, msg);
+            msg.classList.add('message', 'sender')
+            msg.innerHTML = `<p>${message.Message.Message}</p>`
+            conversation.insertAdjacentElement("beforeend", msg);
+            allMessages.scrollTop = allMessages.scrollHeight;
         } else {
-            alert(message.Message.Message);
-
+            const notification = document.querySelector(`#${message.Message.sender_name} .notification`)
+            notification.classList.remove('hide')
+            const counter = notification.querySelector('.notification-counter')
+            counter.textContent = parseInt(counter.textContent) + 1
         }
     }
     setTitle(title) {
@@ -241,41 +245,36 @@ export class BASE {
     }
 
     async renderSidebar() {
+        const makeBar = (online, user) => {
+            const bar = document.createElement('div')
+            bar.setAttribute('data-mssg-link', null)
+            bar.id = user
+            bar.classList.add('status-bar')
+            bar.innerHTML = `
+            <div class="status-info">
+                <span id="online-status" class="status ${online ? "online" : "offline"}">${online ? "🟢" : "🔴"}</span>
+                <span id="username" class="username">${user} </span>
+            </div>
+            <div class="notification hide"><span class="notification-counter">0</span></div>`
+            return bar
+        }
+
         try {
             const sidebar = document.querySelector('.onligne-bar .sidebar-nav');
             if (!sidebar) {
                 console.error('Sidebar element not found');
                 return;
             }
+
             sidebar.innerHTML = '';
-            let html = '';
 
-            // Render online users
             if (Array.isArray(this.users.online)) {
-                html += this.users.online.map(user => `
-                    <a class="nav__link" id="${user}" data-mssg-link>
-                        👤 ${user} 
-                        <span class="status-tag online">
-                            🟢Online
-                        </span>
-                    </a>
-                `).join('');
+                this.users.online.forEach(user => sidebar.appendChild(makeBar(true, user)));
             }
 
-            // Render offline users
             if (Array.isArray(this.users.offline)) {
-                html += this.users.offline.map(user => `
-                    <a class="nav__link" id="${user}" data-mssg-link>
-                        👤 ${user} 
-                        <span class="status-tag offline">
-                            🔴Offline
-                        </span>
-                    </a>
-                `).join('');
+                this.users.offline.forEach(user => sidebar.appendChild(makeBar(false, user)));
             }
-
-            sidebar.innerHTML = html || '<div>No users available</div>';
-            //  this.setupNavigation();
         } catch (error) {
             console.error('Error rendering sidebar:', error);
             const sidebar = document.querySelector('.onligne-bar .sidebar-nav');
