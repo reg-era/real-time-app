@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -34,6 +33,11 @@ type Client struct {
 }
 
 // var Clients map[*Client]bool
+
+type websocketmsg struct {
+	Type    string  `json: "Type"`
+	Message Message `json:"Message"`
+}
 
 type Hub struct {
 	Clients    map[*Client]int
@@ -84,11 +88,14 @@ func (h *Hub) Run() {
 			}
 			h.Mutex.RUnlock()
 		case mssg := <-h.Message:
-			fmt.Println(mssg.CreatedAt, mssg.Message, mssg.SenderID, mssg.ReceiverID)
+			response := websocketmsg{
+				Type:    "message",
+				Message: mssg,
+			}
 			h.Mutex.RLock()
 			for client := range h.Clients {
 				if client.Id == mssg.ReceiverID {
-					data, _ := json.Marshal(mssg)
+					data, _ := json.Marshal(response)
 					err := client.Conn.WriteMessage(websocket.TextMessage, data)
 					if err != nil {
 						log.Printf("Error broadcasting to client: %v", err)

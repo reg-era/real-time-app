@@ -15,7 +15,7 @@ export class Messages extends MessagesBase {
             for (let i = 0; i < data.length; i++) {
                 const messageCompon = document.createElement('div')
                 messageCompon.classList.add('message')
-                console.log(data[i].sender_name);
+                // console.log(data[i].sender_name);
                 data[i].is_sender ? messageCompon.classList.add('receiver') : messageCompon.classList.add('sender');
                 messageCompon.innerHTML = `<p>${data[i].message}</p>`;
                 document.querySelector('.messages-section').appendChild(messageCompon)

@@ -28,6 +28,8 @@ export class Router {
             this.page = view;
             // Check for authentication
             if ((!hasSession && (route.name !== 'login' && route.name !== "register")) || (route.name === 'login' || route.name === "register")) {
+                console.log(document.cookie);
+
                 if (this.base.connection) {
                     this.base.connection.close();
                 }

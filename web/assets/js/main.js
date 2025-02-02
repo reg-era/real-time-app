@@ -5,7 +5,7 @@ async function main() {
     const app = new BASE();
     app.router = new Router(app);
     if (!document.cookie) {
-        deleteAllCookies();
+        // deleteAllCookies();
         history.pushState(null, null, '/login');
 
         await app.router.handleRoute();

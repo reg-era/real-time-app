@@ -54,7 +54,7 @@ export class BASE {
 
         this.connection.onclose = (event) => {
             console.log('WebSocket closed:', event.code, event.reason);
-            this.handleLogout();
+            // this.handleLogout();
         };
     }
 
@@ -99,7 +99,18 @@ export class BASE {
             document.head.appendChild(linkElement);
         }
     }
+    handleWebSocketMessage(message) {
+        const conversation = document.querySelector('.messages-section')
+        if (conversation) {
+            const msg = document.createElement('div');
+            msg.textContent = message.Message.Message
+            conversation.appendChild(msg)
+        } else {
+            alert(message.Message.Message);
 
+        }
+
+    }
     setTitle(title) {
         document.title = title;
     }

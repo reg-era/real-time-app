@@ -20,7 +20,7 @@ export class popup {
                 const messageCompon = document.createElement('div');
                 messageCompon.classList.add('message');
                 messageCompon.id = name;
-                console.log(data[i].sender_name);
+                // console.log(data[i].sender_name);
                 data[i].IsSender ? messageCompon.classList.add('receiver') : messageCompon.classList.add('sender');
                 messageCompon.innerHTML = `<p>${data[i].Message}</p>`;
                 popupmessages.appendChild(messageCompon);
@@ -34,10 +34,11 @@ export class popup {
     }
 
     setupConversation(name) {
-        const send = document.querySelector('.message-input');
-        send.addEventListener("keydown", async (event) => {
+        document.addEventListener("keydown", async (event) => {
             if (event.key === "Enter" && !event.shiftKey) {
+                const send = document.querySelector('.message-input');
                 const message = send.value.trim();
+                console.log(message);  // Moved console.log here
                 if (message) {
                     try {
                         this.base.connection.send(JSON.stringify({
@@ -49,7 +50,6 @@ export class popup {
                         messageCompon.innerHTML = `<p>${message}</p>`;
                         document.querySelector('.messages-section').appendChild(messageCompon);
                         send.value = '';
-
                     } catch (error) {
                         console.error(error);
                     }

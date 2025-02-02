@@ -15,7 +15,7 @@ export class Home extends BASE {
     }
 
     async renderHtml() {
-        console.log(this.base.users);
+        // console.log(this.base.users);
 
         return `
             ${await this.base.getHtmlBase()}

@@ -24,6 +24,7 @@ func main() {
 		Clients:    make(map[*utils.Client]int),
 		Broadcast:  make(chan []byte),
 		Register:   make(chan *utils.Client),
+		Message:    make(chan utils.Message),
 		Unregister: make(chan *utils.Client),
 	}
 	go forumHub.Run()
