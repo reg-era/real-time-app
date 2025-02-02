@@ -22,9 +22,9 @@ export class Router {
         const route = this.routes.find(r => r.path === path);
         const hasSession = document.cookie.includes('session_token');
 
-        const view = new route.view(this.base);
 
         if (route) {
+            const view = new route.view(this.base);
             this.page = view;
             // Check for authentication
             if ((!hasSession && (route.name !== 'login' && route.name !== "register")) || (route.name === 'login' || route.name === "register")) {
@@ -58,7 +58,7 @@ export class Router {
             }
         } else {
             // Handle 404 case
-            const errorView = new Error("404");
+            const errorView = new Error("404", this.base);
             const html = await errorView.renderHtml();
             const appElement = document.querySelector('.app');
             appElement.innerHTML = html;

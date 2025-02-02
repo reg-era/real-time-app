@@ -4,28 +4,12 @@ import { Router } from "./rootes.js";
 async function main() {
     const app = new BASE();
     app.router = new Router(app);
-    if (!document.cookie) {
-        // deleteAllCookies();
-        history.pushState(null, null, '/login');
-
-        await app.router.handleRoute();
-
-        try {
-            //await app.initializeWebSocket();
-
-        } catch (error) {
-            console.error('Error during route handling:', error);
-        }
-
-    } else {
-        await app.router.handleRoute();
-        if (!app.connection) {
-            await app.initializeWebSocket();
-        }
-
-
+    await app.router.handleRoute();
+    if (!app.connection) {
+        await app.initializeWebSocket();
     }
 }
+// }
 
 function deleteAllCookies() {
     const cookies = document.cookie.split(";");

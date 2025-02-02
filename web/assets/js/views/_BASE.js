@@ -99,6 +99,7 @@ export class BASE {
             document.head.appendChild(linkElement);
         }
     }
+
     handleWebSocketMessage(message) {
         const conversation = document.querySelector('.messages-section')
         if (conversation) {
@@ -109,7 +110,6 @@ export class BASE {
             alert(message.Message.Message);
 
         }
-
     }
     setTitle(title) {
         document.title = title;
@@ -216,7 +216,7 @@ export class BASE {
         document.addEventListener('click', async (event) => {
             const linkElement = event.target.closest('[data-mssg-link]');
             if (linkElement) {
-                event.preventDefault();
+                // event.preventDefault();
                 const pop = new popup(app);
                 await pop.getMessages(linkElement.getAttribute('id'));
                 pop.setupConversation(linkElement.getAttribute('id'));
@@ -287,6 +287,5 @@ export class BASE {
         this.setupAuthNav(this);
         this.setupSidebar();
         this.setupNavigation(this);
-        this.setupmssglistner(this);
     }
 }

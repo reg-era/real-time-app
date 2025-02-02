@@ -1,13 +1,13 @@
 import { BASE } from "./_BASE.js";
 
 export class Error extends BASE {
-    constructor(params) {
+    constructor(params, base) {
         super(params);
 
         this.statusError;
         this.statusMsg;
         this.errorMsg;
-
+        this.base = base;
         this.setTitle("ERROR");
         this.setStyle("http://localhost:8080/api/css/error.css");
     }
@@ -57,5 +57,8 @@ export class Error extends BASE {
         </main>
         `
         return html
+    }
+    afterRender() {
+        this.setupNavigation(this.base);
     }
 }
