@@ -1,3 +1,5 @@
+// import { Error } from "./error.js";
+
 export class popup {
     constructor(app) {
         this.base = app;
@@ -6,14 +8,25 @@ export class popup {
     async getMessages(name) {
         const fieldmssg = document.createElement('div');
         fieldmssg.innerHTML = `
-        <div class="messages-input">
             <input required placeholder="Type message ..." class="message-input"></input>
-            <p class="error-comment"></p>
-        </div>`;
+            <p class="error-comment"></p>`;
+        fieldmssg.className = "messages-input";
         const popupmessages = document.createElement('div');
         popupmessages.classList.add('messages-section');
         try {
-            const res = await fetch(`http://localhost:8080/api/messages?section=message&name=${name}`)
+            const res = await fetch(`http://localhost:8080/api/messages?section=message&name=${name}`);
+            console.log(res);
+            // if (!res.ok) {
+            //     const pageerror = new Error('500', this.base)
+            //     const html = await errorView.renderHtml();
+            //     const appElement = document.querySelector('.app');
+            //     appElement.innerHTML = html;
+            //     appElement.setAttribute('page', 'error');
+            //     if (typeof errorView.afterRender === 'function') {
+            //         errorView.afterRender();
+            //     }
+            //     return
+            // }
             const data = await res.json()
 
             for (let i = 0; i < data.length; i++) {

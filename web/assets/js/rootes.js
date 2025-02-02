@@ -1,7 +1,7 @@
 import { Home } from './views/home.js';
 import { Login } from './views/login.js';
 import { Register } from './views/register.js';
-import { Messages } from './views/messages.js';
+// import { Messages } from './views/messages.js';
 import { NewPost } from './views/newPost.js';
 import { Error } from './views/error.js';
 
@@ -11,7 +11,7 @@ export class Router {
             { path: "/", view: Home, name: "home" },
             { path: "/register", view: Register, name: "register" },
             { path: "/login", view: Login, name: "login" },
-            { path: "/messages", view: Messages, name: "messages" },
+            // { path: "/messages", view: Messages, name: "messages" },
             { path: "/new-post", view: NewPost, name: "new-post" },
         ];
         this.base = app;

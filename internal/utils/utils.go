@@ -49,18 +49,15 @@ type ErrorResponse struct {
 }
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload any) {
-	if payload != nil {
-		w.Header().Set("Content-Type", "application/json")
-		response, err := json.Marshal(payload)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Internal Server Error"))
-			return
-		}
-		w.Write(response)
-	} else {
-		w.WriteHeader(code)
+	w.Header().Set("Content-Type", "application/json")
+	response, err := json.Marshal(payload)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal Server Error"))
+		return
 	}
+	w.WriteHeader(code)
+	w.Write(response)
 }
 
 func QueryRows(db *sql.DB, query string, args ...any) (*sql.Rows, error) {

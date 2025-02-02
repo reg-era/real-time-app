@@ -101,11 +101,14 @@ export class BASE {
     }
 
     handleWebSocketMessage(message) {
-        const conversation = document.querySelector('.messages-section')
+        const conversation = document.querySelector('.messages-section');
+        const input = document.querySelector('.messages-input');
+        console.log(input);
+
         if (conversation) {
             const msg = document.createElement('div');
             msg.textContent = message.Message.Message
-            conversation.appendChild(msg)
+            insertBefore(input, msg);
         } else {
             alert(message.Message.Message);
 
