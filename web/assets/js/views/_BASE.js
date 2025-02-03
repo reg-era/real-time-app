@@ -9,7 +9,7 @@ export class BASE {
         this.styleUrls = [
             'http://localhost:8080/api/css/base.css',
             'http://localhost:8080/api/css/posts.css',
-            'http://localhost:8080/api/css/messages.css'
+            'http://localhost:8080/api/css/messages.css',
         ];
         this.users = {
             online: new Set([]),

@@ -1,3 +1,10 @@
+.posts{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .post-container {
     max-width: 700px;
     margin: 20px auto;
