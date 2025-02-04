@@ -23,8 +23,6 @@ export class Router {
 
 
         if (route) {
-
-            // Check for authentication
             if (!hasSession) {
                 if (this.base.connection) {
                     this.base.connection.close();

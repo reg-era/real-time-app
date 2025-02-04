@@ -29,6 +29,6 @@ const validCookies = async () => {
     }
 }
 
-main();
+await main();
 
 export { validCookies };

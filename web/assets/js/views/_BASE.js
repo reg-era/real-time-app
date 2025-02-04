@@ -15,6 +15,7 @@ export class BASE {
         this.users = {
             Friends: [],
         };
+        this.mssglistener = null;
         this.connection = null;
         this.initializeStyles();
     }
@@ -67,7 +68,7 @@ export class BASE {
 
         this.connection.onclose = (event) => {
             console.log('WebSocket closed:', event.code, event.reason);
-            this.handleLogout();
+            // this.handleLogout();
         };
 
         this.connection.onerror = (error) => {
@@ -221,7 +222,8 @@ export class BASE {
     }
 
     async setupmssglistner(app) {
-        document.addEventListener('click', async (event) => {
+        if (app.mssglistener !== null) return;
+        app.mssglistener = document.addEventListener('click', async (event) => {
             const linkElement = event.target.closest('[data-mssg-link]');
             if (linkElement) {
                 // event.preventDefault();
