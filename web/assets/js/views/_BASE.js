@@ -122,7 +122,9 @@ export class BASE {
             notification.classList.remove('hide');
             const counter = notification.querySelector('.notification-counter');
             counter.textContent = parseInt(counter.textContent) + 1;
-            // alert(message.Message, message.Name)
+            // alert(`${message.Message}
+            //     <span id="${message.Message.sender_name}" data-mssg-link></span>`);
+            showNotification(message.Message);
         }
     }
 
@@ -297,4 +299,32 @@ export class BASE {
         this.setupSidebar();
         this.setupNavigation(this);
     }
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+
+    notification.innerHTML = `
+        ${message.Message}
+        <span class="close-btn">&times;</span>
+    `;
+
+    notification.setAttribute('data-mssg-link', null);
+    notification.id = message.sender_name;
+
+    const notificationContainer = document.getElementById('notification-container');
+    notificationContainer.appendChild(notification);
+
+    notification.style.display = 'block';
+
+    const closeBtn = notification.querySelector('.close-btn');
+    closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notification.remove();
+    });
+
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
 }
