@@ -27,6 +27,7 @@ func main() {
 		Broadcast:  make(chan *sql.DB),
 		Register:   make(chan *websocket.Client),
 		Message:    make(chan utils.Message),
+		Logout:     make(chan *websocket.Client),
 		Unregister: make(chan *websocket.Client),
 	}
 	go forumHub.Run()

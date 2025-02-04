@@ -46,10 +46,10 @@ type WebSocketMessage struct {
 	Users Users  `json:"users"`
 }
 
-type ListOfusers struct {
-	Sender_id int
-	Content   WebSocketMessage
-}
+// type ListOfusers struct {
+// 	Sender_id int
+// 	Content   WebSocketMessage
+// }
 
 type websocketmsg struct {
 	Type    string        `json: "Type"`
@@ -62,6 +62,7 @@ type Hub struct {
 	Message    chan utils.Message
 	Register   chan *Client
 	Unregister chan *Client
+	Logout     chan *Client
 	Mutex      sync.RWMutex
 }
 
@@ -117,6 +118,23 @@ func (h *Hub) Run() {
 				}
 			}
 			h.Mutex.RUnlock()
+		case tologout := <-h.Logout:
+			fmt.Println(tologout.Id)
+			// h.Mutex.Lock()
+			response := websocketmsg{
+				Type:    "Logout",
+				Message: utils.Message{},
+			}
+			data, _ := json.Marshal(response)
+
+			err := tologout.Conn.WriteMessage(websocket.TextMessage, data)
+			if err != nil {
+				log.Printf("Error broadcasting to client: %v", err)
+				tologout.Conn.Close()
+				delete(h.Clients, tologout)
+			}
+			// h.Mutex.Unlock()
+
 		}
 	}
 }

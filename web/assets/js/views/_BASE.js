@@ -85,7 +85,6 @@ export class BASE {
                     console.error('Received message without type:', data);
                     return;
                 }
-
                 switch (data.Type) {
                     case 'message':
                         this.handleWebSocketMessage(data);
@@ -95,6 +94,9 @@ export class BASE {
                             this.users = data.users;
                             await this.renderSidebar();
                         }
+                        break;
+                    case 'Logout':
+                        this.handleLogout();
                         break;
                     default:
                         console.warn('Unknown message type:', data.type);
@@ -116,10 +118,11 @@ export class BASE {
             conversation.insertAdjacentElement("beforeend", msg);
             allMessages.scrollTop = allMessages.scrollHeight;
         } else {
-            const notification = document.querySelector(`#${message.Message.sender_name} .notification`)
-            notification.classList.remove('hide')
-            const counter = notification.querySelector('.notification-counter')
-            counter.textContent = parseInt(counter.textContent) + 1
+            const notification = document.querySelector(`#${message.Message.sender_name} .notification`);
+            notification.classList.remove('hide');
+            const counter = notification.querySelector('.notification-counter');
+            counter.textContent = parseInt(counter.textContent) + 1;
+            // alert(message.Message, message.Name)
         }
     }
 

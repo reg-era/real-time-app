@@ -21,9 +21,10 @@ export class Router {
         const route = this.routes.find(r => r.path === path);
         const hasSession = await validCookies();
 
+        console.log(hasSession);
 
         if (route) {
-            if (!hasSession) {
+            if (!hasSession.valid) {
                 if (this.base.connection) {
                     this.base.connection.close();
                 }
@@ -31,7 +32,7 @@ export class Router {
                     console.log(window.location.pathname);
                     history.pushState(null, null, '/login');
                 }
-                const newroute = this.routes.find(r => r.path === path);
+                const newroute = this.routes.find(r => r.path === window.location.pathname);
 
                 const view = new newroute.view(this.base);
                 this.page = view;
@@ -43,20 +44,22 @@ export class Router {
                     view.afterRender();
                 }
                 return;
-            }
+            } else {
 
-            const appElement = document.querySelector('.app');
-            const view = new route.view(this.base);
-            this.page = view;
-            // Render only if the page has changed
-            if (appElement.getAttribute('page') !== route.name && hasSession) {
-                const html = await view.renderHtml();
-                appElement.innerHTML = html;
-                appElement.setAttribute('page', route.name);
-                if (typeof view.afterRender === 'function') {
-                    view.afterRender();
+                const appElement = document.querySelector('.app');
+                const view = new route.view(this.base);
+                this.page = view;
+                // Render only if the page has changed
+                if (appElement.getAttribute('page') !== route.name && hasSession) {
+                    const html = await view.renderHtml();
+                    appElement.innerHTML = html;
+                    appElement.setAttribute('page', route.name);
+                    if (typeof view.afterRender === 'function') {
+                        view.afterRender();
+                    }
                 }
             }
+
         } else {
             // Handle 404 case
             const errorView = new Error("404", this.base);

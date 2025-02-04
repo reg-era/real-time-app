@@ -21,6 +21,7 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 	}
 	hub.Mutex.Lock()
 	if exist, client := checkForValue(userid, hub.Clients); exist {
+		hub.Logout <- client
 		hub.Unregister <- client
 	}
 	hub.Mutex.Unlock()
