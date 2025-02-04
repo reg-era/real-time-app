@@ -10,14 +10,20 @@ import (
 var Colors = map[string]string{"green": "\033[42m", "red": "\033[41m", "reset": "\033[0m"}
 
 type User struct {
-	UserId               int64
-	UserName             string `json:"username"`
-	Email                string `json:"email"`
-	Password             string `json:"password"`
-	PasswordConfirmation string `json:"confirmPassword"`
-	SessionId            string
-	Expiration           time.Time
+	UserId               int64     `json:"userId,omitempty"`
+	UserName             string    `json:"username"`
+	Email                string    `json:"email"`
+	Password             string    `json:"password"`
+	PasswordConfirmation string    `json:"confirmPassword"`
+	Age                  string    `json:"age"`        // Changed to lowercase
+	Gender               string    `json:"gender"`     // Changed to lowercase
+	LastName             string    `json:"last_name"`  // Changed to match JSON
+	FirstName            string    `json:"first_name"` // Changed to match JSON
+	SessionId            string    `json:"sessionId,omitempty"`
+	Expiration           time.Time `json:"expiration,omitempty"`
 }
+
+// {"username":"asdasdasd","email":"ajdndsf@hdsjnfsd.df","password":"111111111","confirmPassword":"111111111","Age":"121","Gender":"Male","Last_Name":"ddddddd","First_Name":"sadd"}
 
 type Post struct {
 	PostId     int

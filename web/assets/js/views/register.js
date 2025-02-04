@@ -17,10 +17,16 @@ export class Register extends BASE {
 
             const username = document.getElementById("signup-username").value;
             const email = document.getElementById("signup-email").value;
+            const Age = document.getElementById("signup-Age").value;
+            const Gender = document.getElementById("signup-Gender").value;
+            const Last_Name = document.getElementById("signup-Last_Name").value;
+            const First_Name = document.getElementById("signup-First_Name").value;
+
             const password = document.getElementById("signup-password").value;
             const confirmPassword = document.getElementById("signup-confirm-password").value;
             const messageElement = document.getElementById("responseMessage");
 
+            console.log(JSON.stringify({ username, email, password, confirmPassword, Age, Gender, Last_Name, First_Name }));
             if (!validateSignup(password, confirmPassword, messageElement)) {
                 return;
             }
@@ -31,7 +37,7 @@ export class Register extends BASE {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ username, email, password, confirmPassword }),
+                    body: JSON.stringify({ username, email, password, confirmPassword, Age, Gender, Last_Name, First_Name }),
                 });
 
                 if (response.ok) {
@@ -65,6 +71,25 @@ export class Register extends BASE {
                             <label for="signup-username">Username:</label>
                             <input type="text" id="signup-username" name="username" placeholder="Enter your username"
                                 minlength="5" maxlength="30" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-Age">Age:</label>
+                            <input type="Age" id="signup-Age" name="Age" placeholder="Enter your Age" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-Gender">Gender:</label>
+                            <select type="Gender" id="signup-Gender" name="Gender" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-First_Name">First Name:</label>
+                            <input type="First_Name" id="signup-First_Name" name="First_Name" placeholder="Enter your First Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-Last_Name">Last Name:</label>
+                            <input type="Last_Name" id="signup-Last_Name" name="Last_Name" placeholder="Enter your Last Name" required>
                         </div>
                         <div class="form-group">
                             <label for="signup-email">Email:</label>

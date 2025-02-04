@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"html"
 	"net/http"
+	"strconv"
 	"time"
 
 	"forum/internal/database"
@@ -14,9 +15,14 @@ import (
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var userData utils.User
-	// Decode the JSON body
+
 	if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
 		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Invalid input data"})
+		return
+	}
+
+	if age, err := strconv.Atoi(userData.Age); err != nil && age > 0 {
+		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "invalid username/password/email"})
 		return
 	}
 	// fmt.Println(userData)

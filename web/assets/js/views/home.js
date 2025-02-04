@@ -14,21 +14,19 @@ export class Home extends BASE {
         posts.forEach(post => container.appendChild(post));
     }
 
-    async renderHtml() {
-        // console.log(this.base.users);
-
+    renderHtml() {
         return `
-            ${await this.base.getHtmlBase()}
+            ${this.base.getHtmlBase()}
             <main>
-                ${await this.base.getSidebar()}
+                ${this.base.getSidebar()}
                 <section class="posts">
                 </section>
             </main>
-            ${this.getPosts()}
         `;
     }
 
-    afterRender() {
+    async afterRender() {
+        await this.getPosts()
         this.setupmssglistner(this.base);
         this.base.renderSidebar()
         this.setupAuthNav(this.base);

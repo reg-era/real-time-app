@@ -6,7 +6,7 @@ CONTAINER_NAME = forum-container
 # Application-related variables
 APP_DIR        = $(PWD)
 PORT           = 8080
-DB_PATH        = db/data.db
+DB_PATH        = db/data1.db
 
 # Build the Docker image
 build: 

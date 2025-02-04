@@ -92,7 +92,7 @@ export class BASE {
                     case 'onlineusers':
                         if (data.users) {
                             this.users = data.users;
-                            await this.renderSidebar();
+                             this.renderSidebar();
                         }
                         break;
                     case 'Logout':
@@ -186,7 +186,7 @@ export class BASE {
         }
     }
 
-    async getSidebar() {
+     getSidebar() {
         return `
         <aside class="sidebar">
             <nav class="sidebar-nav">
@@ -194,7 +194,7 @@ export class BASE {
                 <span href="/ws" class="nav__link" data-link>Messages</span>
             </nav>
         </aside>
-        ${await this.getOnlineBar()}
+        ${ this.getOnlineBar()}
         `;
     }
 
@@ -212,12 +212,12 @@ export class BASE {
         `;
     }
 
-    async getOnlineBar() {
+     getOnlineBar() {
         return `
         <aside class="onligne-bar">
             <nav class="sidebar-nav">
                 <div class="loading-indicator">Loading users...</div>
-                ${await this.renderSidebar()}
+                ${ this.renderSidebar()}
             </nav>
         </aside>
         `;
@@ -254,7 +254,7 @@ export class BASE {
         });
     }
 
-    async renderSidebar() {
+    renderSidebar() {
         const makeBar = (online, user) => {
             const bar = document.createElement('div')
             bar.setAttribute('data-mssg-link', null)

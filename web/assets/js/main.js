@@ -10,15 +10,15 @@ async function main() {
     }
 }
 
-function deleteAllCookies() {
-    const cookies = document.cookie.split(";");
-    console.log(cookies);
+// function deleteAllCookies() {
+//     const cookies = document.cookie.split(";");
+//     console.log(cookies);
 
-    for (let cookie of cookies) {
-        const name = cookie.split("=")[0].trim();
-        document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    }
-}
+//     for (let cookie of cookies) {
+//         const name = cookie.split("=")[0].trim();
+//         document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+//     }
+// }
 
 const validCookies = async () => {
     try {

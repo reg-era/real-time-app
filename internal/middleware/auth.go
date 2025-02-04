@@ -2,6 +2,7 @@ package auth
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -61,11 +62,12 @@ func IsUserRegistered(db *sql.DB, userData *utils.User) (bool, error) {
 }
 
 func RegisterUser(db *sql.DB, userData *utils.User) error {
-	insertQuery := `INSERT INTO users (username, email, password) VALUES (?, ?, ?);`
-	result, err := db.Exec(insertQuery, userData.UserName, userData.Email, userData.Password)
+	insertQuery := `INSERT INTO users (username, Age, Gender, First_Name, Last_Name, email, password) VALUES (?, ?, ?, ?, ?, ?, ?);`
+	result, err := db.Exec(insertQuery, userData.UserName, userData.Age, userData.Gender, userData.FirstName, userData.LastName, userData.Email, userData.Password)
 	if err != nil {
 		return err
 	}
+	fmt.Println(userData)
 	userData.UserId, err = result.LastInsertId()
 	return err
 }
