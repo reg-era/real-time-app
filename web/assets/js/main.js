@@ -22,12 +22,18 @@ function deleteAllCookies() {
 
 const validCookies = async () => {
     try {
-        const res = await fetch('http://localhost:8080/api/me/check-in')
-        return res.status === 202;
+        const res = await fetch('http://localhost:8080/api/me/check-in');
+        if (res.status === 202) {
+            const body = await res.json(); // or res.text() based on your response format
+            return { valid: true, body };
+        }
+        return { valid: false };
     } catch (error) {
-        return false
+        console.error(error);
+        return { valid: false };
     }
 }
+
 
 await main();
 

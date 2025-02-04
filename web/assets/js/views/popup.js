@@ -6,7 +6,8 @@ export class popup {
     }
 
     async getMessages(name) {
-        if (!(await validCookies())) {
+        const res = await validCookies()
+        if (!(res.valid)) {
             history.pushState(null, null, '/login');
             this.base.router.handleRoute()
             return
@@ -14,6 +15,8 @@ export class popup {
 
         const popMessage = document.createElement('div')
         popMessage.classList.add('conversation');
+        popMessage.setAttribute('name', res.body);
+
 
         const inputMessage = document.createElement('div')
         inputMessage.classList.add('messages-input');
@@ -91,12 +94,15 @@ export class popup {
                             ReceiverName: name,
                             Data: message,
                         }));
+                        const conversation = document.querySelector('.conversation');
+                        const username = conversation.getAttribute('name');
+
                         const messageCompon = document.createElement('div');
                         messageCompon.classList.add('message', 'receiver');
                         // handle the name of loged user !!!!
                         messageCompon.innerHTML = messageCompon.innerHTML = `
                         <div class="message-header">
-                          <span class="username-message">${'to handel'}</span>
+                          <span class="username-message">${username}</span>
                           <span class="timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                         <p>${message}</p>`

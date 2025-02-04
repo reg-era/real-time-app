@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"forum/internal/database"
 	utils "forum/internal/utils"
 
 	"github.com/gofrs/uuid/v5"
@@ -60,7 +61,12 @@ func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 		utils.RespondWithJSON(w, http.StatusOK, data)
 
 	case "/api/me/check-in":
-		utils.RespondWithJSON(w, http.StatusAccepted, nil)
+		name, err := database.GetUserName(userId, db)
+		if err != nil {
+			utils.RespondWithJSON(w, http.StatusInternalServerError, nil)
+			return
+		}
+		utils.RespondWithJSON(w, http.StatusAccepted, name)
 
 	default:
 		utils.RespondWithJSON(w, http.StatusNotFound, utils.ErrorResponse{Error: "Status Not Found"})
