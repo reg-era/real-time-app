@@ -62,7 +62,7 @@ export class NewPost extends BASE {
                 button.disabled = false;
             } else {
                 history.pushState(null, null, '/');
-                this.base.router.handleRoute();
+                await this.base.router.handleRoute();
             }
         });
     }

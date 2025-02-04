@@ -76,10 +76,10 @@ export class Router {
         return params;
     }
 
-    navigateTo(url) {
+    async navigateTo(url) {
         if (window.location.pathname !== url) {
             history.pushState(null, null, url);
-            this.handleRoute();
+            await this.handleRoute();
         }
     }
 }

@@ -40,7 +40,7 @@ export class Register extends BASE {
                     self.base.loged = true;
 
                     history.pushState(null, null, "/");
-                    self.base.router.handleRoute();
+                    await self.base.router.handleRoute();
                 } else {
                     const errorData = await response.text();
                     messageElement.textContent = `Error: ${errorData}`;

@@ -12,8 +12,7 @@ export class BASE {
             'http://localhost:8080/api/css/messages.css',
         ];
         this.users = {
-            online: new Set([]),
-            offline: new Set([])
+            Friends: [],
         };
         this.connection = null;
         this.initializeStyles();
@@ -68,7 +67,9 @@ export class BASE {
                     return;
                 }
 
+                console.log(data);
                 switch (data.Type) {
+
                     case 'message':
                         this.handleWebSocketMessage(data);
                         break;
@@ -139,7 +140,7 @@ export class BASE {
                     this.connection.close();
                 }
                 history.pushState(null, null, '/login');
-                this.router.handleRoute()
+                await this.router.handleRoute()
             } else {
                 throw new Error('Logout failed');
             }
@@ -231,14 +232,14 @@ export class BASE {
         });
     }
 
-    setupNavigation(app) {
+    async setupNavigation(app) {
         document.querySelectorAll('[data-link]').forEach(link => {
-            link.addEventListener('click', (event) => {
+            link.addEventListener('click', async (event) => {
                 event.preventDefault();
                 const href = link.getAttribute('href');
                 if (href) {
                     window.history.pushState(null, null, href);
-                    app.router.handleRoute();
+                    await app.router.handleRoute();
                 }
             });
         });
@@ -248,12 +249,14 @@ export class BASE {
         const makeBar = (online, user) => {
             const bar = document.createElement('div')
             bar.setAttribute('data-mssg-link', null)
-            bar.id = user
+            bar.id = user.Name
             bar.classList.add('status-bar')
             bar.innerHTML = `
             <div class="status-info">
                 <span id="online-status" class="status ${online ? "online" : "offline"}">${online ? "🟢" : "🔴"}</span>
-                <span id="username" class="username">${user} </span>
+                <span id="username" class="username">${user.Name} </span>
+                <span> ${user.LastMessage} </span>
+                <span> ${user.Time} </span>
             </div>
             <div class="notification hide"><span class="notification-counter">0</span></div>`
             return bar
@@ -268,13 +271,10 @@ export class BASE {
 
             sidebar.innerHTML = '';
 
-            if (Array.isArray(this.users.online)) {
-                this.users.online.forEach(user => sidebar.appendChild(makeBar(true, user)));
+            if (Array.isArray(this.users.Friends)) {
+                this.users.Friends.forEach(user => sidebar.appendChild(makeBar(user.Online, user)));
             }
 
-            if (Array.isArray(this.users.offline)) {
-                this.users.offline.forEach(user => sidebar.appendChild(makeBar(false, user)));
-            }
         } catch (error) {
             console.error('Error rendering sidebar:', error);
             const sidebar = document.querySelector('.onligne-bar .sidebar-nav');

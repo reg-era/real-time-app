@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"forum/internal/handlers"
 	auth "forum/internal/middleware"
 	"forum/internal/utils"
+	websocket "forum/internal/ws"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -20,12 +22,12 @@ func main() {
 	port := os.Getenv("PORT")
 
 	db := database.CreateDatabase(dbPath)
-	forumHub := &utils.Hub{
-		Clients:    make(map[*utils.Client]int),
-		Broadcast:  make(chan []byte),
-		Register:   make(chan *utils.Client),
+	forumHub := &websocket.Hub{
+		Clients:    make(map[*websocket.Client]int),
+		Broadcast:  make(chan *sql.DB),
+		Register:   make(chan *websocket.Client),
 		Message:    make(chan utils.Message),
-		Unregister: make(chan *utils.Client),
+		Unregister: make(chan *websocket.Client),
 	}
 	go forumHub.Run()
 	defer db.Close()

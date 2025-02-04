@@ -30,19 +30,20 @@ export class popup {
 
             const allMessages = document.createElement('div')
             allMessages.classList.add('messages-section');
-
-            for (let i = 0; i < data.length; i++) {
-                const messageCompon = document.createElement('div');
-                messageCompon.classList.add('message');
-                messageCompon.id = name;
-                data[i].IsSender ? messageCompon.classList.add('receiver') : messageCompon.classList.add('sender');
-                messageCompon.innerHTML = `
-                <div class="message-header">
-                    <span class="username-message">${data[i].IsSender ? data[i].sender_name : name}</span>
-                    <span class="timestamp">${new Date(data[i].CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                </div>
-                <p>${data[i].Message}</p>`                        
-                allMessages.appendChild(messageCompon);
+            if (data) {
+                for (let i = 0; i < data.length; i++) {
+                    const messageCompon = document.createElement('div');
+                    messageCompon.classList.add('message');
+                    messageCompon.id = name;
+                    data[i].IsSender ? messageCompon.classList.add('receiver') : messageCompon.classList.add('sender');
+                    messageCompon.innerHTML = `
+                    <div class="message-header">
+                        <span class="username-message">${data[i].IsSender ? data[i].sender_name : name}</span>
+                        <span class="timestamp">${new Date(data[i].CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <p>${data[i].Message}</p>`
+                    allMessages.appendChild(messageCompon);
+                }
             }
 
             popMessage.append(allMessages, inputMessage);

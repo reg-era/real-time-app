@@ -287,40 +287,40 @@ func LinkPostWithCategory(transaction *sql.Tx, categories []string, postId int64
 
 ///////// only for messages ////////////
 
-func GetAllFriends(db *sql.DB, userId int) ([]string, error) {
+// func GetAllFriends(db *sql.DB, userId int) ([]string, error) {
+// 	query := `
+// 	SELECT username FROM users
+// 	WHERE id IN (
+// 		SELECT DISTINCT sender_id FROM messages WHERE receiver_id = ?
+// 		UNION
+// 		SELECT DISTINCT receiver_id FROM messages WHERE sender_id = ?
+// 	);
+// 	`
+// 	rows, err := utils.QueryRows(db, query, userId, userId)
+// 	if err != nil {
+// 		return nil, errors.New(err.Error())
+// 	}
+// 	defer rows.Close()
+
+// 	var friends []string
+// 	for rows.Next() {
+// 		var friend string
+// 		err := rows.Scan(&friend)
+// 		if err != nil {
+// 			return nil, errors.New(err.Error())
+// 		}
+// 		friends = append(friends, friend)
+// 	}
+// 	if err = rows.Err(); err != nil {
+// 		return nil, errors.New(err.Error())
+// 	}
+
+// 	return friends, nil
+// }
+
+func GetFriends(db *sql.DB, userId int) ([]int, error) {
 	query := `
-	SELECT username FROM users
-	WHERE id IN (
-		SELECT DISTINCT sender_id FROM messages WHERE receiver_id = ?
-		UNION
-		SELECT DISTINCT receiver_id FROM messages WHERE sender_id = ?
-	);
-	`
-	rows, err := utils.QueryRows(db, query, userId, userId)
-	if err != nil {
-		return nil, errors.New(err.Error())
-	}
-	defer rows.Close()
-
-	var friends []string
-	for rows.Next() {
-		var friend string
-		err := rows.Scan(&friend)
-		if err != nil {
-			return nil, errors.New(err.Error())
-		}
-		friends = append(friends, friend)
-	}
-	if err = rows.Err(); err != nil {
-		return nil, errors.New(err.Error())
-	}
-
-	return friends, nil
-}
-
-func GetFriends(db *sql.DB, userId int) ([]string, error) {
-	query := `
-	SELECT username FROM users
+	SELECT id FROM users
 	WHERE id != ?;
 	`
 	rows, err := utils.QueryRows(db, query, userId)
@@ -328,9 +328,9 @@ func GetFriends(db *sql.DB, userId int) ([]string, error) {
 		return nil, errors.New(err.Error())
 	}
 	defer rows.Close()
-	var friends []string
+	var friends []int
 	for rows.Next() {
-		var friend string
+		var friend int
 		err := rows.Scan(&friend)
 		if err != nil {
 			return nil, errors.New(err.Error())
@@ -400,4 +400,20 @@ func CreateMessage(m *utils.Message, db *sql.DB) error {
 
 	m.SenderID = int(id)
 	return nil
+}
+
+func Getlastmessg(sender_id int, receiver_iD int, db *sql.DB) (error, utils.Message) {
+	message := utils.Message{}
+
+	stmt, err := db.Prepare(`SELECT id, sender_id, receiver_id, message, created_at FROM messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY created_at DESC LIMIT 1;`)
+	if err != nil {
+		return err, message
+	}
+	row := stmt.QueryRow(sender_id, receiver_iD, receiver_iD, sender_id)
+	err = row.Scan(&message.Id, &message.SenderID, &message.ReceiverID, &message.Message, &message.CreatedAt)
+	if err != nil && err != sql.ErrNoRows {
+		print("hbubuhbuu")
+		return err, message
+	}
+	return nil, message
 }

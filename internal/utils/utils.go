@@ -35,6 +35,17 @@ type Reaction struct {
 	UserReaction string `json:"user_reaction"`
 }
 
+type Message struct {
+	Id         int       `json:"Id"`
+	SenderID   int       `json:"SenderID"`
+	ReceiverID int       `json:"ReceiverID"`
+	Message    string    `json:"Message"`
+	CreatedAt  time.Time `json:"CreatedAt"`
+	IsSender   bool      `json:"IsSender"`
+
+	SenderName string `json:"sender_name"`
+}
+
 type Comment struct {
 	Comment_id int    `json:"comment_id"`
 	Post_id    int    `json:"post_id"`

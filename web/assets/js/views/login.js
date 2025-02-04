@@ -30,7 +30,7 @@ export class Login extends BASE {
                 if (response.ok) {
                     this.base.loged = true;
                     history.pushState(null, null, "/");
-                    this.base.router.handleRoute();
+                    await this.base.router.handleRoute();
                     await this.base.initializeWebSocket();
                 } else {
                     const errorData = await response.json();
