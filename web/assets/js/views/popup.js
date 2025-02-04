@@ -6,11 +6,11 @@ export class popup {
     }
 
     async getMessages(name) {
-        if (!(await validCookies())) {
-            history.pushState(null, null, '/login');
-            this.base.router.handleRoute()
-            return
-        }
+        // if (!(await validCookies())) {
+        //     history.pushState(null, null, '/login');
+        //     this.base.router.handleRoute()
+        //     return
+        // }
 
         const popMessage = document.createElement('div')
         popMessage.classList.add('conversation');

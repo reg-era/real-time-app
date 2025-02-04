@@ -1,6 +1,6 @@
 import { handleResize, debounce } from "../libs/script.js";
 import { popup } from "./popup.js";
-import { validCookies } from "../main.js";
+// import { validCookies } from "../main.js";
 
 export class BASE {
     constructor(params) {
@@ -130,15 +130,17 @@ export class BASE {
 
             if (response.ok) {
                 const authNav = document.getElementById('auth-nav');
-                authNav.innerHTML = `
-                    <span href="/login" class="active" data-link>Login</span>
-                    <span href="/register" data-link>Signup</span>
-                `;
+                if (authNav) {
+                    authNav.innerHTML = `
+                        <span href="/login" class="active" data-link>Login</span>
+                        <span href="/register" data-link>Signup</span>
+                    `;
+                }
                 if (this.connection) {
                     this.connection.close();
                 }
                 history.pushState(null, null, '/login');
-                await this.router.handleRoute()
+                await this.router.handleRoute();
             } else {
                 throw new Error('Logout failed');
             }
@@ -237,7 +239,7 @@ export class BASE {
                 const href = link.getAttribute('href');
                 if (href) {
                     window.history.pushState(null, null, href);
-                    await app.router.handleRoute();
+                    app.router.handleRoute();
                 }
             });
         });

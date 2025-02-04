@@ -80,6 +80,7 @@ export class Login extends BASE {
 
     afterRender() {
         this.setListeners();
-        super.afterRender();
+        // super.afterRender();
+        this.setupNavigation(this.base);
     }
 }

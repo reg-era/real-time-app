@@ -23,17 +23,20 @@ export class Router {
 
 
         if (route) {
-            const view = new route.view(this.base);
-            this.page = view;
-            // Check for authentication
-            if ((!hasSession && (route.name !== 'login' && route.name !== "register")) || (route.name === 'login' || route.name === "register")) {
-                console.log(document.cookie);
 
+            // Check for authentication
+            if (!hasSession) {
                 if (this.base.connection) {
                     this.base.connection.close();
                 }
-                history.pushState(null, null, '/login');
-                const view = new Login(this.base);
+                if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+                    console.log(window.location.pathname);
+                    history.pushState(null, null, '/login');
+                }
+                const newroute = this.routes.find(r => r.path === path);
+
+                const view = new newroute.view(this.base);
+                this.page = view;
                 const html = await view.renderHtml();
                 const appElement = document.querySelector('.app');
                 appElement.innerHTML = html;
@@ -45,7 +48,8 @@ export class Router {
             }
 
             const appElement = document.querySelector('.app');
-
+            const view = new route.view(this.base);
+            this.page = view;
             // Render only if the page has changed
             if (appElement.getAttribute('page') !== route.name && hasSession) {
                 const html = await view.renderHtml();
