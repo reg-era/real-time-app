@@ -16,6 +16,7 @@ export class BASE {
             Friends: [],
         };
         this.mssglistener = null;
+        this.navlistener = null;
         this.connection = null;
         this.initializeStyles();
     }
@@ -235,7 +236,8 @@ export class BASE {
     }
 
     async setupNavigation(app) {
-        document.querySelectorAll('[data-link]').forEach(link => {
+        if (app.navlistener !== null) return;
+        app.navlistener = document.querySelectorAll('[data-link]').forEach(link => {
             link.addEventListener('click', async (event) => {
                 event.preventDefault();
                 const href = link.getAttribute('href');
