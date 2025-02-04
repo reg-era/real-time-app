@@ -111,10 +111,9 @@ export class NewPost extends BASE {
     }
 
     afterRender() {
-        //this.getPosts();
-        this.setupAuthNav(this.base);
-        this.setupNavigation(this.base);
-        this.setupSidebar();
+        this.base.setupAuthNav(this.base);
+        this.base.setupNavigation(this.base);
+        this.base.setupSidebar();
         this.setListners();
     }
 }

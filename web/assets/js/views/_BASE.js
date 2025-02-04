@@ -92,7 +92,7 @@ export class BASE {
                     case 'onlineusers':
                         if (data.users) {
                             this.users = data.users;
-                             this.renderSidebar();
+                            this.renderSidebar();
                         }
                         break;
                     case 'Logout':
@@ -186,7 +186,7 @@ export class BASE {
         }
     }
 
-     getSidebar() {
+    getSidebar() {
         return `
         <aside class="sidebar">
             <nav class="sidebar-nav">
@@ -194,7 +194,7 @@ export class BASE {
                 <span href="/ws" class="nav__link" data-link>Messages</span>
             </nav>
         </aside>
-        ${ this.getOnlineBar()}
+        ${this.getOnlineBar()}
         `;
     }
 
@@ -212,12 +212,12 @@ export class BASE {
         `;
     }
 
-     getOnlineBar() {
+    getOnlineBar() {
         return `
         <aside class="onligne-bar">
             <nav class="sidebar-nav">
                 <div class="loading-indicator">Loading users...</div>
-                ${ this.renderSidebar()}
+                ${this.renderSidebar()}
             </nav>
         </aside>
         `;
@@ -242,18 +242,18 @@ export class BASE {
 
     async setupNavigation(app) {
         if (app.navlistener !== null) return;
-        app.navlistener = document.querySelectorAll('[data-link]').forEach(link => {
-            link.addEventListener('click', async (event) => {
+        app.navlistener = document.addEventListener('click', async (event) => {
+            const linkElement = event.target.closest('[data-link]');
+            if (linkElement) {
                 event.preventDefault();
-                const href = link.getAttribute('href');
+                const href = linkElement.getAttribute('href');
                 if (href) {
                     window.history.pushState(null, null, href);
                     app.router.handleRoute();
                 }
-            });
+            }
         });
     }
-
     renderSidebar() {
         const makeBar = (online, user) => {
             const bar = document.createElement('div')

@@ -119,8 +119,6 @@ func (h *Hub) Run() {
 			}
 			h.Mutex.RUnlock()
 		case tologout := <-h.Logout:
-			fmt.Println(tologout.Id)
-			// h.Mutex.Lock()
 			response := websocketmsg{
 				Type:    "Logout",
 				Message: utils.Message{},
@@ -133,8 +131,6 @@ func (h *Hub) Run() {
 				tologout.Conn.Close()
 				delete(h.Clients, tologout)
 			}
-			// h.Mutex.Unlock()
-
 		}
 	}
 }

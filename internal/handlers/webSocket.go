@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -67,7 +66,6 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 			break
 		}
 		newmssg.ReceiverID = id
-		fmt.Println(newmssg)
 		database.CreateMessage(&newmssg, db)
 		hub.Message <- newmssg
 		hub.Broadcast <- db

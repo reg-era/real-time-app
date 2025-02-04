@@ -67,7 +67,6 @@ func RegisterUser(db *sql.DB, userData *utils.User) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(userData)
 	userData.UserId, err = result.LastInsertId()
 	return err
 }
