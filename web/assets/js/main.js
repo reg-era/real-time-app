@@ -9,7 +9,6 @@ async function main() {
         await app.initializeWebSocket();
     }
 }
-// }
 
 function deleteAllCookies() {
     const cookies = document.cookie.split(";");
@@ -21,6 +20,15 @@ function deleteAllCookies() {
     }
 }
 
+const validCookies = async () => {
+    try {
+        const res = await fetch('http://localhost:8080/api/me/check-in')
+        return res.status === 202;
+    } catch (error) {
+        return false
+    }
+}
 
 main();
-//app.initializeWebSockety
+
+export { validCookies };

@@ -58,6 +58,10 @@ func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
 			PostIds []int `json:"post_ids"`
 		}{PostIds: postIds}
 		utils.RespondWithJSON(w, http.StatusOK, data)
+
+	case "/api/me/check-in":
+		utils.RespondWithJSON(w, http.StatusAccepted, nil)
+
 	default:
 		utils.RespondWithJSON(w, http.StatusNotFound, utils.ErrorResponse{Error: "Status Not Found"})
 	}

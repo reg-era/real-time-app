@@ -1,5 +1,6 @@
 import { handleResize, debounce } from "../libs/script.js";
 import { popup } from "./popup.js";
+import { validCookies } from "../main.js";
 
 export class BASE {
     constructor(params) {
@@ -18,11 +19,31 @@ export class BASE {
         this.initializeStyles();
     }
 
+    initializeStyles() {
+        this.styleUrls.forEach(url => this.setStyle(url));
+    }
+
+    setStyle(url) {
+        const links = Array.from(document.head.getElementsByTagName('link'));
+        if (!links.some(link => link.href === url)) {
+            const linkElement = document.createElement('link');
+            linkElement.rel = 'stylesheet';
+            linkElement.href = url;
+            document.head.appendChild(linkElement);
+        }
+    }
+
+    setTitle(title) {
+        document.title = title;
+    }
+
     async initializeWebSocket() {
-        // Don't create a new connection if one exists and is healthy
         if (this.connection &&
-            (this.connection.readyState === WebSocket.CONNECTING ||
-                this.connection.readyState === WebSocket.OPEN)) {
+            (
+                this.connection.readyState === WebSocket.CONNECTING ||
+                this.connection.readyState === WebSocket.OPEN
+            )
+        ) {
             return;
         }
 
@@ -39,22 +60,18 @@ export class BASE {
         this.connection = new WebSocket(wsUrl.toString());
         console.log('Initializing WebSocket connection...');
 
-        this.setupWebSocket();
-    }
-
-    setupWebSocket() {
         this.connection.onopen = async () => {
             console.log('WebSocket connection established');
             this.setupConnReader();
         };
 
-        this.connection.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
-
         this.connection.onclose = (event) => {
             console.log('WebSocket closed:', event.code, event.reason);
-            // this.handleLogout();
+            this.handleLogout();
+        };
+
+        this.connection.onerror = (error) => {
+            console.error('WebSocket error:', error);
         };
     }
 
@@ -67,9 +84,7 @@ export class BASE {
                     return;
                 }
 
-                console.log(data);
                 switch (data.Type) {
-
                     case 'message':
                         this.handleWebSocketMessage(data);
                         break;
@@ -88,20 +103,6 @@ export class BASE {
         };
     }
 
-    initializeStyles() {
-        this.styleUrls.forEach(url => this.setStyle(url));
-    }
-
-    setStyle(url) {
-        const links = Array.from(document.head.getElementsByTagName('link'));
-        if (!links.some(link => link.href === url)) {
-            const linkElement = document.createElement('link');
-            linkElement.rel = 'stylesheet';
-            linkElement.href = url;
-            document.head.appendChild(linkElement);
-        }
-    }
-
     handleWebSocketMessage(message) {
         const allMessages = document.querySelector('.messages-section');
         const conversation = document.querySelector('.messages-section');
@@ -118,9 +119,6 @@ export class BASE {
             const counter = notification.querySelector('.notification-counter')
             counter.textContent = parseInt(counter.textContent) + 1
         }
-    }
-    setTitle(title) {
-        document.title = title;
     }
 
     async handleLogout() {

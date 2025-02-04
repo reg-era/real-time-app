@@ -1,9 +1,17 @@
+import { validCookies } from "../main.js";
+
 export class popup {
     constructor(app) {
         this.base = app;
     }
 
     async getMessages(name) {
+        if (!(await validCookies())) {
+            history.pushState(null, null, '/login');
+            this.base.router.handleRoute()
+            return
+        }
+
         const popMessage = document.createElement('div')
         popMessage.classList.add('conversation');
 
