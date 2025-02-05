@@ -30,6 +30,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 		return
 	}
+	
 	if isemail {
 		userData.Email = CredentialsUser.Username
 		userData.Password = CredentialsUser.Password

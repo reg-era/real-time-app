@@ -69,7 +69,6 @@ export class BASE {
 
         this.connection.onclose = (event) => {
             console.log('WebSocket closed:', event.code, event.reason);
-            // this.handleLogout();
         };
 
         this.connection.onerror = (error) => {
@@ -122,8 +121,6 @@ export class BASE {
             notification.classList.remove('hide');
             const counter = notification.querySelector('.notification-counter');
             counter.textContent = parseInt(counter.textContent) + 1;
-            // alert(`${message.Message}
-            //     <span id="${message.Message.sender_name}" data-mssg-link></span>`);
             showNotification(message.Message);
         }
     }
@@ -265,7 +262,7 @@ export class BASE {
                 <span id="online-status" class="status ${online ? "online" : "offline"}">${online ? "🟢" : "🔴"}</span>
                 <span id="username" class="username">${user.Name} </span>
                 <span> ${user.LastMessage} </span>
-                <span> ${user.Time} </span>
+                <span> ${user.Time !== '0001-01-01T00:00:00Z' ? user.Time : ""} </span>
             </div>
             <div class="notification hide"><span class="notification-counter">0</span></div>`
             return bar

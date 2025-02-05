@@ -115,7 +115,6 @@ export class Register extends BASE {
             <p>&copy; Regera, Yhajjaoui</p>
         </footer>
         `
-
         return html
     }
 

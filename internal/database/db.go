@@ -33,7 +33,7 @@ func CreateDatabase(dbPath string) *sql.DB {
 }
 
 func CreateTables(db *sql.DB) {
-	_, err := db.Exec(database.UsersTable + database.SessionsTable + database.MessageTable +
+	_, err := db.Exec(database.UsersTable + database.SessionsTable + database.MessageTable + database.ReactionTable +
 		database.CommentsTable + database.PostsTable + database.CategoriesTable + database.PostCategoriesTable)
 	if err != nil {
 		log.Fatalln(err)
@@ -412,7 +412,6 @@ func Getlastmessg(sender_id int, receiver_iD int, db *sql.DB) (error, utils.Mess
 	row := stmt.QueryRow(sender_id, receiver_iD, receiver_iD, sender_id)
 	err = row.Scan(&message.Id, &message.SenderID, &message.ReceiverID, &message.Message, &message.CreatedAt)
 	if err != nil && err != sql.ErrNoRows {
-		print("hbubuhbuu")
 		return err, message
 	}
 	return nil, message

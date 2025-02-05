@@ -118,8 +118,7 @@ func main() {
 	router.HandleFunc("/api/react", func(w http.ResponseWriter, r *http.Request) {
 		method := r.Method
 		if method == "GET" {
-			userId, _ := auth.ValidUser(r, db)
-			handlers.GetReactionsHandler(w, r, db, userId)
+			auth.AuthMiddleware(db, handlers.GetReactionsHandler, false).ServeHTTP(w, r)
 		} else if method == "PUT" {
 			auth.AuthMiddleware(db, handlers.InsertOrUpdateReactionHandler, false).ServeHTTP(w, r)
 		} else if method == "DELETE" {
