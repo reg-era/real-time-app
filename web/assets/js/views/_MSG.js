@@ -3,7 +3,7 @@ import { BASE } from "./_BASE.js";
 export class MessagesBase extends BASE {
     constructor(params) {
         super(params);
-        this.setStyle("http://localhost:8080/api/css/messages.css");
+        this.setStyle("/api/css/messages.css");
     }
 
 
@@ -20,7 +20,7 @@ export class MessagesBase extends BASE {
                         return
                     }
                 }
-                const res = await fetch(`http://localhost:8080/api/messages?section=user&name=${input.value}`)
+                const res = await fetch(`/api/messages?section=user&name=${input.value}`)
                 if (res.ok) {
                     const sidbare = document.querySelector('.sidebar-nav')
                     const newConv = document.createElement('a');
@@ -41,7 +41,7 @@ export class MessagesBase extends BASE {
 
     async getPrevConversation() {
         try {
-            const res = await fetch(`http://localhost:8080/api/messages?section=user`)
+            const res = await fetch(`/api/messages?section=user`)
             const data = await res.json()
             return data.friends
         } catch (error) {

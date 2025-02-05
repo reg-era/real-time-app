@@ -6,8 +6,8 @@ export class Register extends BASE {
         super();
         this.base = app;
         this.setTitle("Register");
-        this.setStyle("http://localhost:8080/api/css/base.css")
-        this.setStyle("http://localhost:8080/api/css/register.css")
+        this.setStyle("/api/css/base.css")
+        this.setStyle("/api/css/register.css")
     }
 
     setListners() {

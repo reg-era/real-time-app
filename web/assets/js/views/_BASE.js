@@ -8,9 +8,9 @@ export class BASE {
         this.params = params;
         this.loged = false;
         this.styleUrls = [
-            'http://localhost:8080/api/css/base.css',
-            'http://localhost:8080/api/css/posts.css',
-            'http://localhost:8080/api/css/messages.css',
+            '/api/css/base.css',
+            '/api/css/posts.css',
+            '/api/css/messages.css',
         ];
         this.users = {
             Friends: [],
@@ -54,7 +54,7 @@ export class BASE {
             .find(row => row.startsWith('session_token='))
             ?.split('=')[1];
 
-        const wsUrl = new URL('ws://localhost:8080/ws');
+        const wsUrl = new URL(`ws://${window.location.hostname}:8080/ws`);
         if (sessionToken) {
             wsUrl.searchParams.append('token', sessionToken);
         }
@@ -127,7 +127,7 @@ export class BASE {
 
     async handleLogout() {
         try {
-            const response = await fetch('http://localhost:8080/api/logout', {
+            const response = await fetch('/api/logout', {
                 method: 'POST',
                 credentials: 'include'
             });
@@ -200,7 +200,7 @@ export class BASE {
             <span href="/new-post" class="creat-post" data-link>Create Post</span>
             <span href="/" class="nav__link" data-link>
                 <div class="logo" href="/" data-link>
-                    <img src="http://localhost:8080/api/icons/logo.png" alt="Logo" href="/" data-link>
+                    <img src="/api/icons/logo.png" alt="Logo" href="/" data-link>
                 </div>
             </span>
             <buttom
@@ -250,6 +250,7 @@ export class BASE {
             }
         });
     }
+    
     renderSidebar() {
         const makeBar = (online, user) => {
             const bar = document.createElement('div')
@@ -269,7 +270,7 @@ export class BASE {
         try {
             const sidebar = document.querySelector('.onligne-bar .sidebar-nav');
             if (!sidebar) {
-                console.error('Sidebar element not found');
+                // console.error('Sidebar element not found');
                 return;
             }
 

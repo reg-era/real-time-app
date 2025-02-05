@@ -48,7 +48,7 @@ export async function handleReact(button, follow, id, reactionType, targetType) 
 // Used to get reaction info or set them when the method is PUT or DELETE
 export async function getReactInfo(params, method) {
     const queryString = new URLSearchParams(params).toString();
-    const url = `http://localhost:8080/api/react?${queryString}`;
+    const url = `/api/react?${queryString}`;
 
     try {
         const response = await fetch(url, {

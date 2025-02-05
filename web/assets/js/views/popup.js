@@ -25,7 +25,7 @@ export class popup {
             <p class="error-comment"></p>`;
 
         try {
-            const res = await fetch(`http://localhost:8080/api/messages?section=message&name=${name}`);
+            const res = await fetch(`/api/messages?section=message&name=${name}`);
             // if (!res.ok) {
             //     const pageerror = new Error('500', this.base)
             //     const html = await errorView.renderHtml();

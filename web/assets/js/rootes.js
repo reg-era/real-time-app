@@ -21,7 +21,7 @@ export class Router {
         const route = this.routes.find(r => r.path === path);
         const hasSession = await validCookies();
 
-        console.log(hasSession);
+        // console.log(hasSession);
 
         if (route) {
             if (!hasSession.valid) {
@@ -50,17 +50,19 @@ export class Router {
             const appElement = document.querySelector('.app');
             const view = new route.view(this.base);
             this.page = view;
-            if (appElement.getAttribute('page') !== route.name && hasSession) {
-                const html = await view.renderHtml();
-                appElement.innerHTML = html;
-                appElement.setAttribute('page', route.name);
-                if (typeof view.init === 'function') {
-                    await view.init();
-                }
-                if (typeof view.afterRender === 'function') {
-                    await view.afterRender();
-                }
+
+            const html = await view.renderHtml();
+            appElement.innerHTML = html;
+            console.log(html);
+
+            appElement.setAttribute('page', route.name);
+            if (typeof view.init === 'function') {
+                await view.init();
             }
+            if (typeof view.afterRender === 'function') {
+                await view.afterRender();
+            }
+
         } else {
             // Handle 404 case
             const errorView = new Error("404", this.base);

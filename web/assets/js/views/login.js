@@ -6,7 +6,7 @@ export class Login extends BASE {
         super();
         this.base = app;
         this.setTitle("Login");
-        this.setStyle("http://localhost:8080/api/css/login.css");
+        this.setStyle("/api/css/login.css");
     }
 
     setListeners() {
@@ -18,7 +18,7 @@ export class Login extends BASE {
             const messageElement = document.getElementById("responseMessage");
 
             try {
-                const response = await fetch("http://localhost:8080/api/login", {
+                const response = await fetch("/api/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

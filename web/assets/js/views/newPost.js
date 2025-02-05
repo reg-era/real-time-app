@@ -6,8 +6,8 @@ export class NewPost extends BASE {
         super();
         this.base = app;
         this.setTitle("New");
-        this.setStyle("http://localhost:8080/api/css/base.css");
-        this.setStyle("http://localhost:8080/api/css/newPost.css");
+        this.setStyle("/api/css/base.css");
+        this.setStyle("/api/css/newPost.css");
         this.listenerSet = false;
     }
 
@@ -69,7 +69,7 @@ export class NewPost extends BASE {
 
     async getCategories() {
         try {
-            const res = await fetch('http://localhost:8080/api/new_post');
+            const res = await fetch('/api/new_post');
             if (res.ok) {
                 const categories = await res.json();
                 let html = '';

@@ -22,7 +22,7 @@ async function main() {
 
 const validCookies = async () => {
     try {
-        const res = await fetch('http://localhost:8080/api/me/check-in');
+        const res = await fetch('/api/me/check-in');
         if (res.status === 202) {
             const body = await res.json(); // or res.text() based on your response format
             return { valid: true, body };

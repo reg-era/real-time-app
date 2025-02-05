@@ -21,7 +21,7 @@ export async function renderPage(postIds) {
         let targets = [];
         let i = 0
         while (postIds.length > 0 && i < 10) {
-            const link = `http://localhost:8080/api/posts?post_id=${postIds.pop()}`;
+            const link = `/api/posts?post_id=${postIds.pop()}`;
             const postResponse = await fetch(link);
             if (postResponse.ok) {
                 const post = await postResponse.json();

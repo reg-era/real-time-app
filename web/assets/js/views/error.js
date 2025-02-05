@@ -9,7 +9,7 @@ export class Error extends BASE {
         this.errorMsg;
         this.base = base;
         this.setTitle("ERROR");
-        this.setStyle("http://localhost:8080/api/css/error.css");
+        this.setStyle("/api/css/error.css");
     }
 
     setAttribute() {

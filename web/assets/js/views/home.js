@@ -54,7 +54,7 @@ export class Home extends BASE {
         await this.getPosts(this.posts);
         await this.listenerstoscroll();
         this.setupmssglistner(this.base);
-        this.base.renderSidebar()
+        this.base.renderSidebar();
         this.setupAuthNav(this.base);
         this.base.setupNavigation(this.base);
         this.setupSidebar();
