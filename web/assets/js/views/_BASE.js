@@ -1,4 +1,4 @@
-// import {  debounce } from "../libs/script.js";
+import { handleResize, debounce } from "../libs/script.js";
 import { popup } from "./popup.js";
 // import { validCookies } from "../main.js";
 
@@ -170,20 +170,22 @@ export class BASE {
     }
 
     setupSidebar() {
-        handleResize();
-        const debouncedHandleResize = debounce(handleResize, 100);
-        window.addEventListener('resize', debouncedHandleResize);
+        handleResize()
+        let debouncedHandleResize = debounce(handleResize, 100)
+        window.addEventListener('resize', debouncedHandleResize)
 
         const menuButton = document.querySelector('.menu-button');
-        const sideBar = document.querySelector('.sidebar');
+        const sideBar = document.querySelector('.sidebar-for-min');
         if (menuButton && sideBar) {
-            sideBar.classList.toggle('hide');
+            menuButton.addEventListener('click', () => {
+                sideBar.classList.toggle('hide');
+            });
         }
     }
 
     getSidebar() {
         return `
-        <aside class="sidebar">
+        <aside class="sidebar-for-min">
         <span href="/new-post" class="creat-post-sidebar" data-link>Create Post</span>
         ${this.getOnlineBar()}
         </aside>
@@ -194,6 +196,7 @@ export class BASE {
     getNavBar() {
         return `
         <header>
+            <button class="menu-button">☰</button>
             <span href="/new-post" class="creat-post" data-link>Create Post</span>
             <span href="/" class="nav__link" data-link>
                 <div class="logo" href="/" data-link>
@@ -288,7 +291,7 @@ export class BASE {
     afterRender() {
         this.renderSidebar();
         this.setupAuthNav(this);
-        // this.setupSidebar();
+        this.setupSidebar();
         this.setupNavigation(this);
     }
 }

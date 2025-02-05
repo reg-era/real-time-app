@@ -105,7 +105,8 @@ header .top-bar a.active {
     border: none;
 }
 
-aside.sidebar {
+aside.sidebar,
+.sidebar-for-min {
     width: 250px;
     background-color: var(--white);
     color: var(--black);

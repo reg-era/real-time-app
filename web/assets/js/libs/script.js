@@ -1,6 +1,6 @@
 export function handleResize() {
     const menuButton = document.querySelector('.menu-button');
-    const sideBar = document.querySelector('.sidebar');
+    const sideBar = document.querySelector('.sidebar-for-min');
     const postContainer = document.querySelector('.posts');
     const createPost = document.querySelector('.create-post');
 
@@ -22,7 +22,9 @@ export function handleResize() {
         } else {
             menuButton.style.display = 'none';
             if (sideBar) {
-                sideBar.classList.remove('hide');
+                if (!sideBar.classList.contains('hide')) {
+                    sideBar.classList.add('hide');
+                }
             }
             if (postContainer) {
                 postContainer.style.marginLeft = '250px';

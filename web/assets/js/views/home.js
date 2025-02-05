@@ -57,6 +57,6 @@ export class Home extends BASE {
         this.base.renderSidebar()
         this.setupAuthNav(this.base);
         this.base.setupNavigation(this.base);
-        // this.setupSidebar();
+        this.setupSidebar();
     }
 }
