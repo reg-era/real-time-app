@@ -94,7 +94,7 @@ func (h *Hub) Run() {
 				}
 				err = client.Conn.WriteMessage(websocket.TextMessage, mssg)
 				if err != nil {
-					log.Printf("Error broadcasting to client: %v", err)
+					log.Printf("Error broadcasting to client11: %v", err)
 					client.Conn.Close()
 					delete(h.Clients, client)
 				}
@@ -124,7 +124,6 @@ func (h *Hub) Run() {
 				Message: utils.Message{},
 			}
 			data, _ := json.Marshal(response)
-
 			err := tologout.Conn.WriteMessage(websocket.TextMessage, data)
 			if err != nil {
 				log.Printf("Error broadcasting to client: %v", err)

@@ -45,11 +45,9 @@ export class Router {
                 }
                 return;
             } else {
-
                 const appElement = document.querySelector('.app');
                 const view = new route.view(this.base);
                 this.page = view;
-                // Render only if the page has changed
                 if (appElement.getAttribute('page') !== route.name && hasSession) {
                     const html = await view.renderHtml();
                     appElement.innerHTML = html;
@@ -73,17 +71,4 @@ export class Router {
         }
     }
 
-    getQueryParams() {
-        const params = {};
-        const queryParams = new URLSearchParams(window.location.search);
-        queryParams.forEach((value, key) => params[key] = value);
-        return params;
-    }
-
-    async navigateTo(url) {
-        if (window.location.pathname !== url) {
-            history.pushState(null, null, url);
-            await this.handleRoute();
-        }
-    }
 }

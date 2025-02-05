@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"regexp"
 	"time"
 
 	"forum/internal/database"
@@ -12,14 +13,29 @@ import (
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	var userData utils.User
-	if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
+	type response struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	var CredentialsUser response
+	if err := json.NewDecoder(r.Body).Decode(&CredentialsUser); err != nil {
 		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 		return
 	}
-	if len(userData.UserName) < 5 || len(userData.Password) < 8 || len(userData.UserName) > 30 || len(userData.Password) > 64 {
+	regexp := regexp.MustCompile(`^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$`)
+	isemail := regexp.MatchString(CredentialsUser.Username)
+	var userData utils.User
+
+	if len(CredentialsUser.Username) < 5 || len(CredentialsUser.Password) < 8 || len(CredentialsUser.Username) > 30 || len(CredentialsUser.Password) > 64 {
 		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 		return
+	}
+	if isemail {
+		userData.Email = CredentialsUser.Username
+		userData.Password = CredentialsUser.Password
+	} else {
+		userData.UserName = CredentialsUser.Username
+		userData.Password = CredentialsUser.Password
 	}
 
 	password := userData.Password
@@ -32,7 +48,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
-
 	if !CheckPasswordHash(&password, &userData.Password) {
 		http.Error(w, "Incorrect Password", http.StatusUnauthorized)
 		return

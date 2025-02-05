@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"html"
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"forum/internal/database"
@@ -21,10 +23,18 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		return
 	}
 
-	if age, err := strconv.Atoi(userData.Age); err != nil && age > 0 {
-		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "invalid username/password/email"})
+	regexp := regexp.MustCompile(`^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$`)
+	isemail := regexp.MatchString(userData.Email)
+	if !isemail {
+		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "invalid email"})
 		return
 	}
+
+	if age, err := strconv.Atoi(userData.Age); err != nil || age <= 0 {
+		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "invalid Age"})
+		return
+	}
+	userData.UserName = strings.TrimSpace(userData.UserName)
 	if len(userData.UserName) < 5 || len(userData.Password) < 8 || len(userData.UserName) > 30 || len(userData.Password) > 64 || !isValidEmail(&userData.Email) {
 		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "invalid username/password/email"})
 		return
@@ -37,7 +47,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	ok, err := middleware.IsUserRegistered(db, &userData)
 	if err != nil {
-		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
+		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error "})
 		return
 	}
 

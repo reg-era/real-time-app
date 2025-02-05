@@ -25,8 +25,6 @@ export class Register extends BASE {
             const password = document.getElementById("signup-password").value;
             const confirmPassword = document.getElementById("signup-confirm-password").value;
             const messageElement = document.getElementById("responseMessage");
-
-            console.log(JSON.stringify({ username, email, password, confirmPassword, Age, Gender, Last_Name, First_Name }));
             if (!validateSignup(password, confirmPassword, messageElement)) {
                 return;
             }
@@ -47,6 +45,7 @@ export class Register extends BASE {
 
                     history.pushState(null, null, "/");
                     await self.base.router.handleRoute();
+                    await self.base.initializeWebSocket();
                 } else {
                     const errorData = await response.text();
                     messageElement.textContent = `Error: ${errorData}`;

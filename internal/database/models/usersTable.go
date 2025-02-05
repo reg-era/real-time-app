@@ -6,8 +6,8 @@ var UsersTable = `
 	username TEXT NOT NULL UNIQUE,
     Age INTEGER NOT NULL ,
     Gender TEXT NOT NULL,
-    First_Name TEXT NOT NULL UNIQUE,
-    Last_Name TEXT NOT NULL UNIQUE,
+    First_Name TEXT NOT NULL ,
+    Last_Name TEXT NOT NULL ,
 	email TEXT NOT NULL UNIQUE,
 	password TEXT NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);

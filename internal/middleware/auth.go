@@ -2,6 +2,7 @@ package auth
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -87,9 +88,10 @@ func DeleteSession(db *sql.DB, userData *utils.User) error {
 }
 
 func ValidCredential(db *sql.DB, userData *utils.User) error {
-	query := `SELECT id, password FROM users WHERE username = ?;`
-	err := db.QueryRow(query, userData.UserName).Scan(&userData.UserId, &userData.Password)
+	query := `SELECT id, password FROM users WHERE (username = ? OR email= ?);`
+	err := db.QueryRow(query, userData.UserName, userData.Email).Scan(&userData.UserId, &userData.Password)
 	if err != nil {
+		fmt.Println("test test")
 		return err
 	}
 	return err
