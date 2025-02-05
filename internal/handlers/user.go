@@ -3,8 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"net/http"
-	"regexp"
-	"strings"
 
 	"forum/internal/database"
 	utils "forum/internal/utils"
@@ -14,61 +12,16 @@ import (
 )
 
 func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
-	switch r.URL.Path {
-	case "/api/me/liked-posts":
-		query := `SELECT post_id FROM reactions WHERE user_id = ? AND reaction_type = 'like' AND post_id NOT NULL`
-		rows, err := utils.QueryRows(db, query, userId)
-		if err != nil {
-			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
-			return
-		}
-
-		postIds := []int{}
-		for rows.Next() {
-			var postId int
-			err := rows.Scan(&postId)
-			if err != nil {
-				utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
-				return
-			}
-			postIds = append(postIds, postId)
-		}
-		data := struct {
-			PostIds []int `json:"post_ids"`
-		}{PostIds: postIds}
-		utils.RespondWithJSON(w, http.StatusOK, data)
-	case "/api/me/created-posts":
-		query := `SELECT id FROM posts WHERE user_id = ?`
-		rows, err := utils.QueryRows(db, query, userId)
-		if err != nil {
-			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
-			return
-		}
-
-		postIds := []int{}
-		for rows.Next() {
-			var postId int
-			err := rows.Scan(&postId)
-			if err != nil {
-				utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
-			}
-			postIds = append(postIds, postId)
-		}
-
-		data := struct {
-			PostIds []int `json:"post_ids"`
-		}{PostIds: postIds}
-		utils.RespondWithJSON(w, http.StatusOK, data)
-
-	case "/api/me/check-in":
+	if r.URL.Path == "/api/me/check-in" {
 		name, err := database.GetUserName(userId, db)
 		if err != nil {
 			utils.RespondWithJSON(w, http.StatusInternalServerError, nil)
 			return
 		}
+
 		utils.RespondWithJSON(w, http.StatusAccepted, name)
 
-	default:
+	} else {
 		utils.RespondWithJSON(w, http.StatusNotFound, utils.ErrorResponse{Error: "Status Not Found"})
 	}
 }
@@ -90,11 +43,4 @@ func HashPassword(password *string) error {
 func CheckPasswordHash(password, hash *string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(*hash), []byte(*password))
 	return err == nil
-}
-
-func isValidEmail(email *string) bool {
-	*email = strings.ToLower(*email)
-	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	re := regexp.MustCompile(emailRegex)
-	return re.MatchString(*email)
 }

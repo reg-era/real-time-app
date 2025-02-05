@@ -188,7 +188,6 @@ export class BASE {
         <aside class="sidebar">
             <nav class="sidebar-nav">
                 <span href="/new-post" class="nav__link" data-link>Create Post</span>
-                <span href="/ws" class="nav__link" data-link>Messages</span>
             </nav>
         </aside>
         ${this.getOnlineBar()}
@@ -229,7 +228,6 @@ export class BASE {
         app.mssglistener = document.addEventListener('click', async (event) => {
             const linkElement = event.target.closest('[data-mssg-link]');
             if (linkElement) {
-                // event.preventDefault();
                 const pop = new popup(app);
                 await pop.getMessages(linkElement.getAttribute('id'));
                 pop.setupConversation(linkElement.getAttribute('id'));

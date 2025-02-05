@@ -129,15 +129,6 @@ func main() {
 		}
 	})
 
-	router.HandleFunc("/api/categories", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case "GET":
-			handlers.CategoriesHandler(w, r, db, 0)
-		default:
-			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
-		}
-	})
-
 	router.HandleFunc("/api/me/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
@@ -159,24 +150,6 @@ func main() {
 	router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			// 	section := r.URL.Query().Get("section")
-			// 	switch section {
-			// 	case "user":
-			// 		name := r.URL.Query().Get("name")
-			// 		if name == "" {
-			// 			auth.AuthMiddleware(db, handlers.GetAllFriends, false).ServeHTTP(w, r)
-			// 			return
-			// 		}
-			// 		auth.AuthMiddleware(db, handlers.GetUser, false).ServeHTTP(w, r)
-			// 	case "message":
-			// 		auth.AuthMiddleware(db, handlers.GetConversations, false).ServeHTTP(w, r)
-			// 		return
-			// 	default:
-			// 		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
-			// 	}
-			// case "POST":
-			// 	auth.AuthMiddleware(db, handlers.PostMessage, false).ServeHTTP(w, r)
-
 			auth.AuthMiddleware(db, handlers.GetUser, false).ServeHTTP(w, r)
 
 		default:

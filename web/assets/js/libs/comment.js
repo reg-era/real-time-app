@@ -1,4 +1,3 @@
-import { showRegistrationModal } from "./script.js";
 import { escapeHTML } from "./post.js";
 import { reactToggle, getReactInfo } from "./likes.js";
 
@@ -96,10 +95,7 @@ const addComment = async (postId, content, commentsContainer, commentsection) =>
         switch (response.status) {
             case 400:
                 error.textContent = newComment.error
-                break
-            case 401:
-                showRegistrationModal()
-                break
+                break;
             case 201:
                 error.textContent = ""
                 const reaction = await getReactInfo({

@@ -1,5 +1,3 @@
-import { showRegistrationModal } from "./script.js";
-
 export function reactToggle(element, Id, targetType) {
     const likeButton = element.querySelector('.reaction-section button:nth-child(1)');
     const dislikeButton = element.querySelector('.reaction-section button:nth-child(2)');
@@ -38,7 +36,7 @@ export async function handleReact(button, follow, id, reactionType, targetType) 
         );
 
         if (!result.success) {
-            showRegistrationModal();
+            console.error('Error in handleReact');
         } else {
             interactiveLike(button, follow);
         }
