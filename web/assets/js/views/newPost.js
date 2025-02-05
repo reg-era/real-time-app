@@ -113,7 +113,7 @@ export class NewPost extends BASE {
     afterRender() {
         this.base.setupAuthNav(this.base);
         this.base.setupNavigation(this.base);
-        this.base.setupSidebar();
+        // this.base.setupSidebar();
         this.setListners();
     }
 }

@@ -1,4 +1,4 @@
-import { handleResize, debounce } from "../libs/script.js";
+// import {  debounce } from "../libs/script.js";
 import { popup } from "./popup.js";
 // import { validCookies } from "../main.js";
 
@@ -177,18 +177,15 @@ export class BASE {
         const menuButton = document.querySelector('.menu-button');
         const sideBar = document.querySelector('.sidebar');
         if (menuButton && sideBar) {
-            menuButton.addEventListener('click', () => {
-                sideBar.classList.toggle('hide');
-            });
+            sideBar.classList.toggle('hide');
         }
     }
 
     getSidebar() {
         return `
         <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <span href="/new-post" class="nav__link" data-link>Create Post</span>
-            </nav>
+        <span href="/new-post" class="creat-post-sidebar" data-link>Create Post</span>
+        ${this.getOnlineBar()}
         </aside>
         ${this.getOnlineBar()}
         `;
@@ -197,12 +194,13 @@ export class BASE {
     getNavBar() {
         return `
         <header>
-            <button class="menu-button">☰</button>
+            <span href="/new-post" class="creat-post" data-link>Create Post</span>
             <span href="/" class="nav__link" data-link>
                 <div class="logo" href="/" data-link>
                     <img src="http://localhost:8080/api/icons/logo.png" alt="Logo" href="/" data-link>
                 </div>
             </span>
+            <buttom
             <nav class="top-bar" id="auth-nav"></nav>
         </header>
         `;
@@ -257,10 +255,9 @@ export class BASE {
             bar.classList.add('status-bar')
             bar.innerHTML = `
             <div class="status-info">
-                <span id="online-status" class="status ${online ? "online" : "offline"}">${online ? "🟢" : "🔴"}</span>
-                <span id="username" class="username">${user.Name} </span>
-                <span> ${user.LastMessage} </span>
-                <span> ${user.Time !== '0001-01-01T00:00:00Z' ? user.Time : ""} </span>
+                <span id="online-status" class="status ${online ? "online" : "offline"}">${online ? "🟢" : "🔴"} ${user.Name}</span>
+                <span class="lastmessage"> ${user.LastMessage} </span>
+                <span class="timestamp">${user.LastMessage ? new Date(user.Time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
             </div>
             <div class="notification hide"><span class="notification-counter">0</span></div>`
             return bar
@@ -291,7 +288,7 @@ export class BASE {
     afterRender() {
         this.renderSidebar();
         this.setupAuthNav(this);
-        this.setupSidebar();
+        // this.setupSidebar();
         this.setupNavigation(this);
     }
 }

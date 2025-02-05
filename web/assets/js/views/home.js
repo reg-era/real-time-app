@@ -44,7 +44,7 @@ export class Home extends BASE {
                 const documentHeight = document.documentElement.scrollHeight;
                 const windowHeight = window.innerHeight;
                 if (scrollPosition + windowHeight >= documentHeight - 10) {
-                    await this.debouncedRenderPage();
+                    this.debouncedRenderPage();
                 }
             });
         }
@@ -57,6 +57,6 @@ export class Home extends BASE {
         this.base.renderSidebar()
         this.setupAuthNav(this.base);
         this.base.setupNavigation(this.base);
-        this.setupSidebar();
+        // this.setupSidebar();
     }
 }

@@ -54,9 +54,9 @@ export class Login extends BASE {
                     <h2>Login</h2>
                     <form id="login-form">
                         <div class="form-group">
-                            <label for="login-username">Username:</label>
+                            <label for="login-username">Username or Email:</label>
                             <input type="text" id="login-username" name="username" 
-                                placeholder="Enter your username"
+                                placeholder="Enter your username or Email"
                                 minlength="5" maxlength="30" required>
                         </div>
                         <div class="form-group">

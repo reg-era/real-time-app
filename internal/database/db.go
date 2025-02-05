@@ -285,39 +285,6 @@ func LinkPostWithCategory(transaction *sql.Tx, categories []string, postId int64
 	return nil
 }
 
-///////// only for messages ////////////
-
-// func GetAllFriends(db *sql.DB, userId int) ([]string, error) {
-// 	query := `
-// 	SELECT username FROM users
-// 	WHERE id IN (
-// 		SELECT DISTINCT sender_id FROM messages WHERE receiver_id = ?
-// 		UNION
-// 		SELECT DISTINCT receiver_id FROM messages WHERE sender_id = ?
-// 	);
-// 	`
-// 	rows, err := utils.QueryRows(db, query, userId, userId)
-// 	if err != nil {
-// 		return nil, errors.New(err.Error())
-// 	}
-// 	defer rows.Close()
-
-// 	var friends []string
-// 	for rows.Next() {
-// 		var friend string
-// 		err := rows.Scan(&friend)
-// 		if err != nil {
-// 			return nil, errors.New(err.Error())
-// 		}
-// 		friends = append(friends, friend)
-// 	}
-// 	if err = rows.Err(); err != nil {
-// 		return nil, errors.New(err.Error())
-// 	}
-
-// 	return friends, nil
-// }
-
 func GetFriends(db *sql.DB, userId int) ([]int, error) {
 	query := `
 	SELECT id FROM users
