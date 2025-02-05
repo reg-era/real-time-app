@@ -39,25 +39,28 @@ export class Router {
                 const html = await view.renderHtml();
                 const appElement = document.querySelector('.app');
                 appElement.innerHTML = html;
-                appElement.setAttribute('page', 'error');
+                if (typeof view.init === 'function') {
+                    await view.init();
+                }
                 if (typeof view.afterRender === 'function') {
-                    view.afterRender();
+                    await view.afterRender();
                 }
                 return;
-            } else {
-                const appElement = document.querySelector('.app');
-                const view = new route.view(this.base);
-                this.page = view;
-                if (appElement.getAttribute('page') !== route.name && hasSession) {
-                    const html = await view.renderHtml();
-                    appElement.innerHTML = html;
-                    appElement.setAttribute('page', route.name);
-                    if (typeof view.afterRender === 'function') {
-                        view.afterRender();
-                    }
+            }
+            const appElement = document.querySelector('.app');
+            const view = new route.view(this.base);
+            this.page = view;
+            if (appElement.getAttribute('page') !== route.name && hasSession) {
+                const html = await view.renderHtml();
+                appElement.innerHTML = html;
+                appElement.setAttribute('page', route.name);
+                if (typeof view.init === 'function') {
+                    await view.init();
+                }
+                if (typeof view.afterRender === 'function') {
+                    await view.afterRender();
                 }
             }
-
         } else {
             // Handle 404 case
             const errorView = new Error("404", this.base);

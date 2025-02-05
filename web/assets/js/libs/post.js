@@ -1,33 +1,16 @@
 import { initializeCommentSection } from "./comment.js";
 import { reactToggle, getReactInfo } from "./likes.js";
 
-export const GetData = async (postIds = false) => {
-    if (postIds == null) {
-        return;
-    }
+export const GetData = async () => {
+    let postIds = [];
     try {
-        if (postIds === false) {
-            postIds = [];
-            let response = await fetch('api/posts');
-            if (!response.ok) throw new Error("Network response was not ok");
-            let lastPostId = await response.json();
-            for (let postId = 1; postId <= lastPostId; postId++) {
-                postIds.push(postId);
-            }
+        let response = await fetch('api/posts');
+        if (!response.ok) throw new Error("Network response was not ok");
+        let lastPostId = await response.json();
+        for (let postId = 1; postId <= lastPostId; postId++) {
+            postIds.push(postId);
         }
-
-        const body = await renderPage(postIds);
-        return body
-        // const debouncedRenderPage = debounce(renderPage, 1000)
-        // 
-        // window.addEventListener('scroll', () => {
-        // const scrollPosition = window.scrollY;
-        // const documentHeight = document.documentElement.scrollHeight;
-        // const windowHeight = window.innerHeight;
-        // if (scrollPosition + windowHeight >= documentHeight - 10) {
-        // debouncedRenderPage(postIds, postsContainer)
-        // }
-        // });
+        return postIds
     } catch (err) {
         console.error(err);
     }
