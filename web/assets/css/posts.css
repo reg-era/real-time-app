@@ -22,6 +22,7 @@
     font-size: 24px;
     font-weight: bold;
     color: #333;
+    background-color: white;
 }
 
 .post-meta {
@@ -33,13 +34,15 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 10px;
+    background-color: white;
 }
 
 .post-meta .author {
     font-size: 24px;
-    color: #c59e00;
+    color: black;
     flex: 1;
     text-align: left;
+    background-color: white;
 }
 
 .post-meta .categories,
@@ -57,6 +60,7 @@
     overflow-wrap: break-word;
     word-break: break-word;
     hyphens: auto;
+    background-color: white;
 }
 
 .reaction-section {
@@ -66,6 +70,7 @@
     margin-top: 20px;
     flex-wrap: wrap;
     gap: 10px;
+    background-color: white;
 }
 
 .reaction-buttons {

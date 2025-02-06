@@ -26,7 +26,7 @@ var Upgrader = websocket.Upgrader{
 type Client struct {
 	Id   int
 	Conn *websocket.Conn
-	Send chan utils.Message
+	// Send chan utils.Message
 }
 
 type Friend struct {

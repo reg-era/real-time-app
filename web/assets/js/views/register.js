@@ -1,6 +1,5 @@
-// import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
-
+import { handleResize } from "../libs/script.js";
 export class Register extends BASE {
     constructor(app) {
         super();
@@ -123,6 +122,7 @@ export class Register extends BASE {
         this.setupSidebar();
         this.setupNavigation(this.base);
         this.setListners();
+        handleResize();
     }
 }
 

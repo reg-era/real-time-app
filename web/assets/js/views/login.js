@@ -1,6 +1,5 @@
-// import { app } from "../main.js";
 import { BASE } from "./_BASE.js";
-
+import { handleResize } from "../libs/script.js";
 export class Login extends BASE {
     constructor(app) {
         super();
@@ -80,7 +79,9 @@ export class Login extends BASE {
 
     afterRender() {
         this.setListeners();
-        // super.afterRender();
         this.setupNavigation(this.base);
+        this.setupSidebar();
+        handleResize();
+
     }
 }

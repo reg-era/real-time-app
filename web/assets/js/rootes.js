@@ -50,11 +50,8 @@ export class Router {
             const appElement = document.querySelector('.app');
             const view = new route.view(this.base);
             this.page = view;
-
             const html = await view.renderHtml();
             appElement.innerHTML = html;
-            console.log(html);
-
             appElement.setAttribute('page', route.name);
             if (typeof view.init === 'function') {
                 await view.init();

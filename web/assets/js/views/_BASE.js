@@ -1,6 +1,5 @@
 import { handleResize, debounce } from "../libs/script.js";
 import { popup } from "./popup.js";
-// import { validCookies } from "../main.js";
 
 export class BASE {
     constructor(params) {
@@ -71,9 +70,6 @@ export class BASE {
             console.log('WebSocket closed:', event.code, event.reason);
         };
 
-        this.connection.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
     }
 
     setupConnReader() {
@@ -186,10 +182,10 @@ export class BASE {
     getSidebar() {
         return `
         <aside class="sidebar-for-min">
-        <span href="/new-post" class="creat-post-sidebar" data-link>Create Post</span>
-        ${this.getOnlineBar()}
+        <span href="/new-post" class="creat-post" data-link>Create Post</span>
+        <nav class="sidebar-nav">
+        </nav>
         </aside>
-        ${this.getOnlineBar()}
         `;
     }
 
@@ -213,8 +209,6 @@ export class BASE {
         return `
         <aside class="onligne-bar">
             <nav class="sidebar-nav">
-                <div class="loading-indicator">Loading users...</div>
-                ${this.renderSidebar()}
             </nav>
         </aside>
         `;
@@ -250,36 +244,24 @@ export class BASE {
             }
         });
     }
-    
+
     renderSidebar() {
-        const makeBar = (online, user) => {
-            const bar = document.createElement('div')
-            bar.setAttribute('data-mssg-link', null)
-            bar.id = user.Name
-            bar.classList.add('status-bar')
-            bar.innerHTML = `
-            <div class="status-info">
-                <span id="online-status" class="status ${online ? "online" : "offline"}">${online ? "🟢" : "🔴"} ${user.Name}</span>
-                <span class="lastmessage"> ${user.LastMessage} </span>
-                <span class="timestamp">${user.LastMessage ? new Date(user.Time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
-            </div>
-            <div class="notification hide"><span class="notification-counter">0</span></div>`
-            return bar
-        }
-
         try {
-            const sidebar = document.querySelector('.onligne-bar .sidebar-nav');
-            if (!sidebar) {
-                // console.error('Sidebar element not found');
-                return;
-            }
-
-            sidebar.innerHTML = '';
-
+            //this for online bar 
+            let onlinebar = document.querySelector('.onligne-bar');
+            const nav = onlinebar.querySelector('.sidebar-nav');
+            nav.innerHTML = '';
             if (Array.isArray(this.users.Friends)) {
-                this.users.Friends.forEach(user => sidebar.appendChild(makeBar(user.Online, user)));
+                this.users.Friends.forEach(user => nav.appendChild(makeBar(user.Online, user)));
             }
-
+            //this for side bar hiden
+            const sidebar = document.querySelector('.sidebar-for-min');
+            const navbar = sidebar.querySelector('.sidebar-nav');
+            navbar.innerHTML = '';
+            if (Array.isArray(this.users.Friends)) {
+                this.users.Friends.forEach(user => navbar.appendChild(makeBar(user.Online, user)));
+            }
+            handleResize();
         } catch (error) {
             console.error('Error rendering sidebar:', error);
             const sidebar = document.querySelector('.onligne-bar .sidebar-nav');
@@ -323,4 +305,19 @@ function showNotification(message) {
     setTimeout(() => {
         notification.remove();
     }, 5000);
+}
+
+function makeBar(online, user) {
+    const bar = document.createElement('div')
+    bar.setAttribute('data-mssg-link', null)
+    bar.id = user.Name
+    bar.classList.add('status-bar')
+    bar.innerHTML = `
+    <div class="status-info">
+        <span id="online-status" class="username">${online ? "🟢" : "🔴"} ${user.Name}</span>
+        <span class="lastmessage"> ${user.LastMessage} </span>
+        <span class="timestamp">${user.LastMessage ? new Date(user.Time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+    </div>
+    <div class="notification hide"><span class="notification-counter">0</span></div>`
+    return bar
 }

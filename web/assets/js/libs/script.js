@@ -3,13 +3,24 @@ export function handleResize() {
     const sideBar = document.querySelector('.sidebar-for-min');
     const postContainer = document.querySelector('.posts');
     const createPost = document.querySelector('.create-post');
+    const onlinebar = document.querySelector('.onligne-bar');
+    const bottonCreat = document.querySelector('.creat-post');
 
+    if (window.location.pathname === '/login' || window.location.pathname === '/register') {
+        bottonCreat.style.display = 'none';
+        // the function handlesize is not called in login page and register
+        return
+    }
     if (menuButton) {
         if (window.innerWidth <= 1200) {
             if (window.location.pathname === '/login' || window.location.pathname === '/register') {
+                bottonCreat.style.display = 'none';
+                // the function handlesize is not called in login page and register
                 return
             }
             menuButton.style.display = 'block';
+            onlinebar.style.display = 'none';
+            bottonCreat.style.display = 'none';
             if (sideBar) {
                 sideBar.classList.add('hide');
             }
@@ -21,6 +32,9 @@ export function handleResize() {
             }
         } else {
             menuButton.style.display = 'none';
+            onlinebar.style.display = 'block';
+            bottonCreat.style.display = 'block';
+
             if (sideBar) {
                 if (!sideBar.classList.contains('hide')) {
                     sideBar.classList.add('hide');
