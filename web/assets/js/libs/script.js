@@ -40,12 +40,6 @@ export function handleResize() {
                     sideBar.classList.add('hide');
                 }
             }
-            if (postContainer) {
-                postContainer.style.marginLeft = '250px';
-            }
-            if (createPost) {
-                createPost.style.marginLeft = '250px';
-            }
         }
     }
 }

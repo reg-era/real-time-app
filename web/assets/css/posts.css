@@ -2,7 +2,7 @@
     width: 100%;
     max-width: 800px;
     /* Adjust this value based on your desired post width */
-    margin: 0 auto;
+    margin: 50px auto;
     display: flex;
     flex-direction: column;
     gap: 20px;

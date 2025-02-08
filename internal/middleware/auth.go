@@ -4,28 +4,35 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"forum/internal/database"
 	"forum/internal/utils"
 )
 
+type visitor struct {
+	requests []time.Time
+	lastSeen time.Time
+	mu       sync.Mutex
+}
+
+type Limiter struct {
+	visitors    map[string]*visitor
+	mu          sync.RWMutex
+	maxRequests int
+	window      time.Duration
+	cleanup     time.Duration
+}
+
+
 type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int)
 
-func AuthMiddleware(db *sql.DB, next customHandler, login bool) http.Handler {
+func AuthMiddleware(db *sql.DB, next customHandler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		isConstentJson := r.Header.Get("Content-Type") == "application/json"
 		userId, err := ValidUser(r, db)
 		if err != nil {
 			if err == http.ErrNoCookie {
-				if isConstentJson {
-					utils.RespondWithJSON(w, http.StatusUnauthorized, `{"error":"Unauthorized"}`)
-					return
-				}
-				if login {
-					next(w, r, db, userId)
-					return
-				}
 				utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
 				return
 			} else if err == sql.ErrNoRows {
@@ -35,14 +42,6 @@ func AuthMiddleware(db *sql.DB, next customHandler, login bool) http.Handler {
 					Value:   "",
 					Expires: time.Unix(0, 0),
 				})
-				if isConstentJson {
-					utils.RespondWithJSON(w, http.StatusUnauthorized, `{"error":"Unauthorized"}`)
-					return
-				}
-				if login {
-					next(w, r, db, userId)
-					return
-				}
 				utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
 				return
 			} else {
