@@ -7,6 +7,7 @@
     height: 80vh;
     width: 90%;
     max-width: 800px;
+    background-color: transparent;
 }
 
 .messages-section {
@@ -30,13 +31,26 @@
 }
 
 .message-input {
+    /* height: 100%;
+    width: 100%;
+    padding: 20px;
+    border-radius: 7px;
+    border: 3px; */
+    background: transparent;
+    border-radius: 7px;
+
+    /* border-bottom: 2px solid var(--yellow); */
+    /* font-size: 18px; */
+}
+
+.message-input1 {
     height: 100%;
     width: 100%;
     padding: 20px;
-    border-radius: 12px;
-    border: 3px;
-    background: var(--white);
-    border-bottom: 2px solid var(--yellow);
+    border-radius: 7px;
+    /* border: 3px; */
+    background: white;
+    /* border-bottom: 2px solid var(--yellow); */
     font-size: 18px;
 }
 
@@ -55,9 +69,14 @@
 }
 
 .message.receiver {
-    background-color: var(--yellow);
+    background-color: var(--gray);
     color: var(--white);
     align-self: flex-end;
+}
+
+.message.sender {
+    background-color: var(--gray);
+    color: var(--white);
 }
 
 .error-comment {
@@ -94,19 +113,24 @@ body.has-overlay {
     border-radius: 3px;
 }
 
-.message-header {
+.message-header,
+p {
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: #777;
+    color: white;
+    background-color: var(--gray);
 }
 
 .username-message {
     font-weight: bold;
     font-size: 14px;
-    color: black;
+    color: white;
+    background-color: var(--gray);
+
 }
 
-.timestamp {
-    color: #888;
+.timestamp-mssg {
+    color: #bbb;
+    background-color: var(--gray);
 }

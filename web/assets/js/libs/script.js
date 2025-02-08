@@ -12,7 +12,7 @@ export function handleResize() {
         return
     }
     if (menuButton) {
-        if (window.innerWidth <= 1200) {
+        if (window.innerWidth <= 900) {
             if (window.location.pathname === '/login' || window.location.pathname === '/register') {
                 bottonCreat.style.display = 'none';
                 // the function handlesize is not called in login page and register

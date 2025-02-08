@@ -30,8 +30,8 @@ export class Home extends BASE {
             <main>
                 ${this.base.getSidebar()}
                 <section class="posts">
-                </section>
                 ${this.getOnlineBar()}
+                </section>
             </main>
         `;
     }

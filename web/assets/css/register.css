@@ -3,6 +3,13 @@
     justify-content: center;
     align-items: center;
     min-height: 80vh;
+    width: 100%;
+    margin-top: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background-color: transparent;
 }
 
 .signup {
@@ -17,10 +24,23 @@
     text-align: center;
 }
 
+.login-link {
+    background-color: white;
+    margin-top: 5%;
+}
+
+.login-link a {
+    /* background-color: white; */
+    text-decoration: none;
+    color: var(--black);
+    /* margin-top: 5%; */
+}
+
 .signup h2 {
     font-size: 28px;
     color: var(--black);
     margin-bottom: 25px;
+    background-color: white;
 }
 
 .form-group {
@@ -32,6 +52,7 @@
     margin-bottom: 8px;
     color: var(--gray);
     font-weight: bold;
+    background-color: white;
 }
 
 .form-group input {
@@ -54,7 +75,7 @@ button[type="submit"] {
     width: 100%;
     padding: 12px;
     background-color: var(--yellow);
-    color: var(--black);
+    color: white;
     border: none;
     border-radius: 6px;
     font-size: 18px;

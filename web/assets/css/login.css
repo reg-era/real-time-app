@@ -1,9 +1,16 @@
 .container {
     width: 100%;
+    margin-top: 5%;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 80vh;
+    background-color: transparent;
+    /* color: transparent; */
+}
+
+body {
+    background-color: transparent;
 }
 
 .login {
@@ -16,16 +23,19 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
     text-align: center;
+    background-color: white;
 }
 
 .login h2 {
     font-size: 28px;
     color: var(--black);
     margin-bottom: 25px;
+    background-color: white;
 }
 
 .form-group {
     margin-bottom: 20px;
+    background-color: white;
 }
 
 .form-group label {
@@ -33,6 +43,7 @@
     margin-bottom: 8px;
     color: var(--gray);
     font-weight: bold;
+    background-color: white;
 }
 
 .form-group input {
@@ -55,7 +66,7 @@ button[type="submit"] {
     width: 100%;
     padding: 12px;
     background-color: var(--yellow);
-    color: var(--black);
+    color: var(--white);
     border: none;
     border-radius: 6px;
     font-size: 18px;
@@ -72,14 +83,25 @@ button[type="submit"]:hover {
     margin-top: 20px;
     font-size: 16px;
     color: var(--gray);
+    background-color: white;
 }
 
 .signup-link a {
     color: var(--yellow);
     text-decoration: none;
     font-weight: bold;
+    background-color: white;
 }
 
 .signup-link a:hover {
     text-decoration: underline;
+}
+
+form {
+    background-color: white;
+}
+
+footer p {
+    background-color: var(--yellow);
+    color: white;
 }

@@ -21,7 +21,7 @@ export class popup {
         const inputMessage = document.createElement('div')
         inputMessage.classList.add('messages-input');
         inputMessage.innerHTML = `
-            <input required placeholder="Type message ..." class="message-input"></input>
+            <input required placeholder="Type message ..." class="message-input1"></input>
             <p class="error-comment"></p>`;
 
         try {
@@ -50,7 +50,7 @@ export class popup {
                     messageCompon.innerHTML = `
                     <div class="message-header">
                         <span class="username-message">${data[i].IsSender ? data[i].sender_name : name}</span>
-                        <span class="timestamp">${new Date(data[i].CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span class="timestamp-mssg">${new Date(data[i].CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     <p>${data[i].Message}</p>`
                     allMessages.appendChild(messageCompon);
@@ -84,7 +84,7 @@ export class popup {
     setupConversation(name) {
         const allMessages = document.querySelector('.messages-section');
         const username = document.get
-        const send = document.querySelector('.message-input');
+        const send = document.querySelector('.message-input1');
         document.addEventListener("keydown", async (event) => {
             if (event.key === "Enter" && !event.shiftKey) {
                 const message = send.value.trim();

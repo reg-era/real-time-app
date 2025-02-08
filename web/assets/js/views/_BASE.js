@@ -183,7 +183,7 @@ export class BASE {
         return `
         <aside class="sidebar-for-min">
         <span href="/new-post" class="creat-post" data-link>Create Post</span>
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav-inside">
         </nav>
         </aside>
         `;
@@ -256,7 +256,7 @@ export class BASE {
             }
             //this for side bar hiden
             const sidebar = document.querySelector('.sidebar-for-min');
-            const navbar = sidebar.querySelector('.sidebar-nav');
+            const navbar = sidebar.querySelector('.sidebar-nav-inside');
             navbar.innerHTML = '';
             if (Array.isArray(this.users.Friends)) {
                 this.users.Friends.forEach(user => navbar.appendChild(makeBar(user.Online, user)));
