@@ -285,6 +285,7 @@ function showNotification(message) {
 
     notification.innerHTML = `
         ${message.Message}
+      <span>  ${message.sender_name}</span>
         <span class="close-btn">&times;</span>
     `;
 

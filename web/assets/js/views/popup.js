@@ -103,7 +103,7 @@ export class popup {
                         messageCompon.innerHTML = messageCompon.innerHTML = `
                         <div class="message-header">
                           <span class="username-message">${username}</span>
-                          <span class="timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          <span class="timestamp-mssg">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                         <p>${message}</p>`
                         document.querySelector('.messages-section').appendChild(messageCompon);
