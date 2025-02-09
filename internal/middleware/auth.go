@@ -25,6 +25,15 @@ type Limiter struct {
 	cleanup     time.Duration
 }
 
+func newlimiter() *Limiter {
+	return &Limiter{
+		visitors: make(map[string]*visitor),
+	}
+}
+
+// func (l *Limiter) isSafeUser() bool {
+
+// }
 
 type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int)
 
