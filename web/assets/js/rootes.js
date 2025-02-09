@@ -21,7 +21,6 @@ export class Router {
         const route = this.routes.find(r => r.path === path);
         const hasSession = await validCookies();
 
-        // console.log(hasSession);
 
         if (route) {
             if (!hasSession.valid) {
@@ -70,6 +69,17 @@ export class Router {
             if (typeof errorView.afterRender === 'function') {
                 errorView.afterRender();
             }
+        }
+    }
+
+    async handleError(type) {
+        const errorView = new Error(type, this.base);
+        const html = await errorView.renderHtml();
+        const appElement = document.querySelector('.app');
+        appElement.innerHTML = html;
+        appElement.setAttribute('page', 'error');
+        if (typeof errorView.afterRender === 'function') {
+            errorView.afterRender();
         }
     }
 

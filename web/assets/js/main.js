@@ -5,9 +5,7 @@ async function main() {
     const app = new BASE();
     app.router = new Router(app);
 
-    // Pass the function reference instead of executing it
-    document.addEventListener('popstate', () => {
-        console.log('test');
+    window.addEventListener('popstate', () => {
         app.router.handleRoute()
     });
 

@@ -50,7 +50,7 @@ export class Error extends BASE {
             <section class="container">
                 <div class="error-message">
                     <h1>Oops! ${this.statusMsg} (${this.statusError})</h1>
-                    <p>${this.errorMsg}</p>
+                    <p class="error-msg">${this.errorMsg}</p>
                     <button class="err-button" href="/" data-link>Go to Home</button>
                 </div>
             </section>

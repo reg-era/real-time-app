@@ -26,17 +26,10 @@ export class popup {
 
         try {
             const res = await fetch(`/api/messages?section=message&name=${name}`);
-            // if (!res.ok) {
-            //     const pageerror = new Error('500', this.base)
-            //     const html = await errorView.renderHtml();
-            //     const appElement = document.querySelector('.app');
-            //     appElement.innerHTML = html;
-            //     appElement.setAttribute('page', 'error');
-            //     if (typeof errorView.afterRender === 'function') {
-            //         errorView.afterRender();
-            //     }
-            //     return
-            // }
+            if (!res.ok) {
+                await this.base.router.handleError('500');
+                return
+            }
             const data = await res.json()
 
             const allMessages = document.createElement('div')
