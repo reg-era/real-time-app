@@ -38,7 +38,6 @@ export class Home extends BASE {
 
     async listenerstoscroll() {
         console.log(this.debouncedRenderPage);
-
         if (this.listener === null) {
             this.listener = window.addEventListener('scroll', async () => {
                 const scrollPosition = window.scrollY;

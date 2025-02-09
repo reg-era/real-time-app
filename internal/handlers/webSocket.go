@@ -78,6 +78,5 @@ func checkForValue(userValue int, users map[*websocket.Client]int) (bool, *webso
 			return true, c
 		}
 	}
-
 	return false, nil
 }

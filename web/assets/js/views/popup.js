@@ -1,4 +1,5 @@
 import { validCookies } from "../main.js";
+import { debounce } from "../libs/script.js";
 
 export class popup {
     constructor(app) {
@@ -34,20 +35,25 @@ export class popup {
 
             const allMessages = document.createElement('div')
             allMessages.classList.add('messages-section');
+            // console.log(data);
+
             if (data) {
-                for (let i = 0; i < data.length; i++) {
-                    const messageCompon = document.createElement('div');
-                    messageCompon.classList.add('message');
-                    messageCompon.id = name;
-                    data[i].IsSender ? messageCompon.classList.add('receiver') : messageCompon.classList.add('sender');
-                    messageCompon.innerHTML = `
-                    <div class="message-header">
-                        <span class="username-message">${data[i].IsSender ? data[i].sender_name : name}</span>
-                        <span class="timestamp-mssg">${new Date(data[i].CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                    </div>
-                    <p>${data[i].Message}</p>`
-                    allMessages.appendChild(messageCompon);
-                }
+                const debounceComment = debounce((data, allMessages) => {
+                    printMessages(data, allMessages);
+                }, 800);
+
+                printMessages(data, allMessages);
+
+                allMessages.addEventListener('scroll', (event) => {
+                    const scrollPosition = allMessages.scrollTop;
+                    const containerHeight = allMessages.scrollHeight;
+                    const visibleHeight = allMessages.clientHeight;
+
+                    // Check if the scroll position is near the middle of the data
+                    if (scrollPosition + visibleHeight >= containerHeight / 2) {
+                        debounceComment(data, allMessages);
+                    }
+                });
             }
 
             popMessage.append(allMessages, inputMessage);
@@ -108,5 +114,26 @@ export class popup {
                 }
             }
         })
+    }
+}
+
+function printMessages(data, allMessages) {
+    let i = 0;
+    while (data.length > 0 && i < 10) {
+        const mssg = data.pop();
+        console.log(mssg);
+
+        const messageCompon = document.createElement('div');
+        messageCompon.classList.add('message');
+        messageCompon.id = name;
+        mssg.IsSender ? messageCompon.classList.add('receiver') : messageCompon.classList.add('sender');
+        messageCompon.innerHTML = `
+        <div class="message-header">
+            <span class="username-message">${mssg.IsSender ? mssg.sender_name : name}</span>
+            <span class="timestamp-mssg">${new Date(mssg.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        <p>${mssg.Message}</p>`
+        allMessages.insertBefore(messageCompon, allMessages.firstChild);
+        i++;
     }
 }

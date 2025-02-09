@@ -26,7 +26,6 @@ var Upgrader = websocket.Upgrader{
 type Client struct {
 	Id   int
 	Conn *websocket.Conn
-	// Send chan utils.Message
 }
 
 type Friend struct {
@@ -45,11 +44,6 @@ type WebSocketMessage struct {
 	Type  string `json:"Type"`
 	Users Users  `json:"users"`
 }
-
-// type ListOfusers struct {
-// 	Sender_id int
-// 	Content   WebSocketMessage
-// }
 
 type websocketmsg struct {
 	Type    string        `json: "Type"`

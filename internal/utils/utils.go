@@ -23,8 +23,6 @@ type User struct {
 	Expiration           time.Time `json:"expiration,omitempty"`
 }
 
-// {"username":"asdasdasd","email":"ajdndsf@hdsjnfsd.df","password":"111111111","confirmPassword":"111111111","Age":"121","Gender":"Male","Last_Name":"ddddddd","First_Name":"sadd"}
-
 type Post struct {
 	PostId     int
 	UserId     int
@@ -48,7 +46,6 @@ type Message struct {
 	Message    string    `json:"Message"`
 	CreatedAt  time.Time `json:"CreatedAt"`
 	IsSender   bool      `json:"IsSender"`
-
 	SenderName string `json:"sender_name"`
 }
 

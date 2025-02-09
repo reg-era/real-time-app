@@ -32,7 +32,14 @@ func newlimiter() *Limiter {
 }
 
 // func (l *Limiter) isSafeUser() bool {
+// 	l.mu.Lock()
+// 	defer func ()  {
+// 		l.mu.Unlock()
+// 		return
+// 	}
+// 	for user := range l.visitors {
 
+// 	}
 // }
 
 type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int)
