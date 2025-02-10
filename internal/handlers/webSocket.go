@@ -32,7 +32,7 @@ func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hu
 	hub.Register <- newclient
 
 	// locking map to check if user exist slow the regitration process
-	time.Sleep(100 * time.Millisecond)
+	// time.Sleep(100 * time.Millisecond)
 
 	defer func() {
 		hub.Unregister <- newclient

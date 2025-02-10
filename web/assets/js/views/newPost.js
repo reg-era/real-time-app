@@ -1,4 +1,5 @@
 // import { app } from "../main.js";
+import { handleResize } from "../libs/script.js";
 import { BASE } from "./_BASE.js";
 
 export class NewPost extends BASE {
@@ -12,7 +13,6 @@ export class NewPost extends BASE {
     }
 
     setListners() {
-
         if (this.listenerSet) return; // just to be sure the lisner i call one time
         this.listenerSet = true;
         const self = this;
@@ -89,6 +89,7 @@ export class NewPost extends BASE {
         const html = `
         ${this.getHtmlBase()}
         <main>
+        ${this.base.getSidebar()}
             <section class="create-post">
                 <h2>Create a New Post</h2>
                 <form id="createPostForm" >
@@ -103,6 +104,7 @@ export class NewPost extends BASE {
                     <p id="responseMessage"></p>
                 </form>
             </section>
+         ${this.base.getOnlineBar()}
         </main>
         `;
 
@@ -115,5 +117,7 @@ export class NewPost extends BASE {
         this.base.setupNavigation(this.base);
         this.base.setupSidebar();
         this.setListners();
+        this.base.renderSidebar();
+        // handleResize();
     }
 }
