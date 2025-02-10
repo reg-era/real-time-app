@@ -85,6 +85,10 @@
     margin-top: 5px;
 }
 
+.seemore {
+    cursor: pointer;
+}
+
 .over-layer {
     position: fixed;
     top: 0;
