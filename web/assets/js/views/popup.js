@@ -35,27 +35,39 @@ export class popup {
 
             const allMessages = document.createElement('div')
             allMessages.classList.add('messages-section');
-            // console.log(data);
-
             if (data) {
-                const debounceComment = debounce((data, allMessages) => {
-                    printMessages(data, allMessages);
-                }, 800);
-
-                printMessages(data, allMessages);
-
-                allMessages.addEventListener('scroll', (event) => {
-                    const scrollPosition = allMessages.scrollTop;
-                    const containerHeight = allMessages.scrollHeight;
-                    const visibleHeight = allMessages.clientHeight;
-
-                    // Check if the scroll position is near the middle of the data
-                    if (scrollPosition + visibleHeight >= containerHeight / 2) {
-                        debounceComment(data, allMessages);
+                // Store original data to avoid mutation
+                let messageQueue = [...data];
+                const BATCH_SIZE = 10;
+                const loadMoreMessages = debounce((container) => {
+                    // Remove existing "See More" button
+                    const existingButton = container.querySelector('.seemore');
+                    if (existingButton) {
+                        existingButton.remove();
                     }
-                });
-            }
 
+                    // Get next batch of messages
+                    const nextBatch = messageQueue.splice(-BATCH_SIZE);
+
+                    if (nextBatch.length > 0) {
+                        insertMessages(nextBatch, container);
+
+                        // Only add "See More" if there are more messages
+                        if (messageQueue.length > 0) {
+                            const seeMoreButton = document.createElement('div');
+                            seeMoreButton.className = 'seemore';
+                            seeMoreButton.textContent = `See More (${messageQueue.length} remaining)`;
+                            container.insertBefore(seeMoreButton, container.firstChild);
+
+                            // Add click handler to new button
+                            seeMoreButton.addEventListener('click', () => loadMoreMessages(container));
+                        }
+                    }
+                }, 500);
+
+                // Initial load
+                loadMoreMessages(allMessages);
+            }
             popMessage.append(allMessages, inputMessage);
 
             const over = document.createElement('div')
@@ -117,23 +129,28 @@ export class popup {
     }
 }
 
-function printMessages(data, allMessages) {
-    let i = 0;
-    while (data.length > 0 && i < 10) {
-        const mssg = data.pop();
-        console.log(mssg);
+function insertMessages(messages, container) {
+    // Store current scroll position
+    const currentScroll = container.scrollTop;
+    const prevHeight = container.scrollHeight;
 
+    messages.forEach(mssg => {
         const messageCompon = document.createElement('div');
         messageCompon.classList.add('message');
         messageCompon.id = name;
-        mssg.IsSender ? messageCompon.classList.add('receiver') : messageCompon.classList.add('sender');
+        messageCompon.classList.add(mssg.IsSender ? 'receiver' : 'sender');
         messageCompon.innerHTML = `
-        <div class="message-header">
-            <span class="username-message">${mssg.IsSender ? mssg.sender_name : name}</span>
-            <span class="timestamp-mssg">${new Date(mssg.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-        </div>
-        <p>${mssg.Message}</p>`
-        allMessages.insertBefore(messageCompon, allMessages.firstChild);
-        i++;
+      <div class="message-header">
+        <span class="username-message">${mssg.IsSender ? mssg.sender_name : name}</span>
+        <span class="timestamp-mssg">${new Date(mssg.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      </div>
+      <p>${mssg.Message}</p>`;
+        container.insertBefore(messageCompon, container.firstChild);
+    });
+
+    // Maintain scroll position
+    const newHeight = container.scrollHeight;
+    if (newHeight !== prevHeight) {
+        container.scrollTop = currentScroll + (newHeight - prevHeight);
     }
-}
+};

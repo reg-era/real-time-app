@@ -28,7 +28,6 @@ export class Router {
                     this.base.connection.close();
                 }
                 if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-                    console.log(window.location.pathname);
                     history.pushState(null, null, '/login');
                 }
                 const newroute = this.routes.find(r => r.path === window.location.pathname);

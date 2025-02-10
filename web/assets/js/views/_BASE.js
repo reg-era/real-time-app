@@ -248,8 +248,6 @@ export class BASE {
 
     renderSidebar() {
         try {
-            console.log(this.users.Friends);
-
             //this for online bar 
             let onlinebar = document.querySelector('.onligne-bar');
             const nav = onlinebar.querySelector('.sidebar-nav');
