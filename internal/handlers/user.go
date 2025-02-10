@@ -7,11 +7,13 @@ import (
 	"forum/internal/database"
 	utils "forum/internal/utils"
 
+	websocket "forum/internal/ws"
+
 	"github.com/gofrs/uuid/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func MeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, websocket *websocket.Hub) {
 	if r.URL.Path == "/api/me/check-in" {
 		name, err := database.GetUserName(userId, db)
 		if err != nil {

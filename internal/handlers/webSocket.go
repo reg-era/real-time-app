@@ -12,7 +12,7 @@ import (
 	websocket "forum/internal/ws"
 )
 
-func HandleWs(w http.ResponseWriter, r *http.Request, userid int, db *sql.DB, hub *websocket.Hub) {
+func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hub *websocket.Hub) {
 	conn, err := websocket.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Printf("Failed to upgrade: %v", err)

@@ -10,9 +10,10 @@ import (
 
 	database "forum/internal/database"
 	"forum/internal/utils"
+	websocket "forum/internal/ws"
 )
 
-func PostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func PostsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, ws *websocket.Hub) {
 	id := r.URL.Query().Get("post_id")
 	if id != "" {
 		postId, err := strconv.Atoi(id)

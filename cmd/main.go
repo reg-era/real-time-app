@@ -45,7 +45,9 @@ func main() {
 	router := http.NewServeMux()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/index.html")
+		auth.AuthMiddleware(db, func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, hub *websocket.Hub) {
+			http.ServeFile(w, r, "web/index.html")
+		}, 100, time.Minute, nil, false).ServeHTTP(w, r)
 	})
 
 	router.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +62,7 @@ func main() {
 	router.HandleFunc("/api/register", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
-			handlers.RegisterHandler(w, r, db)
+			auth.AuthMiddleware(db, handlers.RegisterHandler, 1, 30*time.Second, nil, false).ServeHTTP(w, r)
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
@@ -69,7 +71,7 @@ func main() {
 	router.HandleFunc("/api/login", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
-			handlers.LoginHandler(w, r, db)
+			auth.AuthMiddleware(db, handlers.LoginHandler, 10, 30*time.Second, nil, false).ServeHTTP(w, r)
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
@@ -84,20 +86,20 @@ func main() {
 	})
 
 	router.HandleFunc("/api/posts", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "GET" {
+		if r.Method == "GET" {
+			auth.AuthMiddleware(db, handlers.PostsHandler, 300, time.Minute, nil, true).ServeHTTP(w, r)
+		} else {
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 			return
 		}
-		userId, _ := auth.ValidUser(r, db)
-		handlers.PostsHandler(w, r, db, userId)
 	})
 
 	router.HandleFunc("/api/new_post", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			auth.AuthMiddleware(db, handlers.NewPostPageHandler).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.NewPostPageHandler, 200, time.Minute, nil, true).ServeHTTP(w, r)
 		case "POST":
-			auth.AuthMiddleware(db, handlers.NewPostHandler).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.NewPostHandler, 3, time.Minute, nil, true).ServeHTTP(w, r)
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
@@ -106,10 +108,9 @@ func main() {
 	router.HandleFunc("/api/comments", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			userId, _ := auth.ValidUser(r, db)
-			handlers.GetCommentsHandler(w, r, db, userId)
+			auth.AuthMiddleware(db, handlers.GetCommentsHandler, 200, time.Minute, nil, true).ServeHTTP(w, r)
 		case "POST":
-			auth.AuthMiddleware(db, handlers.AddCommentHandler).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.AddCommentHandler, 10, time.Minute, nil, true).ServeHTTP(w, r)
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
@@ -118,11 +119,11 @@ func main() {
 	router.HandleFunc("/api/react", func(w http.ResponseWriter, r *http.Request) {
 		method := r.Method
 		if method == "GET" {
-			auth.AuthMiddleware(db, handlers.GetReactionsHandler).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.GetReactionsHandler, 100, time.Second, nil, true).ServeHTTP(w, r)
 		} else if method == "PUT" {
-			auth.AuthMiddleware(db, handlers.InsertOrUpdateReactionHandler).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.InsertOrUpdateReactionHandler, 10, time.Second, nil, true).ServeHTTP(w, r)
 		} else if method == "DELETE" {
-			auth.AuthMiddleware(db, handlers.DeleteReactionHandler).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.DeleteReactionHandler, 10, time.Second, nil, true).ServeHTTP(w, r)
 		} else {
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 			return
@@ -132,25 +133,20 @@ func main() {
 	router.HandleFunc("/api/me/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			auth.AuthMiddleware(db, handlers.MeHandler).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.MeHandler, 10, time.Second, nil, true).ServeHTTP(w, r)
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
 		}
 	})
 
 	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		userId, err := auth.ValidUser(r, db)
-		if err != nil {
-			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})
-			return
-		}
-		handlers.HandleWs(w, r, userId, db, forumHub)
+		auth.AuthMiddleware(db, handlers.HandleWs, 100, time.Minute, forumHub, true).ServeHTTP(w, r)
 	})
 
 	router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			auth.AuthMiddleware(db, handlers.GetUser).ServeHTTP(w, r)
+			auth.AuthMiddleware(db, handlers.GetUser, 100, time.Second, nil, true).ServeHTTP(w, r)
 
 		default:
 			utils.RespondWithJSON(w, http.StatusMethodNotAllowed, utils.ErrorResponse{Error: "Status Method Not Allowed"})

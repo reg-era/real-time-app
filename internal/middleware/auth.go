@@ -9,6 +9,7 @@ import (
 
 	"forum/internal/database"
 	"forum/internal/utils"
+	websocket "forum/internal/ws"
 )
 
 type visitor struct {
@@ -17,7 +18,7 @@ type visitor struct {
 	mu       sync.Mutex
 }
 
-type Limiter struct {
+type RateLimiter struct {
 	visitors    map[string]*visitor
 	mu          sync.RWMutex
 	maxRequests int
@@ -25,47 +26,110 @@ type Limiter struct {
 	cleanup     time.Duration
 }
 
-func newlimiter() *Limiter {
-	return &Limiter{
-		visitors: make(map[string]*visitor),
+func NewRateLimiter(maxRequests int, window time.Duration) *RateLimiter {
+	rl := &RateLimiter{
+		visitors:    make(map[string]*visitor),
+		maxRequests: maxRequests,
+		window:      window,
+		cleanup:     time.Hour,
+	}
+	go rl.cleanupVisitors()
+	return rl
+}
+
+func (rl *RateLimiter) cleanupVisitors() {
+	for {
+		time.Sleep(rl.cleanup)
+		rl.mu.Lock()
+		for ip, v := range rl.visitors {
+			if time.Since(v.lastSeen) > rl.cleanup {
+				delete(rl.visitors, ip)
+			}
+		}
+		rl.mu.Unlock()
 	}
 }
 
-// func (l *Limiter) isSafeUser() bool {
-// 	l.mu.Lock()
-// 	defer func ()  {
-// 		l.mu.Unlock()
-// 		return
-// 	}
-// 	for user := range l.visitors {
-
-// 	}
-// }
-
-type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int)
-
-func AuthMiddleware(db *sql.DB, next customHandler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userId, err := ValidUser(r, db)
-		if err != nil {
-			if err == http.ErrNoCookie {
-				utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
-				return
-			} else if err == sql.ErrNoRows {
-				http.SetCookie(w, &http.Cookie{
-					Name:    "session_token",
-					Path:    "/",
-					Value:   "",
-					Expires: time.Unix(0, 0),
-				})
-				utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
-				return
-			} else {
-				utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
-				return
-			}
+func (rl *RateLimiter) isAllowed(ip string) bool {
+	rl.mu.Lock()
+	v, exists := rl.visitors[ip]
+	if !exists {
+		v = &visitor{
+			requests: make([]time.Time, 0, rl.maxRequests),
 		}
-		next(w, r, db, userId)
+		rl.visitors[ip] = v
+	}
+	rl.mu.Unlock()
+
+	v.mu.Lock()
+	defer v.mu.Unlock()
+
+	now := time.Now()
+	v.lastSeen = now
+
+	windowStart := now.Add(-rl.window)
+	valid := 0
+	for _, t := range v.requests {
+		if t.After(windowStart) {
+			v.requests[valid] = t
+			valid++
+		}
+	}
+	v.requests = v.requests[:valid]
+
+	if len(v.requests) < rl.maxRequests {
+		v.requests = append(v.requests, now)
+		return true
+	}
+	return false
+}
+
+type customHandler func(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, hub *websocket.Hub)
+
+func AuthMiddleware(db *sql.DB, next customHandler, maxRequests int, window time.Duration, hub *websocket.Hub, loged bool) http.Handler {
+	rateLimiter := NewRateLimiter(maxRequests, window)
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Get IP address
+		ip := r.RemoteAddr
+		if forwardedFor := r.Header.Get("X-Forwarded-For"); forwardedFor != "" {
+			ip = forwardedFor
+		}
+
+		// Check rate limit
+		if !rateLimiter.isAllowed(ip) {
+			utils.RespondWithJSON(w, http.StatusTooManyRequests, utils.ErrorResponse{
+				Error: "Rate limit exceeded. Please try again later.",
+			})
+			return
+		}
+		// validation session
+		if loged {
+			userId, err := ValidUser(r, db)
+			if err != nil {
+				if err == http.ErrNoCookie {
+					// no session in database new user
+					utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
+					return
+				} else if err == sql.ErrNoRows {
+					// user with expirated date we clean the last session cookie
+					http.SetCookie(w, &http.Cookie{
+						Name:    "session_token",
+						Path:    "/",
+						Value:   "",
+						Expires: time.Unix(0, 0),
+					})
+					utils.RespondWithJSON(w, http.StatusUnauthorized, utils.ErrorResponse{Error: "Unauthorized"})
+					return
+				} else {
+					utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
+					return
+				}
+			}
+			next(w, r, db, userId, hub)
+		} else {
+			next(w, r, db, 0, nil)
+		}
 	})
 }
 

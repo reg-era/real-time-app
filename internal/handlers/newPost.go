@@ -10,9 +10,10 @@ import (
 
 	"forum/internal/database"
 	"forum/internal/utils"
+	websocket "forum/internal/ws"
 )
 
-func NewPostPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func NewPostPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, ws *websocket.Hub) {
 	categories, err := GetCategories(db)
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -22,7 +23,7 @@ func NewPostPageHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, user
 	utils.RespondWithJSON(w, http.StatusOK, categories)
 }
 
-func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func NewPostHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, ws *websocket.Hub) {
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		fmt.Printf("Error parsing form: %v", err)
 		utils.RespondWithJSON(w, http.StatusOK, utils.ErrorResponse{Error: "Internal Server Error"})

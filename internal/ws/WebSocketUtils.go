@@ -75,7 +75,6 @@ func (h *Hub) Run() {
 				client.Conn.Close()
 			}
 			h.Mutex.Unlock()
-
 		case message := <-h.Broadcast:
 			h.Mutex.RLock()
 			for client := range h.Clients {

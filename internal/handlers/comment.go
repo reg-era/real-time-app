@@ -12,6 +12,7 @@ import (
 
 	"forum/internal/database"
 	"forum/internal/utils"
+	websocket "forum/internal/ws"
 )
 
 type querys struct {
@@ -20,7 +21,7 @@ type querys struct {
 	from   int
 }
 
-func GetCommentsHandler(w http.ResponseWriter, r *http.Request, file *sql.DB, userId int) {
+func GetCommentsHandler(w http.ResponseWriter, r *http.Request, file *sql.DB, userId int, ws *websocket.Hub) {
 	var data querys
 	err := getDataQuery(&data, r)
 	if err != nil {
@@ -37,7 +38,7 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request, file *sql.DB, us
 	utils.RespondWithJSON(w, http.StatusOK, comments)
 }
 
-func AddCommentHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func AddCommentHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, ws *websocket.Hub) {
 	userName, err := database.GetUserName(userId, db)
 	if err != nil {
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})

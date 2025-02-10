@@ -6,9 +6,10 @@ import (
 	"net/http"
 
 	"forum/internal/utils"
+	websocket "forum/internal/ws"
 )
 
-func InsertOrUpdateReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userID int) {
+func InsertOrUpdateReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userID int, hub *websocket.Hub) {
 	r.Header.Add("content-type", "application/json")
 
 	reactionType := r.URL.Query().Get("reaction_type")
@@ -46,7 +47,7 @@ func InsertOrUpdateReactionHandler(w http.ResponseWriter, r *http.Request, db *s
 	}
 }
 
-func DeleteReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userID int) {
+func DeleteReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userID int, hub *websocket.Hub) {
 	r.Header.Add("content-type", "application/json")
 	targetType := r.URL.Query().Get("target_type")
 	id := r.URL.Query().Get("target_id")
@@ -71,7 +72,7 @@ func DeleteReactionHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, u
 	}
 }
 
-func GetReactionsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int) {
+func GetReactionsHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, hub *websocket.Hub) {
 	targetID := r.URL.Query().Get("target_id")
 	targetType := r.URL.Query().Get("target_type")
 

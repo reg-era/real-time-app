@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"regexp"
 	"time"
@@ -10,9 +11,11 @@ import (
 	"forum/internal/database"
 	middleware "forum/internal/middleware"
 	"forum/internal/utils"
+	websocket "forum/internal/ws"
 )
 
-func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, ws *websocket.Hub) {
+	fmt.Println("testes")
 	type response struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
@@ -30,7 +33,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Bad Request"})
 		return
 	}
-	
+
 	if isemail {
 		userData.Email = CredentialsUser.Username
 		userData.Password = CredentialsUser.Password

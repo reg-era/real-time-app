@@ -13,9 +13,10 @@ import (
 	"forum/internal/database"
 	middleware "forum/internal/middleware"
 	"forum/internal/utils"
+	websocket "forum/internal/ws"
 )
 
-func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
+func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, ws *websocket.Hub) {
 	var userData utils.User
 
 	if err := json.NewDecoder(r.Body).Decode(&userData); err != nil {
