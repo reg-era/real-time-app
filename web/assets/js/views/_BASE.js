@@ -260,7 +260,7 @@ export class BASE {
                             sender_name: user.Name,
                         });
                     }
-                    console.log(user);
+                    // console.log(user);
 
                     nav.appendChild(makeBar(user.Online, user));
                 });
@@ -291,6 +291,10 @@ export class BASE {
 }
 
 function showNotification(message) {
+    const notificationContainer = document.getElementById('notification-container');
+    const oldnotif = notificationContainer.querySelector(`#${message.sender_name}`);
+    if (oldnotif) oldnotif.remove();
+
     const notification = document.createElement('div');
     notification.className = 'notification';
 
@@ -303,7 +307,6 @@ function showNotification(message) {
     notification.setAttribute('data-mssg-link', null);
     notification.id = message.sender_name;
 
-    const notificationContainer = document.getElementById('notification-container');
     notificationContainer.appendChild(notification);
 
     notification.style.display = 'block';
