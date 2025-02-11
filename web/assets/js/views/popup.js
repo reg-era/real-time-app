@@ -1,5 +1,4 @@
 import { validCookies } from "../main.js";
-import { debounce } from "../libs/script.js";
 
 export class popup {
     constructor(app) {
@@ -36,37 +35,35 @@ export class popup {
             const allMessages = document.createElement('div')
             allMessages.classList.add('messages-section');
             if (data) {
-                // Store original data to avoid mutation
-                let messageQueue = [...data];
-                const BATCH_SIZE = 10;
-                const loadMoreMessages = debounce((container) => {
-                    // Remove existing "See More" button
-                    const existingButton = container.querySelector('.seemore');
-                    if (existingButton) {
-                        existingButton.remove();
-                    }
+                const BATCH_SIZE = 10
+                let nextBatch = []
 
-                    // Get next batch of messages
-                    const nextBatch = messageQueue.splice(-BATCH_SIZE);
+                const throttle = (func, delay) => {
+                    let prev = 0
 
-                    if (nextBatch.length > 0) {
-                        insertMessages(nextBatch, container, name);
-
-                        // Only add "See More" if there are more messages
-                        if (messageQueue.length > 0) {
-                            const seeMoreButton = document.createElement('div');
-                            seeMoreButton.className = 'seemore';
-                            seeMoreButton.textContent = `See More (${messageQueue.length} remaining)`;
-                            container.insertBefore(seeMoreButton, container.firstChild);
-
-                            // Add click handler to new button
-                            seeMoreButton.addEventListener('click', () => loadMoreMessages(container));
+                    return () => {
+                        const now = new Date().getTime()
+                        if (now - prev >= delay) {
+                            prev = now
+                            func()
                         }
                     }
-                }, 500);
+                }
 
-                // Initial load
-                loadMoreMessages(allMessages);
+                const loadMoreMessages = () => {
+                    if (data.length > 0) {
+                        nextBatch = data.splice(-BATCH_SIZE)
+                        insertMessages(nextBatch, allMessages, name)
+                    }
+                }
+
+                allMessages.addEventListener('scroll', throttle(() => {
+                    if (allMessages.scrollTop < (allMessages.scrollHeight - allMessages.clientHeight) / 4) {
+                        loadMoreMessages()
+                    }
+                }, 200))
+
+                loadMoreMessages()
             }
             popMessage.append(allMessages, inputMessage);
 
@@ -94,7 +91,6 @@ export class popup {
 
     setupConversation(name) {
         const allMessages = document.querySelector('.messages-section');
-        const username = document.get
         const send = document.querySelector('.message-input1');
         document.addEventListener("keydown", async (event) => {
             if (event.key === "Enter" && !event.shiftKey) {
@@ -110,11 +106,10 @@ export class popup {
 
                         const messageCompon = document.createElement('div');
                         messageCompon.classList.add('message', 'receiver');
-                        // handle the name of loged user !!!!
-                        messageCompon.innerHTML = messageCompon.innerHTML = `
+                        messageCompon.innerHTML = `
                         <div class="message-header">
-                          <span class="username-message">${username}</span>
-                          <span class="timestamp-mssg">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <span class="username-message">${username}</span>
+                            <span class="timestamp-mssg">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                         <p>${message}</p>`
                         document.querySelector('.messages-section').appendChild(messageCompon);
@@ -130,25 +125,25 @@ export class popup {
 }
 
 function insertMessages(messages, container, name) {
-    // Store current scroll position
     const currentScroll = container.scrollTop;
     const prevHeight = container.scrollHeight;
 
-    messages.forEach(mssg => {
+    for (let i = messages.length - 1; i >= 0; i--) {
         const messageCompon = document.createElement('div');
         messageCompon.classList.add('message');
         messageCompon.id = name;
-        messageCompon.classList.add(mssg.IsSender ? 'receiver' : 'sender');
+        messageCompon.classList.add(messages[i].IsSender ? 'receiver' : 'sender');
         messageCompon.innerHTML = `
         <div class="message-header">
-          <span class="username-message">${mssg.IsSender ? mssg.sender_name : name}</span>
-          <span class="timestamp-mssg">${new Date(mssg.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span class="username-message">${messages[i].IsSender ? messages[i].sender_name : name}</span>
+            <span class="timestamp-mssg">${new Date(messages[i].CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
-        <p>${mssg.Message}</p>`;
+        <p>${messages[i].Message}</p>`;
 
         // Append to the end instead of inserting at the beginning
-        container.appendChild(messageCompon);
-    });
+        // container.appendChild(messageCompon);
+        container.insertAdjacentElement('afterbegin', messageCompon);
+    }
 
     // Maintain scroll position
     const newHeight = container.scrollHeight;
