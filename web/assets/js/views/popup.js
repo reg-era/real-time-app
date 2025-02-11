@@ -50,7 +50,7 @@ export class popup {
                     const nextBatch = messageQueue.splice(-BATCH_SIZE);
 
                     if (nextBatch.length > 0) {
-                        insertMessages(nextBatch, container);
+                        insertMessages(nextBatch, container, name);
 
                         // Only add "See More" if there are more messages
                         if (messageQueue.length > 0) {
@@ -129,7 +129,7 @@ export class popup {
     }
 }
 
-function insertMessages(messages, container) {
+function insertMessages(messages, container, name) {
     // Store current scroll position
     const currentScroll = container.scrollTop;
     const prevHeight = container.scrollHeight;
