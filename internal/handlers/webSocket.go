@@ -46,34 +46,44 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 		Data         string `json:"Data"`
 	}
 
+	lastmessage := time.Now()
 	for {
 		_, mssg, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
-		newmssg := utils.Message{}
-		received := mssge{}
-		json.Unmarshal(mssg, &received)
-		newmssg.Message = received.Data
-		newmssg.SenderID = userid
-		newmssg.CreatedAt = time.Now()
-		id, err := database.GetUserIdByName(received.ReceiverName, db)
-		if err != nil {
-			break
-		}
-		if _, exist := hub.Clients[id]; exist {
-			newmssg.Seen = 1
+
+		Duration := time.Since(lastmessage)
+		if Duration.Milliseconds() > 1 {
+			newmssg := utils.Message{}
+			received := mssge{}
+			json.Unmarshal(mssg, &received)
+			newmssg.Message = received.Data
+			newmssg.SenderID = userid
+			newmssg.CreatedAt = time.Now()
+			id, err := database.GetUserIdByName(received.ReceiverName, db)
+			if err != nil {
+				break
+			}
+			if _, exist := hub.Clients[id]; exist {
+				newmssg.Seen = 1
+			} else {
+				newmssg.Seen = 0
+			}
+			newmssg.SenderName, err = database.GetUserName(userid, db)
+			if err != nil {
+				break
+			}
+			newmssg.ReceiverID = id
+			database.CreateMessage(&newmssg, db)
+			hub.Message <- newmssg
+			hub.Broadcast <- db
+			lastmessage = time.Now()
 		} else {
-			newmssg.Seen = 0
+			// error spaming messages
+			hub.Unregister <- newclient
+			hub.Broadcast <- db
 		}
-		newmssg.SenderName, err = database.GetUserName(userid, db)
-		if err != nil {
-			break
-		}
-		newmssg.ReceiverID = id
-		database.CreateMessage(&newmssg, db)
-		hub.Message <- newmssg
-		hub.Broadcast <- db
 	}
 }
 
