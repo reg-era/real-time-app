@@ -23,7 +23,7 @@ func main() {
 
 	db := database.CreateDatabase(dbPath)
 	forumHub := &websocket.Hub{
-		Clients:    make(map[*websocket.Client]int),
+		Clients:    make(map[int]*websocket.Client),
 		Broadcast:  make(chan *sql.DB),
 		Register:   make(chan *websocket.Client),
 		Message:    make(chan utils.Message),

@@ -61,6 +61,11 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 		if err != nil {
 			break
 		}
+		if _, exist := hub.Clients[id]; exist {
+			newmssg.Seen = 1
+		} else {
+			newmssg.Seen = 0
+		}
 		newmssg.SenderName, err = database.GetUserName(userid, db)
 		if err != nil {
 			break
@@ -72,10 +77,10 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 	}
 }
 
-func checkForValue(userValue int, users map[*websocket.Client]int) (bool, *websocket.Client) {
+func checkForValue(userValue int, users map[int]*websocket.Client) (bool, *websocket.Client) {
 	for c, value := range users {
-		if value == userValue {
-			return true, c
+		if c == userValue {
+			return true, value
 		}
 	}
 	return false, nil

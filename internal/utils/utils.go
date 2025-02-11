@@ -46,7 +46,8 @@ type Message struct {
 	Message    string    `json:"Message"`
 	CreatedAt  time.Time `json:"CreatedAt"`
 	IsSender   bool      `json:"IsSender"`
-	SenderName string `json:"sender_name"`
+	SenderName string    `json:"sender_name"`
+	Seen       int       `json:"Seen"`
 }
 
 type Comment struct {

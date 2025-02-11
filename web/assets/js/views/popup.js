@@ -140,12 +140,14 @@ function insertMessages(messages, container) {
         messageCompon.id = name;
         messageCompon.classList.add(mssg.IsSender ? 'receiver' : 'sender');
         messageCompon.innerHTML = `
-      <div class="message-header">
-        <span class="username-message">${mssg.IsSender ? mssg.sender_name : name}</span>
-        <span class="timestamp-mssg">${new Date(mssg.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-      </div>
-      <p>${mssg.Message}</p>`;
-        container.insertBefore(messageCompon, container.firstChild);
+        <div class="message-header">
+          <span class="username-message">${mssg.IsSender ? mssg.sender_name : name}</span>
+          <span class="timestamp-mssg">${new Date(mssg.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        <p>${mssg.Message}</p>`;
+
+        // Append to the end instead of inserting at the beginning
+        container.appendChild(messageCompon);
     });
 
     // Maintain scroll position
@@ -153,4 +155,4 @@ function insertMessages(messages, container) {
     if (newHeight !== prevHeight) {
         container.scrollTop = currentScroll + (newHeight - prevHeight);
     }
-};
+}

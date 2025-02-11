@@ -34,6 +34,8 @@ type Friend struct {
 	LastMessage string    `json: "LastMessage"`
 	Time        time.Time `json: "Time"`
 	Online      bool      `json: "Online"`
+	Seen        int       `json:"Seen"`
+	IsSender    bool      `json:"IsSender"`
 }
 
 type Users struct {
@@ -51,7 +53,7 @@ type websocketmsg struct {
 }
 
 type Hub struct {
-	Clients    map[*Client]int
+	Clients    map[int]*Client
 	Broadcast  chan *sql.DB
 	Message    chan utils.Message
 	Register   chan *Client
@@ -65,30 +67,29 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.Register:
 			h.Mutex.Lock()
-			h.Clients[client] = client.Id
+			h.Clients[client.Id] = client
 			h.Mutex.Unlock()
-
 		case client := <-h.Unregister:
 			h.Mutex.Lock()
-			if _, ok := h.Clients[client]; ok {
-				delete(h.Clients, client)
+			if _, ok := h.Clients[client.Id]; ok {
+				delete(h.Clients, client.Id)
 				client.Conn.Close()
 			}
 			h.Mutex.Unlock()
 		case message := <-h.Broadcast:
 			h.Mutex.RLock()
 			for client := range h.Clients {
-				correctmessage, _ := Getuserslist(client, h, message)
+				correctmessage, _ := Getuserslist(h.Clients[client], h, message)
 				mssg, err := json.Marshal(correctmessage)
 				if err != nil {
 					log.Printf("Error marshling: %v", err)
-					client.Conn.Close()
+					h.Clients[client].Conn.Close()
 					delete(h.Clients, client)
 				}
-				err = client.Conn.WriteMessage(websocket.TextMessage, mssg)
+				err = h.Clients[client].Conn.WriteMessage(websocket.TextMessage, mssg)
 				if err != nil {
 					log.Printf("Error broadcasting to client11: %v", err)
-					client.Conn.Close()
+					h.Clients[client].Conn.Close()
 					delete(h.Clients, client)
 				}
 			}
@@ -100,12 +101,12 @@ func (h *Hub) Run() {
 			}
 			h.Mutex.RLock()
 			for client := range h.Clients {
-				if client.Id == mssg.ReceiverID {
+				if client == mssg.ReceiverID {
 					data, _ := json.Marshal(response)
-					err := client.Conn.WriteMessage(websocket.TextMessage, data)
+					err := h.Clients[client].Conn.WriteMessage(websocket.TextMessage, data)
 					if err != nil {
 						log.Printf("Error broadcasting to client: %v", err)
-						client.Conn.Close()
+						h.Clients[client].Conn.Close()
 						delete(h.Clients, client)
 					}
 				}
@@ -121,7 +122,7 @@ func (h *Hub) Run() {
 			if err != nil {
 				log.Printf("Error broadcasting to client: %v", err)
 				tologout.Conn.Close()
-				delete(h.Clients, tologout)
+				delete(h.Clients, tologout.Id)
 			}
 		}
 	}
@@ -137,11 +138,12 @@ func Getuserslist(client *Client, hub *Hub, db *sql.DB) (WebSocketMessage, error
 	if err != nil {
 		return WebSocketMessage{}, fmt.Errorf("failed to get friends1: %v", err)
 	}
+
 	SortByLastMessage(allFriends)
 
 	for client := range hub.Clients {
 		for i, friend := range allFriends {
-			if client.Id == friend.Id {
+			if client == friend.Id {
 				allFriends[i].Online = true
 			}
 		}
@@ -188,6 +190,11 @@ func creatfriendslist(allFriends []int, userId int, db *sql.DB) (error, []Friend
 		friend.LastMessage = mssg.Message
 		friend.Time = mssg.CreatedAt
 		friend.Online = false
+		if mssg.Message == "" {
+			friend.Seen = 1
+		} else {
+			friend.Seen = mssg.Seen
+		}
 		if mssg.Message != "" {
 			if mssg.SenderID == userId {
 				friend.Id = mssg.ReceiverID
@@ -195,12 +202,14 @@ func creatfriendslist(allFriends []int, userId int, db *sql.DB) (error, []Friend
 				if err != nil {
 					return err, nil
 				}
+				friend.IsSender = true
 			} else {
 				friend.Name, err = database.GetUserName(mssg.SenderID, db)
 				friend.Id = mssg.SenderID
 				if err != nil {
 					return err, nil
 				}
+				friend.IsSender = false
 			}
 		} else {
 			friend.Name, err = database.GetUserName(allFriends[i], db)

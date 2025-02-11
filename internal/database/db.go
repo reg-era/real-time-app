@@ -328,7 +328,7 @@ func GetConversations(db *sql.DB, userId int, receiver string) ([]utils.Message,
 	var conversations []utils.Message
 	for rows.Next() {
 		var conversation utils.Message
-		err := rows.Scan(&conversation.Id, &conversation.SenderID, &conversation.ReceiverID, &conversation.Message, &conversation.CreatedAt)
+		err := rows.Scan(&conversation.Id, &conversation.SenderID, &conversation.ReceiverID, &conversation.Message, &conversation.CreatedAt, &conversation.Seen)
 		if err != nil {
 			return nil, errors.New(err.Error())
 		}
@@ -351,11 +351,11 @@ func GetConversations(db *sql.DB, userId int, receiver string) ([]utils.Message,
 
 func CreateMessage(m *utils.Message, db *sql.DB) error {
 	query := `
-	INSERT INTO messages (sender_id, receiver_id, message, created_at)
-	VALUES (?, ?, ?, ?)
+	INSERT INTO messages (sender_id, receiver_id, message, created_at , seen)
+	VALUES (?, ?, ?, ? , ?)
 	`
 
-	result, err := db.Exec(query, m.SenderID, m.ReceiverID, m.Message, m.CreatedAt)
+	result, err := db.Exec(query, m.SenderID, m.ReceiverID, m.Message, m.CreatedAt, m.Seen)
 	if err != nil {
 		return err
 	}
@@ -372,14 +372,23 @@ func CreateMessage(m *utils.Message, db *sql.DB) error {
 func Getlastmessg(sender_id int, receiver_iD int, db *sql.DB) (error, utils.Message) {
 	message := utils.Message{}
 
-	stmt, err := db.Prepare(`SELECT id, sender_id, receiver_id, message, created_at FROM messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY created_at DESC LIMIT 1;`)
+	stmt, err := db.Prepare(`SELECT id, sender_id, receiver_id, message, created_at , seen FROM messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY created_at DESC LIMIT 1;`)
 	if err != nil {
 		return err, message
 	}
 	row := stmt.QueryRow(sender_id, receiver_iD, receiver_iD, sender_id)
-	err = row.Scan(&message.Id, &message.SenderID, &message.ReceiverID, &message.Message, &message.CreatedAt)
+	err = row.Scan(&message.Id, &message.SenderID, &message.ReceiverID, &message.Message, &message.CreatedAt, &message.Seen)
 	if err != nil && err != sql.ErrNoRows {
 		return err, message
 	}
 	return nil, message
+}
+
+func Updatesenn(sender_id int, receiver_id int, db *sql.DB) error {
+	query := `UPDATE messages SET seen=1 WHERE (sender_id = ? AND receiver_id = ? );`
+	_, err := db.Exec(query, sender_id, receiver_id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
