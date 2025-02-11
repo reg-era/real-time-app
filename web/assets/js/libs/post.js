@@ -82,7 +82,8 @@ function generatePostHTML(post, reactInfo) {
     <div class="post-container">
         <div class="post-header">
             <div class="post-meta">
-                <span class="author">👤  ${post.UserName}</span>
+            <img src="https://avatar.iran.liara.run/public/${post.Gender === "male" ? "girl" : "boy"}?username${post.UserName}" loading="lazy">
+                <span class="author">${post.UserName}</span>
                 <span class="date">${new Date(post.CreatedAt).toLocaleString()}</span>
                 <br>
                 <span class="categories">${post.Categories || "Not categorized"}</span>
@@ -97,10 +98,10 @@ function generatePostHTML(post, reactInfo) {
         <div class="reaction-section">
             <div class="reaction-buttons">
             <button class="like like-button ${liked ? "clicked" : ""}" data-clicked=${liked}>
-                <span class="emoji">👍 </span> (<span class="count">${likeCount}</span>)
+                <span class="like-emoji"> </span> (<span class="count">${likeCount}</span>)
             </button>
             <button class="dislike dislike-button ${disliked ? "clicked" : ""}" data-clicked=${disliked}>
-                <span class="emoji">👎 </span> (<span class="count">${disLikeCount}</span>)
+                <span class="dislike-emoji"> </span> (<span class="count">${disLikeCount}</span>)
             </button>
             </div>
             <button class="toggle-comments">💬</button>

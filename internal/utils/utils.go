@@ -31,6 +31,7 @@ type Post struct {
 	Categories []string
 	Content    string
 	CreatedAt  time.Time
+	Gender     string
 }
 
 type Reaction struct {

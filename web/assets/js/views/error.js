@@ -14,8 +14,6 @@ export class Error extends BASE {
 
     setAttribute() {
         this.statusError = Number.parseInt(this.params);
-
-
         switch (this.statusError) {
             case 404:
                 this.statusMsg = "Page Not Found";

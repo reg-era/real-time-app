@@ -106,6 +106,15 @@ func ReadPost(db *sql.DB, userId int, postId int) (*utils.Post, error) {
 	if err != nil {
 		return nil, err
 	}
+	queryGender := `SELECT Gender FROM users WHERE id = ?`
+	rowe, err := utils.QueryRow(db, queryGender, Post.UserId)
+	if err != nil {
+		return nil, err
+	}
+	err = rowe.Scan(&Post.Gender)
+	if err != nil {
+		return nil, err
+	}
 	return Post, nil
 }
 
