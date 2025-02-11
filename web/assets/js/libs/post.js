@@ -97,13 +97,13 @@ function generatePostHTML(post, reactInfo) {
         <div class="reaction-section">
             <div class="reaction-buttons">
             <button class="like like-button ${liked ? "clicked" : ""}" data-clicked=${liked}>
-                <span class="emoji">👍</span> Like (<span class="count">${likeCount}</span>)
+                <span class="emoji">👍 </span> (<span class="count">${likeCount}</span>)
             </button>
             <button class="dislike dislike-button ${disliked ? "clicked" : ""}" data-clicked=${disliked}>
-                <span class="emoji">👎</span> Dislike (<span class="count">${disLikeCount}</span>)
+                <span class="emoji">👎 </span> (<span class="count">${disLikeCount}</span>)
             </button>
             </div>
-            <button class="toggle-comments">💬 Show Comments</button>
+            <button class="toggle-comments">💬</button>
         </div>
     
         <div class="comments-section" style="display: none;">

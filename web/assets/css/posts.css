@@ -67,6 +67,11 @@
     background-color: white;
 }
 
+.comment-content {
+    background-color: var(--light-gray);
+    color: black;
+}
+
 .reaction-section {
     display: flex;
     justify-content: space-between;
@@ -98,9 +103,9 @@
 }
 
 .toggle-comments {
-    background: var(--yellow);
+    background: var(--gray);
     color: rgb(0, 0, 0);
-    width: 200px;
+    width: auto;
     border: none;
     border-radius: 20px;
     padding: 10px 20px;
@@ -111,7 +116,7 @@
 
 .more-comment,
 .hide-comments {
-    background: linear-gradient(to bottom, var(--yellow), var(--light-gray));
+    background: rgba(51, 49, 49, 0.753);
     color: rgb(0, 0, 0);
     width: 200px;
     border: none;
@@ -119,6 +124,8 @@
     padding: 10px 20px;
     cursor: pointer;
     font-size: 14px;
+    gap: 10px;
+    margin-left: 40px;
 }
 
 .comments-section {
@@ -173,6 +180,7 @@
 
 .comments {
     margin-top: 20px;
+    background-color: var(--light-gray);
 }
 
 .comment {
@@ -190,11 +198,12 @@
     display: flex;
     justify-content: end;
     gap: 15px;
+    background-color: var(--light-gray);
 }
 
 .comment-likes .like-button,
 .comment-likes .dislike-button {
-    border: 1.5px solid var(--white);
+    border: 1.5px solid black;
 }
 
 .clicked {
