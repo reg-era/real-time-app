@@ -1,5 +1,5 @@
 import { GetData, renderPage } from "../libs/post.js";
-import { debounce } from "../libs/script.js";
+import { debounce, handleResize } from "../libs/script.js";
 import { BASE } from "./_BASE.js";
 
 export class Home extends BASE {
@@ -57,5 +57,6 @@ export class Home extends BASE {
         this.setupAuthNav(this.base);
         this.base.setupNavigation(this.base);
         this.setupSidebar();
+        handleResize();
     }
 }

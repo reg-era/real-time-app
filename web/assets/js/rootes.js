@@ -45,6 +45,23 @@ export class Router {
                 }
                 return;
             }
+
+            if (hasSession.valid && (window.location.pathname === '/login' || window.location.pathname === '/register')) {
+                history.pushState(null, null, "/");
+                const appElement = document.querySelector('.app');
+                const view = new Home(this.base);
+                this.page = view;
+                const html = view.renderHtml();
+                appElement.innerHTML = html;
+                appElement.setAttribute('page', route.name);
+                if (typeof view.init === 'function') {
+                    await view.init();
+                }
+                if (typeof view.afterRender === 'function') {
+                    await view.afterRender();
+                }
+                return;
+            }
             const appElement = document.querySelector('.app');
             const view = new route.view(this.base);
             this.page = view;
