@@ -1,5 +1,5 @@
 # Application-related variables
-PORT           = 8080
+PORT           = 8000
 DB_PATH        = db/data1.db
 
 # Run the application directly (outside of Docker)
