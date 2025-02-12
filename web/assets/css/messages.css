@@ -13,6 +13,7 @@
 .messages-section {
     width: 100%;
     height: 80%;
+    max-height: 500px;
     padding: 16px;
     border-radius: 12px;
     background-color: #ffffff;
@@ -25,22 +26,15 @@
 
 .messages-input {
     height: 15%;
+    max-height: 100px;
     width: 100%;
     position: absolute;
     bottom: 0;
 }
 
 .message-input {
-    /* height: 100%;
-    width: 100%;
-    padding: 20px;
-    border-radius: 7px;
-    border: 3px; */
     background: transparent;
     border-radius: 7px;
-
-    /* border-bottom: 2px solid var(--yellow); */
-    /* font-size: 18px; */
 }
 
 .message-input1 {
@@ -48,13 +42,12 @@
     width: 100%;
     padding: 20px;
     border-radius: 7px;
-    /* border: 3px; */
     background: white;
-    /* border-bottom: 2px solid var(--yellow); */
     font-size: 18px;
 }
 
 .message {
+    height: 80px;
     padding: 8px;
     border-radius: 8px;
     font-size: 16px;
@@ -95,7 +88,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.815);
     z-index: 1000;
 }
 

@@ -18,21 +18,12 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 		log.Printf("Failed to upgrade: %v", err)
 		return
 	}
-	hub.Mutex.Lock()
-	if exist, client := checkForValue(userid, hub.Clients); exist {
-		hub.Logout <- client
-		hub.Unregister <- client
-	}
-	hub.Mutex.Unlock()
 
 	newclient := &websocket.Client{
 		Id:   userid,
 		Conn: conn,
 	}
 	hub.Register <- newclient
-
-	// locking map to check if user exist slow the regitration process
-	// time.Sleep(100 * time.Millisecond)
 
 	defer func() {
 		hub.Unregister <- newclient
@@ -85,13 +76,4 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 			hub.Broadcast <- db
 		}
 	}
-}
-
-func checkForValue(userValue int, users map[int]*websocket.Client) (bool, *websocket.Client) {
-	for c, value := range users {
-		if c == userValue {
-			return true, value
-		}
-	}
-	return false, nil
 }

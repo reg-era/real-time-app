@@ -75,6 +75,8 @@ export class BASE {
 
     setupConnReader() {
         this.connection.onmessage = async (event) => {
+
+
             try {
                 const data = JSON.parse(event.data);
                 if (!data.Type) {
@@ -90,9 +92,6 @@ export class BASE {
                             this.users = data.users;
                             this.renderSidebar();
                         }
-                        break;
-                    case 'Logout':
-                        this.handleLogout();
                         break;
                     default:
                         console.warn('Unknown message type:', data.type);
@@ -115,7 +114,7 @@ export class BASE {
                 <span class="username-message">${message.Message.sender_name}</span>
                 <span class="timestamp-mssg">${new Date(message.Message.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <p>${message.Message.Message}</p>` 
+            <p>${message.Message.Message}</p>`
             conversation.insertAdjacentElement("beforeend", msg);
             allMessages.scrollTop = allMessages.scrollHeight;
         } else {

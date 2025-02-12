@@ -23,14 +23,17 @@ func main() {
 
 	db := database.CreateDatabase(dbPath)
 	forumHub := &websocket.Hub{
-		Clients:    make(map[int]*websocket.Client),
+		Clients:    make(map[int][]*websocket.Client),
 		Broadcast:  make(chan *sql.DB),
 		Register:   make(chan *websocket.Client),
 		Message:    make(chan utils.Message),
-		Logout:     make(chan *websocket.Client),
 		Unregister: make(chan *websocket.Client),
 	}
 	go forumHub.Run()
+	defer close(forumHub.Broadcast)
+	defer close(forumHub.Register)
+	defer close(forumHub.Message)
+	defer close(forumHub.Unregister)
 	defer db.Close()
 
 	database.CreateTables(db)
