@@ -110,7 +110,12 @@ export class BASE {
         if (conversation) {
             const msg = document.createElement('div');
             msg.classList.add('message', 'sender')
-            msg.innerHTML = `<p>${message.Message.Message}</p>`
+            msg.innerHTML = `
+            <div class="message-header">
+                <span class="username-message">${message.Message.sender_name}</span>
+                <span class="timestamp-mssg">${new Date(message.Message.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+            <p>${message.Message.Message}</p>` 
             conversation.insertAdjacentElement("beforeend", msg);
             allMessages.scrollTop = allMessages.scrollHeight;
         } else {
