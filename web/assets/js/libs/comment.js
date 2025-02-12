@@ -129,7 +129,7 @@ const createCommentElement = (comment, reaction) => {
     }
 
     commentElement.innerHTML = `
-    <p class="comment-content"><strong>👤 ${comment.user_name}:</strong> ${escapeHTML(comment.content)}</p>
+    <p class="comment-content"><strong>${comment.user_name}:</strong> ${escapeHTML(comment.content)}</p>
     <div class="reaction-section comment-likes">
         <button class="like-button ${liked ? 'clicked' : ''}" data-clicked=${liked}>
         👍 Like (<span class="count">${likeCount}</span>)

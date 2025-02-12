@@ -82,7 +82,7 @@ function generatePostHTML(post, reactInfo) {
     <div class="post-container">
         <div class="post-header">
             <div class="post-meta">
-            <img src="https://avatar.iran.liara.run/public/${post.Gender === "male" ? "girl" : "boy"}?username${post.UserName}" loading="lazy">
+            <img class="profile" src="https://avatar.iran.liara.run/public/${post.Gender === "male" ? "girl" : "boy"}?username${post.UserName}" loading="lazy">
                 <span class="author">${post.UserName}</span>
                 <span class="date">${new Date(post.CreatedAt).toLocaleString()}</span>
                 <br>
