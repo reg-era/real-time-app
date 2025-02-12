@@ -9,6 +9,11 @@
     box-sizing: border-box;
     text-align: center;
     margin: 10vh;
+    height: 100%;
+}
+
+.create-post section {
+    height: auto;
 }
 
 .create-post h2 {
@@ -19,6 +24,7 @@
 
 .create-post form {
     width: 100%;
+    height: auto;
 }
 
 .create-post .post-title,
