@@ -84,13 +84,7 @@
     background-color: var(--light-gray);
 }
 
-#responseMessage {
-    font-size: 20px;
-    margin-top: 20px;
-    margin-bottom: 0px;
-    padding-bottom: 0px;
-    color: red;
-}
+
 
 @media screen and (max-width: 768px) {
     .create-post {

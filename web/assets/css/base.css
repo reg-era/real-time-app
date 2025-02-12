@@ -16,6 +16,15 @@
     /* background-color: var(--light-gray); */
 }
 
+#responseMessage {
+    font-size: 20px;
+    /* margin-top: 20px; */
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    color: red;
+    background-color: white;
+}
+
 /* Container styling */
 .sidebar-nav {
     background: rgba(30, 30, 30, 0.95);
@@ -453,6 +462,7 @@ footer {
     width: 100%;
     bottom: 0;
     z-index: 10;
+    height: 5vh;
 }
 
 dialog {
