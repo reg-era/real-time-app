@@ -68,17 +68,35 @@ func (h *Hub) Run() {
 		case client := <-h.Register:
 			h.Mutex.Lock()
 			h.Clients[client.Id] = append(h.Clients[client.Id], client)
-
-			//client.Conn.SetPongHandler(func(string) error {
-			//	h.Mutex.Lock()
-			//	client.LastPing = time.Now()
-			//	h.Mutex.Unlock()
-			//	return nil
-			//})
-			//client.Conn.SetReadDeadline(time.Now().Add(60 * time.Second))
-			// go client.PingToConnection()
-
 			h.Mutex.Unlock()
+
+			client.Conn.SetPongHandler(func(string) error {
+				h.Mutex.Lock()
+				client.LastPing = time.Now()
+				h.Mutex.Unlock()
+				return nil
+			})
+
+			client.LastPing = time.Now()
+
+			go func() {
+				ticker := time.NewTicker(3 * time.Second)
+				defer ticker.Stop()
+
+				for range ticker.C {
+					if time.Since(client.LastPing) > 5*time.Second {
+						h.Unregister <- client
+						return
+					}
+
+					err := client.Conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(2*time.Second))
+					if err != nil {
+						h.Unregister <- client
+						return
+					}
+				}
+			}()
+
 		case client := <-h.Unregister:
 			h.Mutex.Lock()
 			if _, ok := h.Clients[client.Id]; ok {
@@ -121,24 +139,8 @@ func (h *Hub) Run() {
 						log.Printf("Error broadcasting to client: %v", err)
 					}
 				}
-
 			}
 			h.Mutex.RUnlock()
-		}
-	}
-}
-
-func (c *Client) PingToConnection() {
-	ticker := time.NewTicker(30 * time.Second)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			if err := c.Conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(10*time.Second)); err != nil {
-				c.Conn.Close()
-				fmt.Printf("Client disconnected due to ping failure: %v\n", err)
-			}
 		}
 	}
 }
