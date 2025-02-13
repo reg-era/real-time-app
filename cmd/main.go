@@ -28,12 +28,14 @@ func main() {
 		Register:   make(chan *websocket.Client),
 		Message:    make(chan utils.Message),
 		Unregister: make(chan *websocket.Client),
+		Progress:   make(chan int),
 	}
 	go forumHub.Run()
 	defer close(forumHub.Broadcast)
 	defer close(forumHub.Register)
 	defer close(forumHub.Message)
 	defer close(forumHub.Unregister)
+	defer close(forumHub.Progress)
 	defer db.Close()
 
 	database.CreateTables(db)

@@ -74,9 +74,9 @@ export class BASE {
     }
 
     setupConnReader() {
+        let debounceTimeout
+        let toggled = false
         this.connection.onmessage = async (event) => {
-
-
             try {
                 const data = JSON.parse(event.data);
                 if (!data.Type) {
@@ -93,6 +93,25 @@ export class BASE {
                             this.renderSidebar();
                         }
                         break;
+
+                    case 'inprogress':
+                        const typer = document.querySelector('.progress-container')
+                        if (typer) {
+                            if (!toggled) {
+                                typer.classList.add('progress');
+                                typer.classList.remove('hiden');
+                                toggled = true
+                            }
+                            clearTimeout(debounceTimeout);
+                            debounceTimeout = setTimeout(() => {
+                                console.log("removed");
+                                typer.classList.remove('progress');
+                                typer.classList.add('hiden');
+                                toggled = false
+                            }, 500);
+                        }
+                        break;
+
                     default:
                         console.warn('Unknown message type:', data.type);
                 }

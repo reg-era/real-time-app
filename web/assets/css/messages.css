@@ -131,3 +131,46 @@ p {
     color: #bbb;
     background-color: var(--gray);
 }
+
+.progress-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    background-color: #f0f0f0;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 5px 5px 5px 5px;
+    text-align: center;
+}
+
+.progress-container span {
+    font-size: 16px;
+    padding: 5px;
+}
+
+.progress {
+    position: absolute;
+    height: 40%;
+    width: 20%;
+    animation: moveUpDown 2s infinite ease-in-out;
+}
+
+
+@keyframes moveUpDown {
+    0% {
+        transform: translateY(-80px);
+    }
+
+    50% {
+        transform: translateY(-50px);
+    }
+
+    100% {
+        transform: translateY(-80px);
+    }
+}
+
+.hiden {
+    display: none;
+}

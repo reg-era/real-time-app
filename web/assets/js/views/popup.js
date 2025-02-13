@@ -21,6 +21,7 @@ export class popup {
         const inputMessage = document.createElement('div')
         inputMessage.classList.add('messages-input');
         inputMessage.innerHTML = `
+            <div class="progress-container hiden"><span>${name} is typing</span></div>
             <input required placeholder="Type message ..." class="message-input1"></input>
             <p class="error-comment"></p>`;
 
@@ -67,6 +68,8 @@ export class popup {
             }
             popMessage.append(allMessages, inputMessage);
 
+            this.setProgressTyping(inputMessage, name)
+
             const over = document.createElement('div')
             over.classList.add('over-layer');
 
@@ -86,6 +89,12 @@ export class popup {
         } catch (error) {
             console.error(error);
         }
+    }
+
+    setProgressTyping(input, name) {
+        input.addEventListener('input', (_) => {
+            this.base.connection.send(name);
+        })
     }
 
     setupConversation(name) {

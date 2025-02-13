@@ -60,6 +60,8 @@ type Hub struct {
 	Register   chan *Client
 	Unregister chan *Client
 	Mutex      sync.RWMutex
+
+	Progress chan int
 }
 
 func (h *Hub) Run() {
@@ -131,16 +133,35 @@ func (h *Hub) Run() {
 			if client, ok := h.Clients[mssg.ReceiverID]; ok {
 				data, err := json.Marshal(response)
 				if err != nil {
-					log.Printf("Error broadcasting to client: %v", err)
+					log.Printf("Error broadcasting to client: %v", err) // handling error
 				}
 				for _, window := range client {
 					err = window.Conn.WriteMessage(websocket.TextMessage, data)
 					if err != nil {
-						log.Printf("Error broadcasting to client: %v", err)
+						log.Printf("Error broadcasting to client: %v", err) // handling error
 					}
 				}
 			}
 			h.Mutex.RUnlock()
+
+		case typer := <-h.Progress:
+			for client := range h.Clients {
+				for _, window := range h.Clients[client] {
+					response := websocketmsg{
+						Type: "inprogress",
+					}
+					data, err := json.Marshal(response)
+					if err != nil {
+						fmt.Println("err on marshling br", err)
+					}
+					if typer == client {
+						err := window.Conn.WriteMessage(websocket.TextMessage, data)
+						if err != nil {
+							fmt.Println("err on brodcast", err)
+						}
+					}
+				}
+			}
 		}
 	}
 }
