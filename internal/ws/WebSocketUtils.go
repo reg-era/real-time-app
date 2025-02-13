@@ -91,7 +91,7 @@ func (h *Hub) Run() {
 
 					err := client.Conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(2*time.Second))
 					if err != nil {
-						h.Unregister <- client
+						client.Conn.Close()
 						return
 					}
 				}
