@@ -54,18 +54,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int
 		http.Error(w, "Incorrect Password", http.StatusUnauthorized)
 		return
 	}
-	ok, err := middleware.GetActiveSession(db, &userData)
-	if err != nil {
-		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
-		return
-	}
-	if ok {
-		err = middleware.DeleteSession(db, &userData)
-		if err != nil {
-			utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
-			return
-		}
-	}
+	// ok, err := middleware.GetActiveSession(db, &userData)
+	// if err != nil {
+	// 	utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
+	// 	return
+	// }
+	// if ok {
+	// 	err = middleware.DeleteSession(db, &userData)
+	// 	if err != nil {
+	// 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
+	// 		return
+	// 	}
+	// }
 
 	userData.SessionId, err = GenerateSessionID()
 	if err != nil {
