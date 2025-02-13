@@ -75,15 +75,14 @@ export class popup {
 
             allMessages.scrollTop = allMessages.scrollHeight;
             over.addEventListener('click', (e) => {
-                popMessage.remove()
-                over.remove()
+                popMessage.remove();
+                over.remove();
                 document.body.classList.remove('has-overlay');
-
-                const notification = document.querySelector(`#${name} .notification`)
-                notification.classList.add('hide')
-                const counter = notification.querySelector('.notification-counter')
-                counter.textContent = 0
-            })
+                const notification = document.querySelector(`#${name} .notification`);
+                notification.classList.add('hide');
+                const counter = notification.querySelector('.notification-counter');
+                counter.textContent = 0;
+            });
         } catch (error) {
             console.error(error);
         }
@@ -95,7 +94,8 @@ export class popup {
         document.addEventListener("keydown", async (event) => {
             if (event.key === "Enter" && !event.shiftKey) {
                 const message = send.value.trim();
-                if (message) {
+                const validCookie = await validCookies();
+                if (message && validCookie.valid) {
                     try {
                         this.base.connection.send(JSON.stringify({
                             ReceiverName: name,
@@ -118,6 +118,12 @@ export class popup {
                     } catch (error) {
                         console.error(error);
                     }
+                } else {
+                    const popMessage = document.querySelector('.conversation');
+                    const over = document.querySelector('.over-layer');
+                    popMessage.remove();
+                    over.remove();
+                    this.base.handleLogout();
                 }
             }
         })

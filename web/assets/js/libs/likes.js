@@ -1,3 +1,5 @@
+import { app } from "../main.js";
+
 export function reactToggle(element, Id, targetType) {
     const likeButton = element.querySelector('.reaction-section button:nth-child(1)');
     const dislikeButton = element.querySelector('.reaction-section button:nth-child(2)');
@@ -42,6 +44,7 @@ export async function handleReact(button, follow, id, reactionType, targetType) 
         }
     } catch (error) {
         console.error("Error in handleReact:", error);
+        return { success: false, error: err.message };
     }
 }
 
@@ -59,8 +62,9 @@ export async function getReactInfo(params, method) {
         });
 
         if (!response.ok) {
-            const errorText = await response.text(); // Use text() for error body
+            const errorText = await response.text();
             console.error("API error:", errorText);
+            app.router.handleError('401');
             return { success: false, error: errorText || "Unknown error" };
         }
         // If response has no body, return success with no data

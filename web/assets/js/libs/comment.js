@@ -1,5 +1,6 @@
 import { escapeHTML } from "./post.js";
 import { reactToggle, getReactInfo } from "./likes.js";
+import { app } from "../main.js";
 
 const commentSize = 3
 const comentIndex = {}
@@ -52,7 +53,10 @@ export const initializeCommentSection = (postElement, post) => {
 const loadComments = async (postId, limit, commentsContainer) => {
     try {
         const response = await fetch(`api/comments?post=${postId}&limit=${limit}&from=${comentIndex[postId]}`)
-        if (!response.ok) throw new Error("Failed to load comments.")
+        if (!response.ok) {
+            app.router.handleError(`${response.status}`)
+            throw new Error("Failed to load comments.")
+        }
 
         const comments = await response.json()
         if (!comments || comments.length === 0) return
@@ -91,17 +95,17 @@ const addComment = async (postId, content, commentsContainer, commentsection) =>
         let commentInput = commentsection.querySelector(".comment-input");
         const error = commentsection.querySelector('.error-comment')
         const newComment = await response.json();
-
         switch (response.status) {
             case 400:
-                error.textContent = newComment.error
+                error.textContent = newComment.error;
+                app.router.handleError(`${response.status}`);
                 break;
             case 201:
                 error.textContent = ""
                 const reaction = await getReactInfo({
                     target_type: "comment",
                     target_id: newComment.comment_id,
-                }, "GET")
+                }, "GET");
 
                 const commentSection = createCommentElement(newComment, reaction)
                 reactToggle(commentSection, newComment.comment_id, 'comment')

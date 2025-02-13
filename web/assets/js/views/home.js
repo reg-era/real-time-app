@@ -19,9 +19,15 @@ export class Home extends BASE {
     }
 
     async getPosts() {
-        const posts = await renderPage(this.posts);
-        const container = document.querySelector('.posts');
-        posts.forEach(post => container.appendChild(post));
+        let posts = null
+        try {
+
+            posts = await renderPage(this.posts);
+            const container = document.querySelector('.posts');
+            posts.forEach(post => container.appendChild(post));
+        } catch (err) {
+            this.base.router.handleError('500');
+        }
     }
 
     renderHtml() {
@@ -43,7 +49,12 @@ export class Home extends BASE {
                 const documentHeight = document.documentElement.scrollHeight;
                 const windowHeight = window.innerHeight;
                 if (scrollPosition + windowHeight >= documentHeight - 10) {
-                    this.debouncedRenderPage();
+                    try {
+                        this.debouncedRenderPage();;
+                    } catch (err) {
+                        this.base.router.handleError('500');
+                    }
+
                 }
             });
         }
