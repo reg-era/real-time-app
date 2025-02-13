@@ -75,8 +75,8 @@ export class popup {
 
             allMessages.scrollTop = allMessages.scrollHeight;
             over.addEventListener('click', (e) => {
-                popMessage.remove()
-                over.remove()
+                if (popMessage) popMessage.remove();
+                if (over) over.remove();
                 document.body.classList.remove('has-overlay');
 
                 const notification = document.querySelector(`#${name} .notification`)
