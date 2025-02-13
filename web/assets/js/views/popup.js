@@ -92,9 +92,15 @@ export class popup {
     }
 
     setProgressTyping(input, name) {
-        input.addEventListener('input', (_) => {
-            this.base.connection.send(name);
-        })
+        let last = 0
+
+        input.addEventListener('input', () => {
+            const current = Date.now()
+            if (current - last >= 500) {
+                this.base.connection.send(name)
+                last = current
+            }
+        });
     }
 
     setupConversation(name) {

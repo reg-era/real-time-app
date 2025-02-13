@@ -38,51 +38,50 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 		Data         string `json:"Data"`
 	}
 
-	// lastmessage := time.Now()
+	lastmessage := time.Now()
 	for {
 		_, mssg, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
 
-		// Duration := time.Since(lastmessage)
-		// if Duration.Milliseconds() > 1 {
-		newmssg := utils.Message{}
-		received := mssge{}
-		if err := json.Unmarshal(mssg, &received); err != nil {
-			fmt.Println(string(mssg))
-			typer, err := database.GetUserIdByName(string(mssg), db)
-			if err != nil {
-				fmt.Println("err on geting", err) // handling error
+		Duration := time.Since(lastmessage)
+		if Duration.Milliseconds() > 1 {
+			newmssg := utils.Message{}
+			received := mssge{}
+			if err := json.Unmarshal(mssg, &received); err != nil {
+				typer, err := database.GetUserIdByName(string(mssg), db)
+				if err != nil {
+					fmt.Println("err on geting", err) // handling error
+				}
+				hub.Progress <- typer
+				continue
 			}
-			hub.Progress <- typer
-			continue
-		}
-		newmssg.Message = received.Data
-		newmssg.SenderID = userid
-		newmssg.CreatedAt = time.Now()
-		id, err := database.GetUserIdByName(received.ReceiverName, db)
-		if err != nil {
-			break
-		}
-		if _, exist := hub.Clients[id]; exist {
-			newmssg.Seen = 1
+			newmssg.Message = received.Data
+			newmssg.SenderID = userid
+			newmssg.CreatedAt = time.Now()
+			id, err := database.GetUserIdByName(received.ReceiverName, db)
+			if err != nil {
+				break
+			}
+			if _, exist := hub.Clients[id]; exist {
+				newmssg.Seen = 1
+			} else {
+				newmssg.Seen = 0
+			}
+			newmssg.SenderName, err = database.GetUserName(userid, db)
+			if err != nil {
+				break
+			}
+			newmssg.ReceiverID = id
+			database.CreateMessage(&newmssg, db)
+			hub.Message <- newmssg
+			hub.Broadcast <- db
+			lastmessage = time.Now()
 		} else {
-			newmssg.Seen = 0
+			// error spaming messages
+			hub.Unregister <- newclient
+			hub.Broadcast <- db
 		}
-		newmssg.SenderName, err = database.GetUserName(userid, db)
-		if err != nil {
-			break
-		}
-		newmssg.ReceiverID = id
-		database.CreateMessage(&newmssg, db)
-		hub.Message <- newmssg
-		hub.Broadcast <- db
-		// lastmessage = time.Now()
-		//} else {
-		//	// error spaming messages
-		//	hub.Unregister <- newclient
-		//	hub.Broadcast <- db
-		//}
 	}
 }

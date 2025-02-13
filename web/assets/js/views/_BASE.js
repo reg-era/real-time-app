@@ -97,18 +97,17 @@ export class BASE {
                     case 'inprogress':
                         const typer = document.querySelector('.progress-container')
                         if (typer) {
-                            if (!toggled) {
+                            if (!toggled && typer.classList.contains('hiden')) {
                                 typer.classList.add('progress');
                                 typer.classList.remove('hiden');
                                 toggled = true
                             }
                             clearTimeout(debounceTimeout);
                             debounceTimeout = setTimeout(() => {
-                                console.log("removed");
                                 typer.classList.remove('progress');
                                 typer.classList.add('hiden');
                                 toggled = false
-                            }, 500);
+                            }, 1000);
                         }
                         break;
 
