@@ -1,3 +1,4 @@
+import { escapeHTML } from "../libs/post.js";
 import { handleResize, debounce } from "../libs/script.js";
 import { validCookies } from "../main.js";
 import { popup } from "./popup.js";
@@ -115,7 +116,7 @@ export class BASE {
                 <span class="username-message">${message.Message.sender_name}</span>
                 <span class="timestamp-mssg">${new Date(message.Message.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <p>${message.Message.Message}</p>`
+            <p>${escapeHTML(message.Message.Message)}</p>`
             allMessages.insertAdjacentElement("beforeend", msg);
             allMessages.scrollTop = allMessages.scrollHeight;
         } else {
@@ -123,7 +124,7 @@ export class BASE {
             notification.classList.remove('hide');
             const counter = notification.querySelector('.notification-counter');
             counter.textContent = parseInt(counter.textContent) + 1;
-            showNotification(message.Message);
+            showNotification(escapeHTML(message.Message));
         }
     }
 
@@ -337,7 +338,7 @@ function makeBar(online, user) {
     bar.innerHTML = `
     <div class="status-info">
         <span id="online-status" class="username">${online ? "🟢" : "🔴"} ${user.Name}</span>
-        <span class="lastmessage"> ${user.LastMessage} </span>
+        <span class="lastmessage"> ${escapeHTML(user.LastMessage)} </span>
         <span class="timestamp">${user.LastMessage ? new Date(user.Time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
     </div>
     <div class="notification hide"><span class="notification-counter">0</span></div>`

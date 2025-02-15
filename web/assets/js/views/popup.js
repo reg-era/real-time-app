@@ -1,3 +1,4 @@
+import { escapeHTML } from "../libs/post.js";
 import { validCookies } from "../main.js";
 
 export class popup {
@@ -123,7 +124,7 @@ export class popup {
                             <span class="username-message">${username}</span>
                             <span class="timestamp-mssg">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                        <p>${message}</p>`
+                        <p>${escapeHTML(message)}</p>`
                         document.querySelector('.messages-section').appendChild(messageCompon);
                         send.value = '';
                         allMessages.scrollTop = allMessages.scrollHeight;
@@ -159,7 +160,7 @@ function insertMessages(messages, container, name) {
             <span class="username-message">${messages[i].IsSender ? messages[i].sender_name : name}</span>
             <span class="timestamp-mssg">${new Date(messages[i].CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
-        <p>${messages[i].Message}</p>`;
+        <p>${escapeHTML(messages[i].Message)}</p>`;
 
         // Append to the end instead of inserting at the beginning
         // container.appendChild(messageCompon);
