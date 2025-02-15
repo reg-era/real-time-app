@@ -15,7 +15,7 @@ export class popup {
 
         const popMessage = document.createElement('div')
         popMessage.classList.add('conversation');
-        popMessage.setAttribute('name', res.body);
+        popMessage.setAttribute('name', name);
 
 
         const inputMessage = document.createElement('div')

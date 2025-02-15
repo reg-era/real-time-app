@@ -1,4 +1,5 @@
 import { handleResize, debounce } from "../libs/script.js";
+import { validCookies } from "../main.js";
 import { popup } from "./popup.js";
 
 export class BASE {
@@ -73,7 +74,7 @@ export class BASE {
 
     }
 
-    setupConnReader() {
+    async setupConnReader() {
         this.connection.onmessage = async (event) => {
 
 
@@ -85,7 +86,7 @@ export class BASE {
                 }
                 switch (data.Type) {
                     case 'message':
-                        this.handleWebSocketMessage(data);
+                        await this.handleWebSocketMessage(data);
                         break;
                     case 'onlineusers':
                         if (data.users) {
@@ -102,11 +103,11 @@ export class BASE {
         };
     }
 
-    handleWebSocketMessage(message) {
+    async handleWebSocketMessage(message) {
         const allMessages = document.querySelector('.messages-section');
-        const conversation = document.querySelector('.messages-section');
+        const conversation = document.querySelector('.conversation');
 
-        if (conversation) {
+        if (allMessages && conversation.getAttribute('name') === message.Message.sender_name) {
             const msg = document.createElement('div');
             msg.classList.add('message', 'sender')
             msg.innerHTML = `
@@ -115,7 +116,7 @@ export class BASE {
                 <span class="timestamp-mssg">${new Date(message.Message.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
             <p>${message.Message.Message}</p>`
-            conversation.insertAdjacentElement("beforeend", msg);
+            allMessages.insertAdjacentElement("beforeend", msg);
             allMessages.scrollTop = allMessages.scrollHeight;
         } else {
             const notification = document.querySelector(`#${message.Message.sender_name} .notification`);
