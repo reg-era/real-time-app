@@ -91,7 +91,9 @@ export class popup {
     setupConversation(name) {
         const allMessages = document.querySelector('.messages-section');
         const send = document.querySelector('.message-input1');
-        document.addEventListener("keydown", async (event) => {
+        const overlay = document.querySelector('.over-layer')
+
+        const event = async (event) => {
             if (event.key === "Enter" && !event.shiftKey) {
                 const message = send.value.trim();
                 const validCookie = await validCookies();
@@ -118,7 +120,7 @@ export class popup {
                     } catch (error) {
                         console.error(error);
                     }
-                } else {
+                } else if (!validCookie.valid) {
                     const popMessage = document.querySelector('.conversation');
                     const over = document.querySelector('.over-layer');
                     popMessage.remove();
@@ -126,7 +128,10 @@ export class popup {
                     this.base.handleLogout();
                 }
             }
-        })
+        }
+
+        document.addEventListener("keydown", event)
+        overlay.addEventListener('click', (e) => { document.removeEventListener("keydown", event) })
     }
 }
 
