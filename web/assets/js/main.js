@@ -1,8 +1,9 @@
 import { BASE } from "./views/_BASE.js"
 import { Router } from "./rootes.js";
 
+export const app = new BASE();
+
 async function main() {
-    const app = new BASE();
     app.router = new Router(app);
 
     window.addEventListener('popstate', () => {

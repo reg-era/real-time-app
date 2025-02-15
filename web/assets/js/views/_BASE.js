@@ -254,27 +254,29 @@ export class BASE {
         try {
             //this for online bar 
             let onlinebar = document.querySelector('.onligne-bar');
-            const nav = onlinebar.querySelector('.sidebar-nav');
-            nav.innerHTML = '';
-            if (Array.isArray(this.users.Friends)) {
-                this.users.Friends.forEach(user => {
-                    if (user.Seen === 0 && !user.IsSender) {
-                        showNotification({
-                            Message: user.LastMessage,
-                            sender_name: user.Name,
-                        });
-                    }
-                    // console.log(user);
-
-                    nav.appendChild(makeBar(user.Online, user));
-                });
+            if (onlinebar) {
+                const nav = onlinebar.querySelector('.sidebar-nav');
+                nav.innerHTML = '';
+                if (Array.isArray(this.users.Friends)) {
+                    this.users.Friends.forEach(user => {
+                        if (user.Seen === 0 && !user.IsSender) {
+                            showNotification({
+                                Message: user.LastMessage,
+                                sender_name: user.Name,
+                            });
+                        }
+                        nav.appendChild(makeBar(user.Online, user));
+                    });
+                }
             }
             //this for side bar hiden
             const sidebar = document.querySelector('.sidebar-for-min');
-            const navbar = sidebar.querySelector('.sidebar-nav-inside');
-            navbar.innerHTML = '';
-            if (Array.isArray(this.users.Friends)) {
-                this.users.Friends.forEach(user => navbar.appendChild(makeBar(user.Online, user)));
+            if (sidebar) {
+                const navbar = sidebar.querySelector('.sidebar-nav-inside');
+                navbar.innerHTML = '';
+                if (Array.isArray(this.users.Friends)) {
+                    this.users.Friends.forEach(user => navbar.appendChild(makeBar(user.Online, user)));
+                }
             }
             handleResize();
         } catch (error) {

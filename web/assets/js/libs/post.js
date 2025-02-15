@@ -33,7 +33,12 @@ export async function renderPage(postIds) {
             }
             i++
         }
-        const data = await renderPosts(targets);
+        let data = null;
+        try {
+            data = await renderPosts(targets);
+        } catch (err) {
+            return err
+        }
         return data;
     } catch (error) {
         console.error(error);
@@ -57,6 +62,7 @@ export async function renderPosts(posts) {
             initializeCommentSection(postElement, post);
         } catch (error) {
             console.error("Error rendering post:", error);
+            return error
         }
     }
     return res

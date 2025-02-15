@@ -24,8 +24,9 @@ var Upgrader = websocket.Upgrader{
 }
 
 type Client struct {
-	Id   int
-	Conn *websocket.Conn
+	Id       int
+	Conn     *websocket.Conn
+	LastPing time.Time
 }
 
 type Friend struct {
@@ -68,6 +69,34 @@ func (h *Hub) Run() {
 			h.Mutex.Lock()
 			h.Clients[client.Id] = append(h.Clients[client.Id], client)
 			h.Mutex.Unlock()
+
+			client.Conn.SetPongHandler(func(string) error {
+				h.Mutex.Lock()
+				client.LastPing = time.Now()
+				h.Mutex.Unlock()
+				return nil
+			})
+
+			client.LastPing = time.Now()
+
+			go func() {
+				ticker := time.NewTicker(3 * time.Second)
+				defer ticker.Stop()
+
+				for range ticker.C {
+					if time.Since(client.LastPing) > 5*time.Second {
+						h.Unregister <- client
+						return
+					}
+
+					err := client.Conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(2*time.Second))
+					if err != nil {
+						client.Conn.Close() // closing connection insted of removing client
+						return
+					}
+				}
+			}()
+
 		case client := <-h.Unregister:
 			h.Mutex.Lock()
 			if _, ok := h.Clients[client.Id]; ok {
@@ -111,7 +140,6 @@ func (h *Hub) Run() {
 						log.Printf("Error broadcasting to client: %v", err)
 					}
 				}
-
 			}
 			h.Mutex.RUnlock()
 		}

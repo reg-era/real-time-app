@@ -18,10 +18,10 @@ export function handleResize() {
                 // the function handlesize is not called in login page and register
                 return
             }
-            
-            menuButton.style.display = 'block';
-            onlinebar.style.display = 'none';
-            bottonCreat.style.display = 'none';
+
+            if (menuButton) menuButton.style.display = 'block';
+            if (onlinebar) onlinebar.style.display = 'none';
+            if (bottonCreat) bottonCreat.style.display = 'none';
             if (sideBar) {
                 sideBar.classList.add('hide');
             }
@@ -35,8 +35,8 @@ export function handleResize() {
             if (window.location.pathname === '/') {
                 bottonCreat.style.display = 'block';
             }
-            menuButton.style.display = 'none';
-            onlinebar.style.display = 'block';
+            if (menuButton) menuButton.style.display = 'none';
+            if (onlinebar) onlinebar.style.display = 'block';
 
             if (sideBar) {
                 if (!sideBar.classList.contains('hide')) {
