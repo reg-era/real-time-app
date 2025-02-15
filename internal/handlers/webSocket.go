@@ -49,6 +49,10 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 			newmssg := utils.Message{}
 			received := mssge{}
 			json.Unmarshal(mssg, &received)
+			if len(received.Data) > 200 || len(received.Data) <= 0 {
+				continue
+			}
+
 			newmssg.Message = received.Data
 			newmssg.SenderID = userid
 			newmssg.CreatedAt = time.Now()

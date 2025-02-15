@@ -22,7 +22,7 @@ export class popup {
         inputMessage.classList.add('messages-input');
         inputMessage.innerHTML = `
             <input required placeholder="Type message ..." class="message-input1"></input>
-            <p class="error-comment"></p>`;
+            <p class="error-message"></p>`;
 
         try {
             const res = await fetch(`/api/messages?section=message&name=${name}`);
@@ -95,14 +95,24 @@ export class popup {
 
         const event = async (event) => {
             if (event.key === "Enter" && !event.shiftKey) {
+                const err = document.querySelector('.error-message')
+                err.textContent = ''
+
                 const message = send.value.trim();
+                if (message.length > 200 || message.length <= 0 || !message) {
+                    const err = document.querySelector('.error-message')
+                    err.textContent = 'invalid message'
+                    return
+                }
+
                 const validCookie = await validCookies();
-                if (message && validCookie.valid) {
+                if (validCookie.valid) {
                     try {
                         this.base.connection.send(JSON.stringify({
                             ReceiverName: name,
                             Data: message,
                         }));
+
                         const conversation = document.querySelector('.conversation');
                         const username = conversation.getAttribute('name');
 
@@ -120,7 +130,7 @@ export class popup {
                     } catch (error) {
                         console.error(error);
                     }
-                } else if (!validCookie.valid) {
+                } else {
                     const popMessage = document.querySelector('.conversation');
                     const over = document.querySelector('.over-layer');
                     popMessage.remove();
