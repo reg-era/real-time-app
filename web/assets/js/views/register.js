@@ -46,8 +46,8 @@ export class Register extends BASE {
                     await self.base.router.handleRoute();
                     await self.base.initializeWebSocket();
                 } else {
-                    const errorData = await response.text();
-                    messageElement.textContent = `Error: ${errorData}`;
+                    const errorData = await response.json();
+                    messageElement.textContent = `Error: ${errorData.error}`;
                     messageElement.style.color = "red";
                 }
             } catch (error) {
