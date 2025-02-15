@@ -91,6 +91,7 @@ func (h *Hub) Run() {
 						delete(h.Clients, client)
 					}
 				}
+				database.Updatesenn(client, message)
 			}
 			h.Mutex.RUnlock()
 		case mssg := <-h.Message:
