@@ -28,7 +28,7 @@ func main() {
 		Register:   make(chan *websocket.Client),
 		Message:    make(chan utils.Message),
 		Unregister: make(chan *websocket.Client),
-		Progress:   make(chan int),
+		Progress:   make(chan websocket.Progresser),
 	}
 	go forumHub.Run()
 	defer close(forumHub.Broadcast)

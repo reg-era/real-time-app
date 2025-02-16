@@ -393,9 +393,9 @@ func Getlastmessg(sender_id int, receiver_iD int, db *sql.DB) (error, utils.Mess
 	return nil, message
 }
 
-func Updatesenn(sender_id int, receiver_id int, db *sql.DB) error {
-	query := `UPDATE messages SET seen=1 WHERE (sender_id = ? AND receiver_id = ? );`
-	_, err := db.Exec(query, sender_id, receiver_id)
+func Updatesenn(receiver_id int, db *sql.DB) error {
+	query := `UPDATE messages SET seen=1 WHERE receiver_id = ? ;`
+	_, err := db.Exec(query, receiver_id)
 	if err != nil {
 		return err
 	}

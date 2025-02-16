@@ -61,7 +61,12 @@ type Hub struct {
 	Unregister chan *Client
 	Mutex      sync.RWMutex
 
-	Progress chan int
+	Progress chan Progresser
+}
+
+type Progresser struct {
+	UserId   int
+	UserName string `json:"user_name"`
 }
 
 func (h *Hub) Run() {
@@ -122,6 +127,7 @@ func (h *Hub) Run() {
 						delete(h.Clients, client)
 					}
 				}
+				database.Updatesenn(client, message)
 			}
 			h.Mutex.RUnlock()
 		case mssg := <-h.Message:
@@ -147,17 +153,16 @@ func (h *Hub) Run() {
 		case typer := <-h.Progress:
 			for client := range h.Clients {
 				for _, window := range h.Clients[client] {
-					response := websocketmsg{
-						Type: "inprogress",
-					}
-					data, err := json.Marshal(response)
-					if err != nil {
-						fmt.Println("err on marshling br", err)
-					}
-					if typer == client {
-						err := window.Conn.WriteMessage(websocket.TextMessage, data)
+					if typer.UserId == client {
+						response := websocketmsg{
+							Type: "inprogress",
+							Message: utils.Message{
+								SenderName: typer.UserName,
+							},
+						}
+						err := window.Conn.WriteJSON(response)
 						if err != nil {
-							fmt.Println("err on brodcast", err)
+							log.Printf("Error broadcasting to client: %v", err)
 						}
 					}
 				}

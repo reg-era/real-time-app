@@ -1,4 +1,6 @@
+import { escapeHTML } from "../libs/post.js";
 import { handleResize, debounce } from "../libs/script.js";
+import { validCookies } from "../main.js";
 import { popup } from "./popup.js";
 
 export class BASE {
@@ -85,7 +87,7 @@ export class BASE {
                 }
                 switch (data.Type) {
                     case 'message':
-                        this.handleWebSocketMessage(data);
+                        await this.handleWebSocketMessage(data);
                         break;
                     case 'onlineusers':
                         if (data.users) {
@@ -95,17 +97,20 @@ export class BASE {
                         break;
 
                     case 'inprogress':
-                        const typer = document.querySelector('.progress-container')
-                        if (typer) {
-                            if (!toggled && typer.classList.contains('hiden')) {
-                                typer.classList.add('progress');
-                                typer.classList.remove('hiden');
+                        const container_conv = document.querySelector('.conversation')
+                        const container_progress = document.querySelector('.progress-container')
+                        const username = JSON.parse(event.data).Message.sender_name
+
+                        if (container_progress && container_conv.getAttribute('name') === username) {
+                            if (!toggled && container_progress.classList.contains('hiden')) {
+                                container_progress.classList.add('progress');
+                                container_progress.classList.remove('hiden');
                                 toggled = true
                             }
                             clearTimeout(debounceTimeout);
                             debounceTimeout = setTimeout(() => {
-                                typer.classList.remove('progress');
-                                typer.classList.add('hiden');
+                                container_progress.classList.remove('progress');
+                                container_progress.classList.add('hiden');
                                 toggled = false
                             }, 1000);
                         }
@@ -120,11 +125,11 @@ export class BASE {
         };
     }
 
-    handleWebSocketMessage(message) {
+    async handleWebSocketMessage(message) {
         const allMessages = document.querySelector('.messages-section');
-        const conversation = document.querySelector('.messages-section');
+        const conversation = document.querySelector('.conversation');
 
-        if (conversation) {
+        if (allMessages && conversation.getAttribute('name') === message.Message.sender_name) {
             const msg = document.createElement('div');
             msg.classList.add('message', 'sender')
             msg.innerHTML = `
@@ -132,8 +137,8 @@ export class BASE {
                 <span class="username-message">${message.Message.sender_name}</span>
                 <span class="timestamp-mssg">${new Date(message.Message.CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
-            <p>${message.Message.Message}</p>`
-            conversation.insertAdjacentElement("beforeend", msg);
+            <p>${escapeHTML(message.Message.Message)}</p>`
+            allMessages.insertAdjacentElement("beforeend", msg);
             allMessages.scrollTop = allMessages.scrollHeight;
         } else {
             const notification = document.querySelector(`#${message.Message.sender_name} .notification`);
@@ -323,8 +328,8 @@ function showNotification(message) {
     notification.className = 'notification';
 
     notification.innerHTML = `
-        ${message.Message}
-      <span>  ${message.sender_name}</span>
+        ${escapeHTML(message.Message)}
+        <span>  ${message.sender_name}</span>
         <span class="close-btn">&times;</span>
     `;
 
@@ -354,7 +359,7 @@ function makeBar(online, user) {
     bar.innerHTML = `
     <div class="status-info">
         <span id="online-status" class="username">${online ? "🟢" : "🔴"} ${user.Name}</span>
-        <span class="lastmessage"> ${user.LastMessage} </span>
+        <span class="lastmessage"> ${escapeHTML(user.LastMessage)} </span>
         <span class="timestamp">${user.LastMessage ? new Date(user.Time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
     </div>
     <div class="notification hide"><span class="notification-counter">0</span></div>`

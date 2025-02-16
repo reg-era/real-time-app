@@ -72,10 +72,10 @@
     color: var(--white);
 }
 
-.error-comment {
+.error-message {
     color: red;
-    font-size: 12px;
-    margin-top: 5px;
+    font-size: 20px;
+    margin-top: 10px;
 }
 
 .seemore {

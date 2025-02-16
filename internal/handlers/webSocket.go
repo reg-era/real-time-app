@@ -39,6 +39,7 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 	}
 
 	lastmessage := time.Now()
+
 	for {
 		_, mssg, err := conn.ReadMessage()
 		if err != nil {
@@ -50,11 +51,19 @@ func HandleWs(w http.ResponseWriter, r *http.Request, db *sql.DB, userid int, hu
 			newmssg := utils.Message{}
 			received := mssge{}
 			if err := json.Unmarshal(mssg, &received); err != nil {
-				typer, err := database.GetUserIdByName(string(mssg), db)
+				id, err := database.GetUserIdByName(string(mssg), db)
 				if err != nil {
-					fmt.Println("err on geting", err) // handling error
+					fmt.Println(err)
+					continue
 				}
-				hub.Progress <- typer
+				username, _ := database.GetUserName(userid, db)
+				hub.Progress <- websocket.Progresser{
+					UserId:   id,
+					UserName: username,
+				}
+				continue
+			}
+			if len(received.Data) > 200 || len(received.Data) <= 0 {
 				continue
 			}
 			newmssg.Message = received.Data

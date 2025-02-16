@@ -1,3 +1,4 @@
+import { escapeHTML } from "../libs/post.js";
 import { validCookies } from "../main.js";
 
 export class popup {
@@ -15,7 +16,7 @@ export class popup {
 
         const popMessage = document.createElement('div')
         popMessage.classList.add('conversation');
-        popMessage.setAttribute('name', res.body);
+        popMessage.setAttribute('name', name);
 
 
         const inputMessage = document.createElement('div')
@@ -23,7 +24,7 @@ export class popup {
         inputMessage.innerHTML = `
             <div class="progress-container hiden"><span>${name} is typing</span></div>
             <input required placeholder="Type message ..." class="message-input1"></input>
-            <p class="error-comment"></p>`;
+            <p class="error-message"></p>`;
 
         try {
             const res = await fetch(`/api/messages?section=message&name=${name}`);
@@ -106,16 +107,28 @@ export class popup {
     setupConversation(name) {
         const allMessages = document.querySelector('.messages-section');
         const send = document.querySelector('.message-input1');
-        document.addEventListener("keydown", async (event) => {
+        const overlay = document.querySelector('.over-layer')
+
+        const event = async (event) => {
             if (event.key === "Enter" && !event.shiftKey) {
+                const err = document.querySelector('.error-message')
+                err.textContent = ''
+
                 const message = send.value.trim();
+                if (message.length > 200 || message.length <= 0 || !message) {
+                    const err = document.querySelector('.error-message')
+                    err.textContent = 'invalid message'
+                    return
+                }
+
                 const validCookie = await validCookies();
-                if (message && validCookie.valid) {
+                if (validCookie.valid) {
                     try {
                         this.base.connection.send(JSON.stringify({
                             ReceiverName: name,
                             Data: message,
                         }));
+
                         const conversation = document.querySelector('.conversation');
                         const username = conversation.getAttribute('name');
 
@@ -126,7 +139,7 @@ export class popup {
                             <span class="username-message">${username}</span>
                             <span class="timestamp-mssg">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                        <p>${message}</p>`
+                        <p>${escapeHTML(message)}</p>`
                         document.querySelector('.messages-section').appendChild(messageCompon);
                         send.value = '';
                         allMessages.scrollTop = allMessages.scrollHeight;
@@ -141,7 +154,10 @@ export class popup {
                     this.base.handleLogout();
                 }
             }
-        })
+        }
+
+        document.addEventListener("keydown", event)
+        overlay.addEventListener('click', (e) => { document.removeEventListener("keydown", event) })
     }
 }
 
@@ -159,7 +175,7 @@ function insertMessages(messages, container, name) {
             <span class="username-message">${messages[i].IsSender ? messages[i].sender_name : name}</span>
             <span class="timestamp-mssg">${new Date(messages[i].CreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
-        <p>${messages[i].Message}</p>`;
+        <p>${escapeHTML(messages[i].Message)}</p>`;
 
         // Append to the end instead of inserting at the beginning
         // container.appendChild(messageCompon);

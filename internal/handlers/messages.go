@@ -12,13 +12,13 @@ import (
 
 func GetUser(w http.ResponseWriter, r *http.Request, db *sql.DB, userId int, hub *ws.Hub) {
 	name := r.URL.Query().Get("name")
-	sender_id, err := database.GetUserIdByName(name, db)
+	_, err := database.GetUserIdByName(name, db)
 	if err != nil {
 		fmt.Println(err)
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
 		return
 	}
-	err = database.Updatesenn(sender_id, userId, db)
+	err = database.Updatesenn(userId, db)
 	if err != nil {
 		fmt.Println(err)
 		utils.RespondWithJSON(w, http.StatusInternalServerError, utils.ErrorResponse{Error: "Internal Server Error"})
