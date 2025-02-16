@@ -137,37 +137,88 @@ p {
     display: flex;
     flex-direction: row;
     background-color: #f0f0f0;
-    width: 100%;
+    max-width: 300px;
+    min-width: 200px;
+    max-height: 40px;
     border-radius: 10px;
-    overflow: hidden;
-    padding: 5px 5px 5px 5px;
-    text-align: center;
-}
-
-.progress-container span {
-    font-size: 16px;
-    padding: 5px;
+    gap: 20px;
+    padding: 5px 5px 5px;
 }
 
 .progress {
     position: absolute;
-    height: 40%;
-    width: 20%;
-    animation: moveUpDown 2s infinite ease-in-out;
+    animation: fadeIn 0.5s ease-out;
+    transform: translateY(-110%);
 }
 
+.prog-message p {
+    background-color: #f0f0f0;
+    color: black;
+    font-size: 20px;
+    margin-top: 5px;
+}
 
-@keyframes moveUpDown {
+.prog-name {
+    font-weight: bolder;
+    margin-right: 5px;
+}
+
+.prog-animation {
+    margin-top: 15px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.dot {
+    height: 8px;
+    width: 8px;
+    background-color: black;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.one {
+    animation: blinking 2s infinite;
+    animation-delay: 0s;
+}
+
+.two {
+    animation: blinking 2s infinite;
+    animation-delay: 0.5s;
+}
+
+.three {
+    animation: blinking 2s infinite;
+    animation-delay: 1s;
+}
+
+@keyframes fadeIn {
     0% {
-        transform: translateY(-80px);
-    }
-
-    50% {
-        transform: translateY(-50px);
+        z-index: -99;
+        opacity: 0;
+        transform: translateY(150%);
     }
 
     100% {
-        transform: translateY(-80px);
+        z-index: 99;
+        opacity: 1;
+        transform: translateY(-110%);
+    }
+
+}
+
+@keyframes blinking {
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(-5px);
     }
 }
 

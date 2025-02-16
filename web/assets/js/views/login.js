@@ -32,8 +32,8 @@ export class Login extends BASE {
                     await this.base.router.handleRoute();
                     await this.base.initializeWebSocket();
                 } else {
-                    const errorData = await response.json();
-                    messageElement.textContent = errorData.message || 'Login failed. Please try again.';
+                    const errorData = await response.text();
+                    messageElement.textContent = errorData || 'Login failed. Please try again.';
                     messageElement.style.color = "red";
                 }
             } catch (error) {

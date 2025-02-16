@@ -22,7 +22,16 @@ export class popup {
         const inputMessage = document.createElement('div')
         inputMessage.classList.add('messages-input');
         inputMessage.innerHTML = `
-            <div class="progress-container hiden"><span>${name} is typing</span></div>
+            <div class="progress-container hiden">
+                <div class="prog-message">    
+                    <p><span class="prog-name">${name}</span> is typing</p>
+                </div>
+                <div class="prog-animation">    
+                    <div class="dot one"></div>
+                    <div class="dot two"></div>
+                    <div class="dot three"></div>
+                </div>
+            </div>
             <input required placeholder="Type message ..." class="message-input1"></input>
             <p class="error-message"></p>`;
 
