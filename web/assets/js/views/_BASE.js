@@ -124,7 +124,7 @@ export class BASE {
             notification.classList.remove('hide');
             const counter = notification.querySelector('.notification-counter');
             counter.textContent = parseInt(counter.textContent) + 1;
-            showNotification(escapeHTML(message.Message));
+            showNotification(message.Message);
         }
     }
 
@@ -307,8 +307,8 @@ function showNotification(message) {
     notification.className = 'notification';
 
     notification.innerHTML = `
-        ${message.Message}
-      <span>  ${message.sender_name}</span>
+        ${escapeHTML(message.Message)}
+        <span>  ${message.sender_name}</span>
         <span class="close-btn">&times;</span>
     `;
 
