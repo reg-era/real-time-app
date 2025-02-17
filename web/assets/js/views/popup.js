@@ -138,14 +138,11 @@ export class popup {
                             Data: message,
                         }));
 
-                        const conversation = document.querySelector('.conversation');
-                        const username = conversation.getAttribute('name');
-
                         const messageCompon = document.createElement('div');
                         messageCompon.classList.add('message', 'receiver');
                         messageCompon.innerHTML = `
                         <div class="message-header">
-                            <span class="username-message">${username}</span>
+                            <span class="username-message">${validCookie.body}</span>
                             <span class="timestamp-mssg">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                         <p>${escapeHTML(message)}</p>`
