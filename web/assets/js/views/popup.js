@@ -106,7 +106,7 @@ export class popup {
 
         input.addEventListener('input', () => {
             const current = Date.now()
-            if (current - last >= 500) {
+            if (current - last >= 300) {
                 this.base.connection.send(name)
                 last = current
             }

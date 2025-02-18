@@ -114,7 +114,7 @@ export class BASE {
                                     container_progress.classList.remove('progress');
                                     container_progress.classList.add('hiden');
                                     toggled = false
-                                }, 1000);
+                                }, 500);
                             }
                             break;
 
@@ -146,6 +146,12 @@ export class BASE {
             <p>${escapeHTML(message.Message.Message)}</p>`
             allMessages.insertAdjacentElement("beforeend", msg);
             allMessages.scrollTop = allMessages.scrollHeight;
+
+            //const barProgress = document.querySelector('.progress-container')
+            //if (barProgress && barProgress.classList.contains('progress')){
+            //    barProgress.classList.remove('progress')
+            //    barProgress.classList.add('hiden');
+            //}
         } else {
             const notification = document.querySelector(`#${message.Message.sender_name} .notification`);
             notification.classList.remove('hide');
