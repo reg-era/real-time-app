@@ -41,6 +41,18 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request, db *sql.DB, userId 
 		return
 	}
 
+	userData.FirstName = strings.TrimSpace(userData.FirstName)
+	if len(userData.FirstName) == 0 || len(userData.FirstName) > 15 {
+		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "invalid username/password/email"})
+		return
+	}
+
+	userData.LastName = strings.TrimSpace(userData.LastName)
+	if len(userData.LastName) == 0 || len(userData.LastName) > 15 {
+		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "invalid username/password/email"})
+		return
+	}
+
 	if userData.Password != userData.PasswordConfirmation {
 		utils.RespondWithJSON(w, http.StatusBadRequest, utils.ErrorResponse{Error: "Passwords do not match."})
 		return

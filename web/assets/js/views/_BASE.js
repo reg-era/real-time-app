@@ -75,52 +75,58 @@ export class BASE {
 
     }
 
-    setupConnReader() {
+    async setupConnReader() {
         let debounceTimeout
         let toggled = false
         this.connection.onmessage = async (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                if (!data.Type) {
-                    console.error('Received message without type:', data);
-                    return;
-                }
-                switch (data.Type) {
-                    case 'message':
-                        await this.handleWebSocketMessage(data);
-                        break;
-                    case 'onlineusers':
-                        if (data.users) {
-                            this.users = data.users;
-                            this.renderSidebar();
-                        }
-                        break;
-
-                    case 'inprogress':
-                        const container_conv = document.querySelector('.conversation')
-                        const container_progress = document.querySelector('.progress-container')
-                        const username = JSON.parse(event.data).Message.sender_name
-
-                        if (container_progress && container_conv.getAttribute('name') === username) {
-                            if (!toggled && container_progress.classList.contains('hiden')) {
-                                container_progress.classList.add('progress');
-                                container_progress.classList.remove('hiden');
-                                toggled = true
+            const valid = await validCookies();
+            if (valid.valid) {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (!data.Type) {
+                        console.error('Received message without type:', data);
+                        return;
+                    }
+                    switch (data.Type) {
+                        case 'message':
+                            await this.handleWebSocketMessage(data);
+                            break;
+                        case 'onlineusers':
+                            if (data.users) {
+                                this.users = data.users;
+                                this.renderSidebar();
                             }
-                            clearTimeout(debounceTimeout);
-                            debounceTimeout = setTimeout(() => {
-                                container_progress.classList.remove('progress');
-                                container_progress.classList.add('hiden');
-                                toggled = false
-                            }, 1000);
-                        }
-                        break;
+                            break;
 
-                    default:
-                        console.warn('Unknown message type:', data.type);
+                        case 'inprogress':
+                            const container_conv = document.querySelector('.conversation')
+                            const container_progress = document.querySelector('.progress-container')
+                            const username = JSON.parse(event.data).Message.sender_name
+
+                            if (container_progress && container_conv.getAttribute('name') === username) {
+                                if (!toggled && container_progress.classList.contains('hiden')) {
+                                    container_progress.classList.add('progress');
+                                    container_progress.classList.remove('hiden');
+                                    toggled = true
+                                }
+                                clearTimeout(debounceTimeout);
+                                debounceTimeout = setTimeout(() => {
+                                    container_progress.classList.remove('progress');
+                                    container_progress.classList.add('hiden');
+                                    toggled = false
+                                }, 1000);
+                            }
+                            break;
+
+                        default:
+                            console.warn('Unknown message type:', data.type);
+                    }
+                } catch (error) {
+                    console.error('Error processing WebSocket message:', error);
                 }
-            } catch (error) {
-                console.error('Error processing WebSocket message:', error);
+            } else {
+                this.connection.close();
+                this.router.handleLogout();
             }
         };
     }
