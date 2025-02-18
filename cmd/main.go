@@ -145,7 +145,7 @@ func main() {
 	})
 
 	router.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		auth.AuthMiddleware(db, handlers.HandleWs, 100, time.Minute, forumHub, true).ServeHTTP(w, r)
+		auth.AuthMiddleware(db, handlers.HandleWs, 1000, time.Minute, forumHub, true).ServeHTTP(w, r)
 	})
 
 	router.HandleFunc("/api/messages", func(w http.ResponseWriter, r *http.Request) {

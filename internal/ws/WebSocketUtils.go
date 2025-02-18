@@ -24,9 +24,8 @@ var Upgrader = websocket.Upgrader{
 }
 
 type Client struct {
-	Id       int
-	Conn     *websocket.Conn
-	LastPing time.Time
+	Id   int
+	Conn *websocket.Conn
 }
 
 type Friend struct {
@@ -76,39 +75,14 @@ func (h *Hub) Run() {
 			h.Mutex.Lock()
 			h.Clients[client.Id] = append(h.Clients[client.Id], client)
 			h.Mutex.Unlock()
-
-			client.Conn.SetPongHandler(func(string) error {
-				h.Mutex.Lock()
-				client.LastPing = time.Now()
-				h.Mutex.Unlock()
-				return nil
-			})
-
-			client.LastPing = time.Now()
-
-			go func() {
-				ticker := time.NewTicker(3 * time.Second)
-				defer ticker.Stop()
-
-				for range ticker.C {
-					if time.Since(client.LastPing) > 5*time.Second {
-						h.Unregister <- client
-						return
-					}
-
-					err := client.Conn.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(2*time.Second))
-					if err != nil {
-						client.Conn.Close() // closing connection insted of removing client
-						return
-					}
-				}
-			}()
-
 		case client := <-h.Unregister:
 			h.Mutex.Lock()
 			if _, ok := h.Clients[client.Id]; ok {
-				delete(h.Clients, client.Id)
 				client.Conn.Close()
+				h.Clients[client.Id] = DeleteUser(h.Clients[client.Id], client)
+				if len(h.Clients[client.Id]) == 0 {
+					delete(h.Clients, client.Id)
+				}
 			}
 			h.Mutex.Unlock()
 		case message := <-h.Broadcast:
@@ -151,19 +125,18 @@ func (h *Hub) Run() {
 			h.Mutex.RUnlock()
 
 		case typer := <-h.Progress:
-			for client := range h.Clients {
-				for _, window := range h.Clients[client] {
-					if typer.UserId == client {
-						response := websocketmsg{
-							Type: "inprogress",
-							Message: utils.Message{
-								SenderName: typer.UserName,
-							},
-						}
-						err := window.Conn.WriteJSON(response)
-						if err != nil {
-							log.Printf("Error broadcasting to client: %v", err)
-						}
+			// fmt.Println(len(h.Clients[typer.UserId]))
+			if Client, ok := h.Clients[typer.UserId]; ok {
+				for _, window := range Client {
+					response := websocketmsg{
+						Type: "inprogress",
+						Message: utils.Message{
+							SenderName: typer.UserName,
+						},
+					}
+					err := window.Conn.WriteJSON(response)
+					if err != nil {
+						log.Printf("Error broadcasting to client: %v", err)
 					}
 				}
 			}
@@ -264,4 +237,13 @@ func creatfriendslist(allFriends []int, userId int, db *sql.DB) ([]Friend, error
 		Friends = append(Friends, friend)
 	}
 	return Friends, nil
+}
+
+func DeleteUser(arr []*Client, user *Client) []*Client {
+	for index, client := range arr {
+		if client.Conn == user.Conn {
+			return append(arr[:index], arr[index+1:]...)
+		}
+	}
+	return arr
 }
