@@ -106,7 +106,7 @@ export class popup {
 
         input.addEventListener('input', () => {
             const current = Date.now()
-            if (current - last >= 300) {
+            if (current - last >= 500 || last === 0) {
                 this.base.connection.send(name)
                 last = current
             }
@@ -183,8 +183,6 @@ function insertMessages(messages, container, name) {
         </div>
         <p>${escapeHTML(messages[i].Message)}</p>`;
 
-        // Append to the end instead of inserting at the beginning
-        // container.appendChild(messageCompon);
         container.insertAdjacentElement('afterbegin', messageCompon);
     }
 

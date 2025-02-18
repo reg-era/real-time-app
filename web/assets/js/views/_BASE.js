@@ -90,6 +90,7 @@ export class BASE {
                     switch (data.Type) {
                         case 'message':
                             await this.handleWebSocketMessage(data);
+                            toggled=false;
                             break;
                         case 'onlineusers':
                             if (data.users) {
@@ -98,7 +99,9 @@ export class BASE {
                             }
                             break;
 
-                        case 'inprogress':
+                        case 'inprogress':  
+                            console.log(toggled);
+                                                  
                             const container_conv = document.querySelector('.conversation')
                             const container_progress = document.querySelector('.progress-container')
                             const username = JSON.parse(event.data).Message.sender_name
@@ -114,7 +117,9 @@ export class BASE {
                                     container_progress.classList.remove('progress');
                                     container_progress.classList.add('hiden');
                                     toggled = false
-                                }, 500);
+                                    console.log(toggled);
+                                    
+                                }, 1000);
                             }
                             break;
 
@@ -147,11 +152,11 @@ export class BASE {
             allMessages.insertAdjacentElement("beforeend", msg);
             allMessages.scrollTop = allMessages.scrollHeight;
 
-            //const barProgress = document.querySelector('.progress-container')
-            //if (barProgress && barProgress.classList.contains('progress')){
-            //    barProgress.classList.remove('progress')
-            //    barProgress.classList.add('hiden');
-            //}
+            const barProgress = document.querySelector('.progress-container')
+            if (barProgress && barProgress.classList.contains('progress')){
+               barProgress.classList.remove('progress');
+               barProgress.classList.add('hiden');
+            }
         } else {
             const notification = document.querySelector(`#${message.Message.sender_name} .notification`);
             notification.classList.remove('hide');
